@@ -13,12 +13,6 @@ buildscript {
     }
 }
 
-ext {
-    minSdkVersion = 19
-    targetSdkVersion = 28
-    androidSupportVerion = '28.+'
-}
-
 allprojects {
     repositories {
         google()
