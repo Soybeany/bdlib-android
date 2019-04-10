@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion rootProject.ext.targetSdkVersion
@@ -34,8 +34,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     compileOnly "com.android.support:appcompat-v7:$rootProject.androidSupportVerion"
     // BDLib
-    api 'com.github.Soybeany:bdlib-core:master-SNAPSHOT'
-    implementation project(':android_util')
+    api project(':android_util')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
