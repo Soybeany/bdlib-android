@@ -1,0 +1,73 @@
+package com.soybeany.bdlib.android.util.dialog;
+
+import android.support.annotation.NonNull;
+
+import com.soybeany.bdlib.android.util.StdHintUtils;
+import com.soybeany.bdlib.core.java8.Optional;
+
+/**
+ * <br>Created by Soybeany on 2019/3/21.
+ */
+public class DialogMsg implements Comparable<DialogMsg> {
+
+    String prefix = StdHintUtils.STD_LOADING_PREFIX;
+    String suffix = StdHintUtils.STD_LOADING_SUFFIX;
+    String hint;
+    IMultiHintListener hintListener = (msg, count, cancelable) -> "处理" + count + "项任务";
+    boolean cancelable;
+
+    long showTime; // 此信息被show时的时间
+
+    public DialogMsg(String hint) {
+        hint(hint);
+    }
+
+    @Override
+    public int compareTo(@NonNull DialogMsg o) {
+        return (int) (showTime - o.showTime);
+    }
+
+    /**
+     * 设置单项提示
+     */
+    public DialogMsg hint(String hint) {
+        this.hint = Optional.ofNullable(hint).orElseGet(() -> "处理任务");
+        return this;
+    }
+
+    /**
+     * 获得单项提示
+     */
+    public String hint() {
+        return hint;
+    }
+
+    /**
+     * 设置多项提示
+     */
+    public DialogMsg multiHint(IMultiHintListener listener) {
+        if (null != listener) {
+            hintListener = listener;
+        }
+        return this;
+    }
+
+    /**
+     * 设置返回键是否能取消弹窗
+     */
+    public DialogMsg cancelable(boolean flag) {
+        this.cancelable = flag;
+        return this;
+    }
+
+    /**
+     * 弹窗是否能被取消
+     */
+    public boolean isCancelable() {
+        return cancelable;
+    }
+
+    public interface IMultiHintListener {
+        String getHint(String hint, int count, boolean cancelable);
+    }
+}
