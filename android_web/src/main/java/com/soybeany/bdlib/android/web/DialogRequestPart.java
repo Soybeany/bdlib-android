@@ -25,16 +25,13 @@ import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
  * <br>Created by Soybeany on 2019/4/11.
  */
 public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
-    private AbstractDialog mDialog;
 
-    public DialogRequestPart(OkHttpClient client, AbstractDialog dialog) {
+    public DialogRequestPart(OkHttpClient client) {
         super(client);
-        mDialog = dialog;
     }
 
-    @Override
-    public DialogCall newCall(IRequestSupplier supplier) {
-        return new DialogCall(mDialog, super.newCall(supplier));
+    public DialogCall newDialogCall(AbstractDialog dialog, IRequestSupplier supplier) {
+        return new DialogCall(dialog, newCall(supplier));
     }
 
     @EverythingIsNonNull
