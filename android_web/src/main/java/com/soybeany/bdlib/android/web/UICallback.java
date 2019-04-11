@@ -1,7 +1,7 @@
 package com.soybeany.bdlib.android.web;
 
 
-import com.soybeany.bdlib.web.okhttp.ICallback;
+import com.soybeany.bdlib.web.okhttp.core.ICallback;
 
 import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
 

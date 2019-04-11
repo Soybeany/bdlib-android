@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.soybeany.bdlib.android.util.StdHintUtils;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
-import com.soybeany.bdlib.web.okhttp.HandledException;
+import com.soybeany.bdlib.web.okhttp.core.HandledException;
 
 import java.io.IOException;
 
