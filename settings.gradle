@@ -1,1 +1,1 @@
-include ':app', ':android_util', ':android_web', ':android_mvp'
+include ':app', ':android_util', ':android_web', ':android_mvp', ':android_template'
