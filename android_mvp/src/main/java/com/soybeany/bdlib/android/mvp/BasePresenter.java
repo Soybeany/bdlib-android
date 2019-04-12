@@ -5,17 +5,17 @@ import android.support.annotation.NonNull;
 
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.core.java8.function.Consumer;
-import com.soybeany.bdlib.core.util.thread.ObjectStorage;
+import com.soybeany.bdlib.core.util.thread.UidOwnerStorage;
 
 /**
  * <br>Created by Soybeany on 2019/4/11.
  */
-public abstract class BasePresenter implements IObserver, IUidOwner {
-    private final ObjectStorage mStorage = new ObjectStorage();
+public abstract class BasePresenter implements IObserver, UidOwnerStorage.IUidOwner {
+    private final UidOwnerStorage mStorage = new UidOwnerStorage();
 
     public BasePresenter(@NonNull IView... views) {
         for (IView view : views) {
-            mStorage.put(IUidOwner.getKey(view.getClass(), view.getUid()), view);
+            mStorage.put(view);
         }
     }
 
@@ -24,19 +24,22 @@ public abstract class BasePresenter implements IObserver, IUidOwner {
         mStorage.clear();
     }
 
-    protected IView getView(Class<? extends IView> clazz) {
-        return getView(clazz, IView.DEFAULT_UID);
+    /**
+     * 获得指定视图(不要在调用方法外强引用此返回值，以免影响回收)
+     */
+    protected <V extends IView> V getView(Class<V> clazz) {
+        return mStorage.get(clazz);
     }
 
-    protected IView getView(Class<? extends IView> clazz, String uid) {
-        return (IView) mStorage.get(IUidOwner.getKey(clazz, uid));
+    protected <V extends IView> V getView(Class<V> clazz, String uid) {
+        return mStorage.get(clazz, uid);
     }
 
-    protected <T extends IView> boolean invoke(Class<T> clazz, Consumer<T> consumer) {
-        return invoke(clazz, IView.DEFAULT_UID, consumer);
+    protected <V extends IView> boolean invoke(Class<V> clazz, Consumer<V> consumer) {
+        return mStorage.invoke(clazz, consumer);
     }
 
-    protected <T extends IView> boolean invoke(Class<T> clazz, String uid, Consumer<T> consumer) {
-        return mStorage.invoke(IUidOwner.getKey(clazz, uid), consumer, clazz);
+    protected <V extends IView> boolean invoke(Class<V> clazz, String uid, Consumer<V> consumer) {
+        return mStorage.invoke(clazz, uid, consumer);
     }
 }
