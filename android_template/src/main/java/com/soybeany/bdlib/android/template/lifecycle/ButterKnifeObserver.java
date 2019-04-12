@@ -13,6 +13,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
+ * 使用时需在项目的依赖中添加 annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'(版本按需修改)
  * <br>Created by Soybeany on 2019/3/16.
  */
 public class ButterKnifeObserver implements IObserver {

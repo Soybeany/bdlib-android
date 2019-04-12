@@ -2,11 +2,8 @@ package com.soybeany.bdlib.android.template.lifecycle;
 
 import android.arch.lifecycle.ViewModel;
 
-import com.soybeany.bdlib.android.util.BDContext;
-import com.soybeany.bdlib.core.java8.Optional;
+import com.soybeany.bdlib.core.util.thread.KeyValueStorage;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -17,12 +14,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class ScheduledViewModel extends ViewModel {
     private final ScheduledThreadPoolExecutor mExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
-    private final Map<String, Runnable> mRunnableMap = new HashMap<>(); // 用于缓存runnable，避免结束后还持有对象
+    private KeyValueStorage mStorage = new KeyValueStorage();
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        mRunnableMap.clear();
+        mStorage.clear();
         mExecutor.shutdown();
     }
 
@@ -35,17 +32,16 @@ public class ScheduledViewModel extends ViewModel {
         mExecutor.schedule(getSafeRunnable(runnable), delay, unit);
     }
 
-    public void scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-        mExecutor.scheduleWithFixedDelay(command, initialDelay, delay, unit);
+    public void scheduleWithFixedDelay(Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
+        mExecutor.scheduleWithFixedDelay(getSafeRunnable(runnable), initialDelay, delay, unit);
     }
 
-    public void scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-        mExecutor.scheduleAtFixedRate(command, initialDelay, period, unit);
+    public void scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
+        mExecutor.scheduleAtFixedRate(getSafeRunnable(runnable), initialDelay, period, unit);
     }
 
     private Runnable getSafeRunnable(Runnable runnable) {
-        String key = BDContext.getUID();
-        mRunnableMap.put(key, runnable);
-        return () -> Optional.ofNullable(mRunnableMap.get(key)).ifPresent(Runnable::run);
+        String key = mStorage.put(runnable);
+        return () -> mStorage.invoke(key, r -> ((Runnable) r).run()); // 存储中有值才继续执行
     }
 }
