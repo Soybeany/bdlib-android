@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.soybeany.bdlib.android.util.IObserver;
-import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.core.java8.Optional;
 
 import butterknife.ButterKnife;
@@ -34,12 +33,10 @@ public class ButterKnifeObserver implements IObserver {
         } else {
             throw new RuntimeException("使用了不支持的source类型");
         }
-        LogUtils.test("创建:" + callback);
     }
 
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
-        LogUtils.test("销毁:" + owner);
         Optional.ofNullable(mUnBinder).ifPresent(Unbinder::unbind);
     }
 
