@@ -2,7 +2,8 @@ package com.soybeany.bdlib.android.template.lifecycle;
 
 import android.arch.lifecycle.ViewModel;
 
-import com.soybeany.bdlib.core.util.thread.KeyValueStorage;
+import com.soybeany.bdlib.android.util.BDContext;
+import com.soybeany.bdlib.core.util.storage.KeyValueStorage;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ScheduledViewModel extends ViewModel {
     private final ScheduledThreadPoolExecutor mExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
-    private KeyValueStorage mStorage = new KeyValueStorage();
+    private KeyValueStorage<String, Runnable> mStorage = new KeyValueStorage<>();
 
     @Override
     protected void onCleared() {
@@ -41,7 +42,8 @@ public class ScheduledViewModel extends ViewModel {
     }
 
     private Runnable getSafeRunnable(Runnable runnable) {
-        String key = mStorage.put(runnable);
-        return () -> mStorage.invoke(key, r -> ((Runnable) r).run()); // 存储中有值才继续执行
+        String key = BDContext.getUID();
+        mStorage.put(key, runnable);
+        return () -> mStorage.invoke(key, Runnable::run); // 存储中有值才继续执行
     }
 }

@@ -5,7 +5,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 
 import com.soybeany.bdlib.core.java8.Optional;
-import com.soybeany.bdlib.core.util.thread.IExecutable;
+import com.soybeany.bdlib.core.util.storage.IExecutable;
 
 public class HandlerThreadImpl implements IExecutable {
 

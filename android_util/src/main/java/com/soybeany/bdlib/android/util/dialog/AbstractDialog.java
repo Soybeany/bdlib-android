@@ -2,7 +2,7 @@ package com.soybeany.bdlib.android.util.dialog;
 
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.core.java8.Optional;
-import com.soybeany.bdlib.core.util.thread.MessageCenter;
+import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 /**
  * <br>Created by Soybeany on 2019/3/21.

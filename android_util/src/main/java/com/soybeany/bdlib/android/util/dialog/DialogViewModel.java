@@ -3,7 +3,7 @@ package com.soybeany.bdlib.android.util.dialog;
 import android.arch.lifecycle.ViewModel;
 
 import com.soybeany.bdlib.android.util.BDContext;
-import com.soybeany.bdlib.core.util.thread.MessageCenter;
+import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 import java.util.HashSet;
 import java.util.Set;
