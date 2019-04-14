@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
-import com.soybeany.bdlib.core.util.thread.MessageCenter;
+import com.soybeany.bdlib.core.util.storage.MessageCenter;
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 

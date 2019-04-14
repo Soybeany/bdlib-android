@@ -3,7 +3,6 @@ package com.soybeany.bdlib.project;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.soybeany.bdlib.R;
 
 public class MainActivity extends AppCompatActivity {
 
