@@ -2,7 +2,6 @@ package com.soybeany.bdlib.android.util.dialog;
 
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -18,11 +17,11 @@ public class ProgressDialogImpl extends AbstractDialog implements IObserver {
     private ProgressDialog mDialog;
 
     public ProgressDialogImpl(FragmentActivity activity) {
-        this(activity, ViewModelProviders.of(activity).get(DialogViewModel.class));
+        this(activity, DialogViewModel.get(activity));
     }
 
     public ProgressDialogImpl(Fragment fragment) {
-        this(fragment.getContext(), ViewModelProviders.of(fragment).get(DialogViewModel.class));
+        this(fragment.getContext(), DialogViewModel.get(fragment));
     }
 
     public ProgressDialogImpl(Context context, DialogViewModel vm) {

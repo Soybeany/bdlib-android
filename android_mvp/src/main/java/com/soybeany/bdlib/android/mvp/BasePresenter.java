@@ -15,6 +15,9 @@ public abstract class BasePresenter<V extends IView> implements IObserver {
     private final KeySetStorage<Lifecycle, V> mStorage = new KeySetStorage<>();
 
     public void bind(Lifecycle lifecycle, V view) {
+        if (!mStorage.containKey(lifecycle)) {
+            lifecycle.addObserver(this);
+        }
         mStorage.putVal(lifecycle, view);
     }
 
@@ -23,11 +26,16 @@ public abstract class BasePresenter<V extends IView> implements IObserver {
      */
     public void unbind(Lifecycle lifecycle, V view) {
         mStorage.removeVal(lifecycle, view);
+        if (!mStorage.containKey(lifecycle)) {
+            lifecycle.removeObserver(this);
+        }
     }
 
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
-        mStorage.remove(owner.getLifecycle());
+        Lifecycle lifecycle = owner.getLifecycle();
+        mStorage.remove(lifecycle);
+        lifecycle.removeObserver(this);
     }
 
     /**

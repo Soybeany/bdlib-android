@@ -1,6 +1,9 @@
 package com.soybeany.bdlib.android.util.dialog;
 
 import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
@@ -34,6 +37,17 @@ public class DialogViewModel extends ViewModel {
      * 标识弹窗是否正在显示
      */
     public boolean isShowing;
+
+    public static DialogViewModel get(FragmentActivity activity) {
+        return ViewModelProviders.of(activity).get(DialogViewModel.class);
+    }
+
+    public static DialogViewModel get(Fragment fragment) {
+        return ViewModelProviders.of(fragment).get(DialogViewModel.class);
+    }
+
+    private DialogViewModel() {
+    }
 
     @Override
     protected void onCleared() {
