@@ -34,6 +34,13 @@ public class OkHttpSafeCallback<Result> extends OkHttpCallback<Result> implement
     /**
      * 安全回调，View相关的调用需使用此回调
      */
+    public OkHttpSafeCallback<Result> addSafeCallback(SafeCallback<Result> callback) {
+        return addSafeCallback(callback.owner, callback);
+    }
+
+    /**
+     * 安全回调，View相关的调用需使用此回调
+     */
     public OkHttpSafeCallback<Result> addSafeCallback(LifecycleOwner owner, ICallback<Result> callback) {
         owner.getLifecycle().addObserver(this);
         super.addCallback(callback);

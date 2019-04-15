@@ -1,19 +1,43 @@
 package com.soybeany.bdlib.android.util.dialog;
 
+import android.arch.lifecycle.LifecycleOwner;
+import android.support.annotation.NonNull;
+
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
+import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 /**
  * 抽象弹窗，用一个弹窗管理多条信息
  * <br>Created by Soybeany on 2019/3/21.
  */
-public abstract class AbstractDialog {
+public abstract class AbstractDialog implements IObserver {
     protected DialogViewModel mVM;
 
-    private MessageCenter.ICallback mCallback = data -> onDismissDialog();
+    private MessageCenter.ICallback mShowMsgCallback = data -> showMsg((DialogMsg) data);
+    private MessageCenter.ICallback mPopMsgCallback = data -> popMsg((DialogMsg) data);
+    private MessageCenter.ICallback mCancelMsgCallback = data -> cancelMsg((DialogMsg) data);
+    private MessageCenter.ICallback mDismissDialogCallback = data -> mVM.notifyDialogToDismiss((DialogViewModel.Reason) data);
+    private MessageCenter.ICallback mOnDismissCallback = data -> onDismissDialog();
 
     public AbstractDialog(DialogViewModel vm) {
         mVM = vm;
+    }
+
+    @Override
+    public void onCreate(@NonNull LifecycleOwner owner) {
+        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().showMsgKey, mShowMsgCallback);
+        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().popMsgKey, mPopMsgCallback);
+        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().cancelMsgKey, mCancelMsgCallback);
+        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().dismissDialogKey, mDismissDialogCallback);
+    }
+
+    @Override
+    public void onDestroy(@NonNull LifecycleOwner owner) {
+        MessageCenter.unregister(mShowMsgCallback);
+        MessageCenter.unregister(mPopMsgCallback);
+        MessageCenter.unregister(mCancelMsgCallback);
+        MessageCenter.unregister(mDismissDialogCallback);
     }
 
     public void showMsg(DialogMsg msg) {
@@ -23,11 +47,11 @@ public abstract class AbstractDialog {
     }
 
     public void cancelMsg(DialogMsg msg) {
-        popMsg(msg, this::cancelDialog);
+        innerPopMsg(msg, this::cancelDialog);
     }
 
     public void popMsg(DialogMsg msg) {
-        popMsg(msg, this::dismissDialog);
+        innerPopMsg(msg, this::dismissDialog);
     }
 
     public void cancelDialog() {
@@ -35,7 +59,7 @@ public abstract class AbstractDialog {
     }
 
     public void dismissDialog() {
-        MessageCenter.notify(mVM.getOnDismissDialogKey(), DialogViewModel.Reason.NORM, 0);
+        mVM.notifyDialogToDismiss(DialogViewModel.Reason.NORM);
     }
 
     /**
@@ -43,8 +67,8 @@ public abstract class AbstractDialog {
      *
      * @return
      */
-    public IMsgCenterKeyProvider getKeyProvider() {
-        return mVM;
+    public DialogKeyProvider getKeyProvider() {
+        return mVM.keyProvider;
     }
 
     public DialogMsg curMsg() {
@@ -56,13 +80,13 @@ public abstract class AbstractDialog {
      */
     protected void showNewestMsg(boolean isReShow) {
         if (!mVM.isShowing) {
-            MessageCenter.register(HandlerThreadImpl.UI_THREAD, mVM.getOnDismissDialogKey(), mCallback);
-            MessageCenter.notify(mVM.getOnShowDialogKey(), null, 0);
+            MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().onDismissDialogKey, mOnDismissCallback);
+            MessageCenter.notifyNow(getKeyProvider().onShowDialogKey, null);
             onRealShow();
             mVM.isShowing = true;
         }
         DialogMsg msg = mVM.getNewestMsg();
-        MessageCenter.notify(isReShow ? mVM.getOnReShowMsgKey() : mVM.getOnShowMsgKey(), msg, 0);
+        MessageCenter.notifyNow(isReShow ? getKeyProvider().onReShowMsgKey : getKeyProvider().onShowMsgKey, msg);
         onSetupDialog(mVM.getHint(msg), mVM.cancelable());
     }
 
@@ -74,17 +98,17 @@ public abstract class AbstractDialog {
             return;
         }
         onRealDismiss();
-        MessageCenter.unregister(mCallback);
+        MessageCenter.unregister(mOnDismissCallback);
         mVM.clearMsgSet();
         mVM.isShowing = false;
     }
 
-    private void popMsg(DialogMsg msg, IDismissListener listener) {
+    private void innerPopMsg(DialogMsg msg, IDismissListener listener) {
         // 若移除失败则不作处理
         if (!mVM.removeMsg(msg)) {
             return;
         }
-        MessageCenter.notify(mVM.getOnPopMsgKey(), msg, 0);
+        MessageCenter.notifyNow(getKeyProvider().onPopMsgKey, msg);
         // 更改或关闭弹窗
         if (null != mVM.getNewestMsg()) {
             showNewestMsg(true);

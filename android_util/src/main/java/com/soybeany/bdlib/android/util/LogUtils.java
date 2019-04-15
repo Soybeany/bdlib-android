@@ -110,7 +110,7 @@ public class LogUtils {
         Optional.ofNullable(file).ifPresent(f -> {
             LogInfo info = new LogInfo(file, log);
             if (needAsync) {
-                MessageCenter.notify(KEY_WRITE_LOG, info, 0);
+                MessageCenter.notifyNow(KEY_WRITE_LOG, info);
             } else {
                 directWriteFile(info);
             }

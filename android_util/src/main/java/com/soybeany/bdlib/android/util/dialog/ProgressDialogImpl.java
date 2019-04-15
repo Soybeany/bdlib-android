@@ -7,14 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
-import com.soybeany.bdlib.android.util.IObserver;
-import com.soybeany.bdlib.core.util.storage.MessageCenter;
-
 
 /**
  * <br>Created by Soybeany on 2019/3/4.
  */
-public class ProgressDialogImpl extends AbstractDialog implements IObserver {
+public class ProgressDialogImpl extends AbstractDialog {
     private ProgressDialog mDialog;
 
     public ProgressDialogImpl(FragmentActivity activity) {
@@ -30,11 +27,12 @@ public class ProgressDialogImpl extends AbstractDialog implements IObserver {
         // 创建弹窗
         mDialog = new ProgressDialog(context);
         mDialog.setCanceledOnTouchOutside(false);
-        mDialog.setOnCancelListener(d -> MessageCenter.notify(getKeyProvider().getOnDismissDialogKey(), DialogViewModel.Reason.CANCEL, 0));
+        mDialog.setOnCancelListener(d -> mVM.notifyDialogToDismiss(DialogViewModel.Reason.CANCEL));
     }
 
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
+        super.onCreate(owner);
         // 若含有信息，直接显示弹窗
         if (mVM.isShowing) {
             showNewestMsg(true);
@@ -45,6 +43,7 @@ public class ProgressDialogImpl extends AbstractDialog implements IObserver {
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
         onRealDismiss();
+        super.onDestroy(owner);
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
-import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 import java.util.HashSet;
@@ -18,14 +17,8 @@ import java.util.TreeSet;
  * 弹窗的VM(备忘录模式)
  * <br>Created by Soybeany on 2019/3/21.
  */
-public class DialogViewModel extends ViewModel implements IMsgCenterKeyProvider {
-    private final String uid = BDContext.getUID(); // 用于后续的监听Key
-
-    private final String mOnShowMsgKey = "DialogVM-onShowMsg:" + uid;
-    private final String mOnReShowMsgKey = "DialogVM-onReShowMsg:" + uid;
-    private final String mOnPopMsgKey = "DialogVM-onPopMsg:" + uid;
-    private final String mOnShowDialogKey = "DialogVM-onShowDialog:" + uid;
-    private final String mOnDismissDialogKey = "DialogVM-onDismissDialog:" + uid;
+public class DialogViewModel extends ViewModel {
+    public final DialogKeyProvider keyProvider = new DialogKeyProvider();
 
     /**
      * 收录的弹窗信息
@@ -56,34 +49,9 @@ public class DialogViewModel extends ViewModel implements IMsgCenterKeyProvider 
     @Override
     protected void onCleared() {
         if (isShowing) {
-            MessageCenter.notify(mOnDismissDialogKey, Reason.OTHER, 0);
+            notifyDialogToDismiss(Reason.OTHER);
         }
         super.onCleared();
-    }
-
-    @Override
-    public String getOnShowMsgKey() {
-        return mOnShowMsgKey;
-    }
-
-    @Override
-    public String getOnReShowMsgKey() {
-        return mOnReShowMsgKey;
-    }
-
-    @Override
-    public String getOnPopMsgKey() {
-        return mOnPopMsgKey;
-    }
-
-    @Override
-    public String getOnShowDialogKey() {
-        return mOnShowDialogKey;
-    }
-
-    @Override
-    public String getOnDismissDialogKey() {
-        return mOnDismissDialogKey;
     }
 
     /**
@@ -138,10 +106,14 @@ public class DialogViewModel extends ViewModel implements IMsgCenterKeyProvider 
         Iterator<DialogMsg> iterator = msgSet.iterator();
         while (iterator.hasNext()) {
             DialogMsg msg = iterator.next();
-            MessageCenter.notify(mOnPopMsgKey, msg, 0);
+            MessageCenter.notifyNow(keyProvider.onPopMsgKey, msg);
             iterator.remove();
         }
         unableCancelSet.clear();
+    }
+
+    public void notifyDialogToDismiss(Reason reason) {
+        MessageCenter.notifyNow(keyProvider.onDismissDialogKey, reason);
     }
 
     public enum Reason {
