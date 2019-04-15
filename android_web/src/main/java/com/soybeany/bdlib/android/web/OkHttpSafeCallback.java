@@ -4,6 +4,7 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
 
 import com.soybeany.bdlib.android.util.IObserver;
+import com.soybeany.bdlib.core.util.file.IProgressListener;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
 import com.soybeany.bdlib.web.okhttp.core.ICallback;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
@@ -27,8 +28,20 @@ public class OkHttpSafeCallback<Result> extends OkHttpCallback<Result> implement
     }
 
     @Override
+    public OkHttpSafeCallback<Result> downloadListener(IProgressListener listener) {
+        super.downloadListener(listener);
+        return this;
+    }
+
+    @Override
     public OkHttpCallback<Result> addCallback(ICallback<Result> callback) {
         throw new RuntimeException("请使用addSafeCallback或addUnsafeCallback");
+    }
+
+    @Override
+    public OkHttpSafeCallback<Result> removeCallback(ICallback<Result> callback) {
+        super.removeCallback(callback);
+        return this;
     }
 
     /**
