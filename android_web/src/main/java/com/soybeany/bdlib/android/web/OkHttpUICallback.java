@@ -13,10 +13,10 @@ import com.soybeany.bdlib.web.okhttp.parser.IParser;
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
-public class OkHttpSafeCallback<Result> extends OkHttpCallback<Result> implements IObserver {
+public class OkHttpUICallback<Result> extends OkHttpCallback<Result> implements IObserver {
     private KeySetStorage<LifecycleOwner, ICallback<Result>> mStorage = new KeySetStorage<>();
 
-    public OkHttpSafeCallback(IParser<Result> parser) {
+    public OkHttpUICallback(IParser<Result> parser) {
         super(parser);
     }
 
@@ -28,7 +28,7 @@ public class OkHttpSafeCallback<Result> extends OkHttpCallback<Result> implement
     }
 
     @Override
-    public OkHttpSafeCallback<Result> downloadListener(IProgressListener listener) {
+    public OkHttpUICallback<Result> downloadListener(IProgressListener listener) {
         super.downloadListener(listener);
         return this;
     }
@@ -39,31 +39,31 @@ public class OkHttpSafeCallback<Result> extends OkHttpCallback<Result> implement
     }
 
     @Override
-    public OkHttpSafeCallback<Result> removeCallback(ICallback<Result> callback) {
+    public OkHttpUICallback<Result> removeCallback(ICallback<Result> callback) {
         super.removeCallback(callback);
         return this;
     }
 
     /**
-     * 安全回调，View相关的调用需使用此回调
+     * UI回调，View相关的调用需使用此回调
      */
-    public OkHttpSafeCallback<Result> addSafeCallback(SafeCallback<Result> callback) {
-        return addSafeCallback(callback.owner, callback);
+    public OkHttpUICallback<Result> addUICallback(LifecycleCallback<Result> callback) {
+        return addUICallback(callback.owner, callback);
     }
 
     /**
-     * 安全回调，View相关的调用需使用此回调
+     * UI回调，View相关的调用需使用此回调
      */
-    public OkHttpSafeCallback<Result> addSafeCallback(LifecycleOwner owner, ICallback<Result> callback) {
+    public OkHttpUICallback<Result> addUICallback(LifecycleOwner owner, UICallback<Result> callback) {
         owner.getLifecycle().addObserver(this);
         super.addCallback(callback);
         return this;
     }
 
     /**
-     * 非安全回调，非View相关的调用可以使用此回调
+     * 非UI回调，非View相关的调用可以使用此回调
      */
-    public OkHttpSafeCallback<Result> addUnsafeCallback(ICallback<Result> callback) {
+    public OkHttpUICallback<Result> addNonUICallback(ICallback<Result> callback) {
         super.addCallback(callback);
         return this;
     }

@@ -85,14 +85,14 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
             }
         }
 
-        public <T> void enqueue(@NonNull DialogMsg msg, @NonNull OkHttpSafeCallback<T> callback) {
+        public <T> void enqueue(@NonNull DialogMsg msg, @NonNull OkHttpUICallback<T> callback) {
             // 显示弹窗、注册弹窗监听
             MessageCenter.notifyNow(mProvider.showMsgKey, msg);
             // 监听弹窗关闭的消息，取消请求任务
             MessageCenter.ICallback dialogCallback = reason -> mTarget.cancel();
             MessageCenter.register(HandlerThreadImpl.UI_THREAD, mProvider.onDismissDialogKey, dialogCallback);
             // 添加请求完成后关闭弹窗的回调
-            callback.addUnsafeCallback(new UICallback.Empty<T>() {
+            callback.addNonUICallback(new UICallback.Empty<T>() {
                 @Override
                 public void onFinal(boolean isCanceled) {
                     // 关闭弹窗、注销弹窗监听
