@@ -56,6 +56,7 @@ public class OkHttpUICallback<Result> extends OkHttpCallback<Result> implements 
      */
     public OkHttpUICallback<Result> addUICallback(LifecycleOwner owner, UICallback<Result> callback) {
         owner.getLifecycle().addObserver(this);
+        mStorage.putVal(owner, callback);
         super.addCallback(callback);
         return this;
     }
