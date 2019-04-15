@@ -6,7 +6,6 @@ import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
-import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 
 import java.io.IOException;
 
@@ -87,14 +86,14 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
             }
         }
 
-        public <T> void enqueue(@NonNull DialogMsg msg, @NonNull OkHttpCallback<T> callback) {
+        public <T> void enqueue(@NonNull DialogMsg msg, @NonNull OkHttpSafeCallback<T> callback) {
             // 显示弹窗、注册弹窗监听
             MAIN_HANDLER.post(() -> mProvider.showMsg(msg));
             // 监听弹窗关闭的消息，取消请求任务
             MessageCenter.ICallback dialogCallback = reason -> mTarget.cancel();
             MessageCenter.register(HandlerThreadImpl.UI_THREAD, mProvider.getKeyProvider().getOnDismissDialogKey(), dialogCallback);
             // 添加请求完成后关闭弹窗的回调
-            callback.addCallback(new UICallback.Empty<T>() {
+            callback.addUnsafeCallback(new UICallback.Empty<T>() {
                 @Override
                 public void onFinal(boolean isCanceled) {
                     // 关闭弹窗、注销弹窗监听
