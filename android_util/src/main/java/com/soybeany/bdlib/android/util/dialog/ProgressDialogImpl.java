@@ -42,7 +42,9 @@ public class ProgressDialogImpl extends AbstractDialog {
 
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
-        onRealDismiss();
+        if (mVM.isShowing) {
+            onRealDismiss();
+        }
         super.onDestroy(owner);
     }
 

@@ -26,10 +26,11 @@ public abstract class AbstractDialog implements IObserver {
 
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
-        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().showMsgKey, mShowMsgCallback);
-        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().popMsgKey, mPopMsgCallback);
-        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().cancelMsgKey, mCancelMsgCallback);
-        MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().dismissDialogKey, mDismissDialogCallback);
+        register(getKeyProvider().showMsgKey, mShowMsgCallback);
+        register(getKeyProvider().popMsgKey, mPopMsgCallback);
+        register(getKeyProvider().cancelMsgKey, mCancelMsgCallback);
+        register(getKeyProvider().dismissDialogKey, mDismissDialogCallback);
+        register(getKeyProvider().onDismissDialogKey, mOnDismissCallback);
     }
 
     @Override
@@ -38,6 +39,7 @@ public abstract class AbstractDialog implements IObserver {
         MessageCenter.unregister(mPopMsgCallback);
         MessageCenter.unregister(mCancelMsgCallback);
         MessageCenter.unregister(mDismissDialogCallback);
+        MessageCenter.unregister(mOnDismissCallback);
     }
 
     public void showMsg(DialogMsg msg) {
@@ -80,7 +82,6 @@ public abstract class AbstractDialog implements IObserver {
      */
     protected void showNewestMsg(boolean isReShow) {
         if (!mVM.isShowing) {
-            MessageCenter.register(HandlerThreadImpl.UI_THREAD, getKeyProvider().onDismissDialogKey, mOnDismissCallback);
             MessageCenter.notifyNow(getKeyProvider().onShowDialogKey, null);
             onRealShow();
             mVM.isShowing = true;
@@ -88,6 +89,10 @@ public abstract class AbstractDialog implements IObserver {
         DialogMsg msg = mVM.getNewestMsg();
         MessageCenter.notifyNow(isReShow ? getKeyProvider().onReShowMsgKey : getKeyProvider().onShowMsgKey, msg);
         onSetupDialog(mVM.getHint(msg), mVM.cancelable());
+    }
+
+    private void register(String key, MessageCenter.ICallback callback) {
+        MessageCenter.register(HandlerThreadImpl.UI_THREAD, key, callback);
     }
 
     /**
@@ -98,7 +103,6 @@ public abstract class AbstractDialog implements IObserver {
             return;
         }
         onRealDismiss();
-        MessageCenter.unregister(mOnDismissCallback);
         mVM.clearMsgSet();
         mVM.isShowing = false;
     }
