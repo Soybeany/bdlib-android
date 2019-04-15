@@ -1,8 +1,10 @@
 package com.soybeany.bdlib.android.web;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
 
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
+import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
@@ -28,8 +30,8 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
         super(client);
     }
 
-    public DialogCall newDialogCall(DialogProvider provider, IRequestSupplier supplier) {
-        return new DialogCall(provider, newCall(supplier));
+    public DialogCall newDialogCall(LifecycleOwner owner, AbstractDialog dialog, IRequestSupplier supplier) {
+        return new DialogCall(new DialogProvider(owner, dialog), newCall(supplier));
     }
 
     @EverythingIsNonNull

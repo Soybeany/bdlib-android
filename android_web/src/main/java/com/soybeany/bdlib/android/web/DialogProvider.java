@@ -1,6 +1,5 @@
 package com.soybeany.bdlib.android.web;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
 
@@ -14,17 +13,18 @@ import com.soybeany.bdlib.core.util.storage.KeyValueStorage;
 /**
  * <br>Created by Soybeany on 2019/4/14.
  */
-public class DialogProvider implements IObserver {
+class DialogProvider implements IObserver {
     private KeyValueStorage<String, AbstractDialog> mStorage = new KeyValueStorage<>();
     private final String mKey = BDContext.getUID();
 
-    public DialogProvider(Lifecycle lifecycle, AbstractDialog dialog) {
-        lifecycle.addObserver(this);
+    public DialogProvider(LifecycleOwner owner, AbstractDialog dialog) {
+        owner.getLifecycle().addObserver(this);
         mStorage.put(mKey, dialog);
     }
 
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
+        owner.getLifecycle().removeObserver(this);
         mStorage.remove(mKey);
     }
 
