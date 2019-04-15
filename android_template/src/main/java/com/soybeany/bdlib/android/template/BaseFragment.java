@@ -19,7 +19,7 @@ import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
 public abstract class BaseFragment extends Fragment
         implements IInitialHelper, ButterKnifeObserver.ICallback<View> {
     private LifecycleHelper mLifecycleHelper = new LifecycleHelper();
-    private ProgressDialogImpl mDialog;
+    private AbstractDialog mDialog;
     private View mContentV;
     private int mPreparedCount; // 已准备好的位置的计数
 
@@ -27,8 +27,8 @@ public abstract class BaseFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
-        mLifecycleHelper.addObservers(getLifecycle(), setupObservers(), new ButterKnifeObserver(this));
-        mDialog = new ProgressDialogImpl(this);
+        mLifecycleHelper.addObservers(getLifecycle(), setupObservers(),
+                new ButterKnifeObserver(this), mDialog = onGetNewDialog());
         onInit();
         trySignalDoBusiness();
     }
@@ -50,6 +50,12 @@ public abstract class BaseFragment extends Fragment
     @Override
     public View onGetButterKnifeSource() {
         return mContentV;
+    }
+
+    // //////////////////////////////////子类回调//////////////////////////////////
+
+    protected AbstractDialog onGetNewDialog() {
+        return new ProgressDialogImpl(this);
     }
 
     // //////////////////////////////////便捷方法//////////////////////////////////

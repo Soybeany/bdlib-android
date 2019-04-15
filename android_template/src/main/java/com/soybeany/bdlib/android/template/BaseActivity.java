@@ -24,7 +24,7 @@ import com.soybeany.bdlib.core.java8.Optional;
 public abstract class BaseActivity extends AppCompatActivity
         implements IInitialHelper, ButterKnifeObserver.ICallback<Activity> {
     private final LifecycleHelper mLifecycleHelper = new LifecycleHelper();
-    private ProgressDialogImpl mDialog;
+    private AbstractDialog mDialog;
 
     // //////////////////////////////////方法重写//////////////////////////////////
 
@@ -34,7 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity
         setContentView(setupLayoutResId());
         mLifecycleHelper.addObservers(getLifecycle(), setupObservers(),
                 new ButterKnifeObserver(this), new CallbackObserver(),
-                mDialog = new ProgressDialogImpl(this));
+                mDialog = onGetNewDialog());
     }
 
     @Override
@@ -50,6 +50,9 @@ public abstract class BaseActivity extends AppCompatActivity
         return this;
     }
 
+    protected AbstractDialog onGetNewDialog() {
+        return new ProgressDialogImpl(this);
+    }
 
     // //////////////////////////////////便捷方法//////////////////////////////////
 
