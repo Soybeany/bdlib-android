@@ -1,80 +1,80 @@
 package com.soybeany.bdlib.android.util.dialog;
 
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
-import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 /**
+ * 抽象弹窗，用一个弹窗管理多条信息
  * <br>Created by Soybeany on 2019/3/21.
  */
-public abstract class AbstractDialog implements IDialog {
+public abstract class AbstractDialog {
     protected DialogViewModel mVM;
 
-    private MessageCenter.ICallback mCallback = data -> cleanup(null);
+    private MessageCenter.ICallback mCallback = data -> onDismissDialog();
 
     public AbstractDialog(DialogViewModel vm) {
         mVM = vm;
     }
 
-    @Override
-    public void show(DialogMsg msg) {
+    public void showMsg(DialogMsg msg) {
         if (mVM.addMsg(msg)) {
-            showDialog(msg);
+            showNewestMsg(false);
         }
     }
 
-    @Override
-    public void cancelAll() {
+    public void cancelMsg(DialogMsg msg) {
+        popMsg(msg, this::cancelDialog);
+    }
+
+    public void popMsg(DialogMsg msg) {
+        popMsg(msg, this::dismissDialog);
+    }
+
+    public void cancelDialog() {
         onRealCancel();
     }
 
-    @Override
-    public void cancel(DialogMsg msg) {
-        popMsg(msg, this::cancelAll);
+    public void dismissDialog() {
+        MessageCenter.notify(mVM.getOnDismissDialogKey(), DialogViewModel.Reason.NORM, 0);
     }
 
-    @Override
-    public void dismissAll() {
-        onRealDismiss();
-        cleanup(DialogViewModel.Reason.NORM);
+    /**
+     * 获得用于在{@link MessageCenter}中监听的Key
+     *
+     * @return
+     */
+    public IMsgCenterKeyProvider getKeyProvider() {
+        return mVM;
     }
 
-    @Override
-    public void dismiss(DialogMsg msg) {
-        popMsg(msg, this::dismissAll);
-    }
-
-    @Override
-    public String getMsgCenterKey() {
-        return mVM.key;
-    }
-
-    @Override
     public DialogMsg curMsg() {
         return mVM.getNewestMsg();
     }
 
     /**
-     * 纯粹地显示弹窗
+     * 显示最新的信息
      */
-    protected void showDialog(DialogMsg msg) {
+    protected void showNewestMsg(boolean isReShow) {
         if (!mVM.isShowing) {
-            MessageCenter.register(HandlerThreadImpl.UI_THREAD, getMsgCenterKey(), mCallback);
+            MessageCenter.register(HandlerThreadImpl.UI_THREAD, mVM.getOnDismissDialogKey(), mCallback);
+            MessageCenter.notify(mVM.getOnShowDialogKey(), null, 0);
             onRealShow();
             mVM.isShowing = true;
         }
+        DialogMsg msg = mVM.getNewestMsg();
+        MessageCenter.notify(isReShow ? mVM.getOnReShowMsgKey() : mVM.getOnShowMsgKey(), msg, 0);
         onSetupDialog(mVM.getHint(msg), mVM.cancelable());
     }
 
     /**
-     * 弹窗关闭后，清理相关资源
+     * 关闭弹窗的回调
      */
-    protected void cleanup(DialogViewModel.Reason reason) {
+    private void onDismissDialog() {
         if (!mVM.isShowing) {
             return;
         }
+        onRealDismiss();
         MessageCenter.unregister(mCallback);
-        Optional.ofNullable(reason).ifPresent(r -> MessageCenter.notify(getMsgCenterKey(), r, 0));
         mVM.clearMsgSet();
         mVM.isShowing = false;
     }
@@ -84,10 +84,10 @@ public abstract class AbstractDialog implements IDialog {
         if (!mVM.removeMsg(msg)) {
             return;
         }
+        MessageCenter.notify(mVM.getOnPopMsgKey(), msg, 0);
         // 更改或关闭弹窗
-        DialogMsg newestMsg = mVM.getNewestMsg();
-        if (null != newestMsg) {
-            showDialog(newestMsg);
+        if (null != mVM.getNewestMsg()) {
+            showNewestMsg(true);
         } else {
             listener.onRealDismiss();
         }

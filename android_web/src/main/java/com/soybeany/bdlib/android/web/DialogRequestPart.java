@@ -3,7 +3,6 @@ package com.soybeany.bdlib.android.web;
 import android.support.annotation.NonNull;
 
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
-import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
@@ -30,17 +29,17 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
         super(client);
     }
 
-    public DialogCall newDialogCall(AbstractDialog dialog, IRequestSupplier supplier) {
-        return new DialogCall(dialog, newCall(supplier));
+    public DialogCall newDialogCall(DialogProvider provider, IRequestSupplier supplier) {
+        return new DialogCall(provider, newCall(supplier));
     }
 
     @EverythingIsNonNull
     public static class DialogCall implements Call {
-        private AbstractDialog mDialog;
+        private DialogProvider mProvider;
         private Call mTarget;
 
-        DialogCall(AbstractDialog dialog, Call call) {
-            mDialog = dialog;
+        DialogCall(DialogProvider provider, Call call) {
+            mProvider = provider;
             mTarget = call;
         }
 
@@ -90,15 +89,17 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
 
         public <T> void enqueue(@NonNull DialogMsg msg, @NonNull OkHttpCallback<T> callback) {
             // 显示弹窗、注册弹窗监听
-            MAIN_HANDLER.post(() -> mDialog.show(msg));
+            MAIN_HANDLER.post(() -> mProvider.showMsg(msg));
+            // 监听弹窗关闭的消息，取消请求任务
             MessageCenter.ICallback dialogCallback = reason -> mTarget.cancel();
-            MessageCenter.register(HandlerThreadImpl.UI_THREAD, mDialog.getMsgCenterKey(), dialogCallback);
+            MessageCenter.register(HandlerThreadImpl.UI_THREAD, mProvider.getKeyProvider().getOnDismissDialogKey(), dialogCallback);
+            // 添加请求完成后关闭弹窗的回调
             callback.addCallback(new UICallback.Empty<T>() {
                 @Override
                 public void onFinal(boolean isCanceled) {
                     // 关闭弹窗、注销弹窗监听
                     MessageCenter.unregister(dialogCallback);
-                    mDialog.dismiss(msg);
+                    mProvider.popMsg(msg);
                 }
             });
             // 异步请求

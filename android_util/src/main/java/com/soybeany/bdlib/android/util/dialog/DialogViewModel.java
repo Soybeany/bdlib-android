@@ -9,6 +9,7 @@ import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -17,11 +18,14 @@ import java.util.TreeSet;
  * 弹窗的VM(备忘录模式)
  * <br>Created by Soybeany on 2019/3/21.
  */
-public class DialogViewModel extends ViewModel {
-    /**
-     * 可以在{@link MessageCenter}中监听该uid，以获取弹窗关闭时的通知
-     */
-    public final String key = "DialogVM-onDismiss:" + BDContext.getUID();
+public class DialogViewModel extends ViewModel implements IMsgCenterKeyProvider {
+    private final String uid = BDContext.getUID(); // 用于后续的监听Key
+
+    private final String mOnShowMsgKey = "DialogVM-onShowMsg:" + uid;
+    private final String mOnReShowMsgKey = "DialogVM-onReShowMsg:" + uid;
+    private final String mOnPopMsgKey = "DialogVM-onPopMsg:" + uid;
+    private final String mOnShowDialogKey = "DialogVM-onShowDialog:" + uid;
+    private final String mOnDismissDialogKey = "DialogVM-onDismissDialog:" + uid;
 
     /**
      * 收录的弹窗信息
@@ -52,9 +56,34 @@ public class DialogViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         if (isShowing) {
-            MessageCenter.notify(key, Reason.OTHER, 0);
+            MessageCenter.notify(mOnDismissDialogKey, Reason.OTHER, 0);
         }
         super.onCleared();
+    }
+
+    @Override
+    public String getOnShowMsgKey() {
+        return mOnShowMsgKey;
+    }
+
+    @Override
+    public String getOnReShowMsgKey() {
+        return mOnReShowMsgKey;
+    }
+
+    @Override
+    public String getOnPopMsgKey() {
+        return mOnPopMsgKey;
+    }
+
+    @Override
+    public String getOnShowDialogKey() {
+        return mOnShowDialogKey;
+    }
+
+    @Override
+    public String getOnDismissDialogKey() {
+        return mOnDismissDialogKey;
     }
 
     /**
@@ -106,7 +135,12 @@ public class DialogViewModel extends ViewModel {
     }
 
     public void clearMsgSet() {
-        msgSet.clear();
+        Iterator<DialogMsg> iterator = msgSet.iterator();
+        while (iterator.hasNext()) {
+            DialogMsg msg = iterator.next();
+            MessageCenter.notify(mOnPopMsgKey, msg, 0);
+            iterator.remove();
+        }
         unableCancelSet.clear();
     }
 

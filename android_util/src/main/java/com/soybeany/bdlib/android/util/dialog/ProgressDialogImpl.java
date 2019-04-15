@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.util.IObserver;
+import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 
 /**
@@ -29,14 +30,15 @@ public class ProgressDialogImpl extends AbstractDialog implements IObserver {
         // 创建弹窗
         mDialog = new ProgressDialog(context);
         mDialog.setCanceledOnTouchOutside(false);
-        mDialog.setOnCancelListener(d -> cleanup(DialogViewModel.Reason.CANCEL));
+        mDialog.setOnCancelListener(d -> MessageCenter.notify(getKeyProvider().getOnDismissDialogKey(), DialogViewModel.Reason.CANCEL, 0));
     }
 
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
         // 若含有信息，直接显示弹窗
         if (mVM.isShowing) {
-            showDialog(mVM.getNewestMsg());
+            showNewestMsg(true);
+            onRealShow();
         }
     }
 
