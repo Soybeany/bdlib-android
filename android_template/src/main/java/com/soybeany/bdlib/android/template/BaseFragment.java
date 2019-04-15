@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
+import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
 
 /**
@@ -55,6 +56,10 @@ public abstract class BaseFragment extends Fragment
 
     protected AbstractDialog getDialog() {
         return mDialog;
+    }
+
+    protected DialogKeyProvider getDialogKeys() {
+        return mDialog.getKeyProvider();
     }
 
     // //////////////////////////////////内部实现//////////////////////////////////

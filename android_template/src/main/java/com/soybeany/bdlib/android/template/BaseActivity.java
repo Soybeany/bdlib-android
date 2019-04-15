@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
+import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
 import com.soybeany.bdlib.core.java8.Optional;
 
@@ -54,6 +55,10 @@ public abstract class BaseActivity extends AppCompatActivity
 
     protected AbstractDialog getDialog() {
         return mDialog;
+    }
+
+    protected DialogKeyProvider getDialogKeys() {
+        return mDialog.getKeyProvider();
     }
 
     protected void startNewActivity(Class<? extends Activity> activityClazz) {
