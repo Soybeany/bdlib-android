@@ -74,13 +74,13 @@ public class AuthInterceptor implements Interceptor {
 
     private void showDialog(DialogMsg msg) {
         if (null != mDialog) {
-            MAIN_HANDLER.post(() -> mDialog.show(msg));
+            MAIN_HANDLER.post(() -> mDialog.showMsg(msg));
         }
     }
 
     private void dismissDialog(DialogMsg oldMsg, DialogMsg curMsg) {
         if (null != mDialog && oldMsg != curMsg) {
-            MAIN_HANDLER.post(() -> mDialog.dismiss(curMsg));
+            MAIN_HANDLER.post(() -> mDialog.popMsg(curMsg));
         }
     }
 
