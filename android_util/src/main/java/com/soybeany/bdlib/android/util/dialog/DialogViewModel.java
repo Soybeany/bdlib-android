@@ -43,9 +43,6 @@ public class DialogViewModel extends ViewModel {
         return ViewModelProviders.of(fragment).get(DialogViewModel.class);
     }
 
-    private DialogViewModel() {
-    }
-
     @Override
     protected void onCleared() {
         if (isShowing) {
