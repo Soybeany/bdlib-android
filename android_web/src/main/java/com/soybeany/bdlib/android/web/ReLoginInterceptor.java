@@ -22,41 +22,62 @@ import okhttp3.Response;
 public abstract class ReLoginInterceptor extends AuthInterceptor {
     @Nullable
     private DialogInfo mInfo;
-    @NonNull
-    private ICallback mCallback;
 
-    public ReLoginInterceptor(@Nullable DialogInfo info, @NonNull ICallback callback) {
+    public ReLoginInterceptor(@Nullable DialogInfo info) {
         mInfo = info;
-        mCallback = callback;
     }
 
     @Override
     protected Response onInvalid(@NonNull Chain chain) throws IOException {
         DialogMsg oldMsg = (null != mInfo ? mInfo.msg : null);
         // 尝试重登录
-        DialogMsg authMsg = mCallback.getAuthMsg(oldMsg);
+        DialogMsg authMsg = getAuthMsg(oldMsg);
         try {
             showMsg(authMsg);
-            Response reLogin = mCallback.onAuth();
+            Response reLogin = onAuth();
             if (!reLogin.isSuccessful()) {
                 return reLogin;
             }
         } catch (IOException e) {
-            throw mCallback.onAuthException(e);
+            throw onAuthException(e);
         } finally {
             popMsg(oldMsg, authMsg);
         }
         // 再次请求并返回新响应
-        DialogMsg reRequestMsg = mCallback.getReRequestMsg(oldMsg);
+        DialogMsg reRequestMsg = getReRequestMsg(oldMsg);
         try {
             showMsg(reRequestMsg);
-            return mCallback.onReRequest(chain.call());
+            return onReRequest(chain.call());
         } catch (IOException e) {
-            throw mCallback.onReRequestException(e);
+            throw onReRequestException(e);
         } finally {
             popMsg(oldMsg, reRequestMsg);
         }
     }
+
+    // //////////////////////////////////重写区//////////////////////////////////
+
+    protected IOException onAuthException(IOException e) {
+        return e instanceof HandledException ? e : new IOException("重登录异常:" + e.getMessage());
+    }
+
+    protected DialogMsg getReRequestMsg(DialogMsg oldMsg) {
+        return oldMsg;
+    }
+
+    protected Response onReRequest(Call call) throws IOException {
+        return call.execute();
+    }
+
+    protected IOException onReRequestException(IOException e) {
+        return e instanceof HandledException ? e : new IOException("重请求异常:" + e.getMessage());
+    }
+
+    protected DialogMsg getAuthMsg(DialogMsg oldMsg) {
+        return new DialogMsg(StdHintUtils.STD_RE_LOGIN_HINT).cancelable(oldMsg.isCancelable()).multiHint((hint, count, cancelable) -> hint);
+    }
+
+    // //////////////////////////////////内部区//////////////////////////////////
 
     private void showMsg(DialogMsg msg) {
         invoke(provider -> MessageCenter.notifyNow(provider.showMsgKey, msg));
@@ -74,27 +95,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
         Optional.ofNullable(mInfo).map(info -> info.provider).ifPresent(consumer);
     }
 
-    public interface ICallback {
-        default DialogMsg getAuthMsg(DialogMsg oldMsg) {
-            return new DialogMsg(StdHintUtils.STD_RE_LOGIN_HINT).cancelable(oldMsg.isCancelable()).multiHint((hint, count, cancelable) -> hint);
-        }
+    // //////////////////////////////////实现区//////////////////////////////////
 
-        Response onAuth() throws IOException;
-
-        default IOException onAuthException(IOException e) {
-            return e instanceof HandledException ? e : new IOException("重登录异常:" + e.getMessage());
-        }
-
-        default DialogMsg getReRequestMsg(DialogMsg oldMsg) {
-            return oldMsg;
-        }
-
-        default Response onReRequest(Call call) throws IOException {
-            return call.execute();
-        }
-
-        default IOException onReRequestException(IOException e) {
-            return e instanceof HandledException ? e : new IOException("重请求异常:" + e.getMessage());
-        }
-    }
+    protected abstract Response onAuth() throws IOException;
 }
