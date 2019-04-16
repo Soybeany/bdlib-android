@@ -39,9 +39,9 @@ class DialogHelper {
      */
     public boolean showMsg(@NonNull Call call) {
         if (null != mDialogCallback) {
-            mDialogCallback = reason -> call.cancel();
             return false;
         }
+        mDialogCallback = reason -> call.cancel();
         return invoke((provider, msg) -> {
             // 显示弹窗、注册弹窗监听
             MessageCenter.notifyNow(provider.showMsgKey, msg);
