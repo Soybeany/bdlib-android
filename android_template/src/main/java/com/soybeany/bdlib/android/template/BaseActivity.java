@@ -17,13 +17,13 @@ import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
 import com.soybeany.bdlib.core.java8.Optional;
+import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 /**
  * <br>Created by Soybeany on 2019/2/1.
  */
-public abstract class BaseActivity extends AppCompatActivity
-        implements IInitialHelper, ButterKnifeObserver.ICallback<Activity> {
-    private final LifecycleHelper mLifecycleHelper = new LifecycleHelper();
+public abstract class BaseActivity extends AppCompatActivity implements IInitialHelper, ButterKnifeObserver.ICallback<Activity> {
+    private final BaseFuncHelper mFuncHelper = new BaseFuncHelper();
     private AbstractDialog mDialog;
 
     // //////////////////////////////////方法重写//////////////////////////////////
@@ -32,15 +32,9 @@ public abstract class BaseActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(setupLayoutResId());
-        mLifecycleHelper.addObservers(getLifecycle(), setupObservers(),
-                new ButterKnifeObserver(this), new CallbackObserver(),
-                mDialog = onGetNewDialog());
-    }
-
-    @Override
-    protected void onDestroy() {
-        mLifecycleHelper.removeObservers(getLifecycle());
-        super.onDestroy();
+        mFuncHelper.init(getLifecycle(), getViewModel(BaseFuncHelper.VM.class))
+                .addObservers(setupObservers(), new ButterKnifeObserver(this),
+                        new CallbackObserver(), mDialog = onGetNewDialog());
     }
 
     // //////////////////////////////////子类回调//////////////////////////////////
@@ -79,6 +73,15 @@ public abstract class BaseActivity extends AppCompatActivity
 
     protected <T extends ViewModel> T getViewModel(Class<T> modelClass) {
         return ViewModelProviders.of(this).get(modelClass);
+    }
+
+    /**
+     * 注册回调，自动注销
+     *
+     * @return 用于监听的uid
+     */
+    protected String autoRegister(String key, MessageCenter.ICallback callback) {
+        return mFuncHelper.autoRegister(key, callback);
     }
 
     // //////////////////////////////////内部实现//////////////////////////////////

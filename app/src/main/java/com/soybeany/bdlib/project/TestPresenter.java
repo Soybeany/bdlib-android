@@ -1,37 +1,39 @@
 package com.soybeany.bdlib.project;
 
+import com.soybeany.bdlib.android.mvp.BasePresenter;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
-import com.soybeany.bdlib.android.web.OkHttpUICallback;
+import com.soybeany.bdlib.android.web.UICallback;
 import com.soybeany.bdlib.core.util.file.IProgressListener;
-import com.soybeany.bdlib.web.okhttp.core.ICallback;
+import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestFactory;
 import com.soybeany.bdlib.web.okhttp.parser.StringParser;
 
 /**
  * <br>Created by Soybeany on 2019/2/19.
  */
-public class TestPresenter {
-
-    public static final TestPresenter INSTANCE = new TestPresenter();
-
-    public OkHttpUICallback<String> callback = new OkHttpUICallback<>(StringParser.get()).addNonUICallback(new TestCallback()).downloadListener(getLogListener("测试"));
+public class TestPresenter extends BasePresenter<ITestView> {
 
     public void testFile(DialogKeyProvider provider) {
-        RequestUtils.client(null).newDialogCall(provider, () -> OkHttpRequestFactory.get("http://192.168.137.232:8080/mobile/auth//file").param("test", "测试").build())
-                .enqueue(new DialogMsg("测试").cancelable(true), callback);
+        RequestUtils.client(null, info -> info.with(provider, new DialogMsg("测试").cancelable(true)))
+                .newCall(() -> OkHttpRequestFactory.get("http://192.168.137.232:8080/mobile/auth//file").param("test", "测试").build())
+                .enqueue(new OkHttpCallback<>(StringParser.get())
+                        .addCallback(new TestCallback())
+                        .downloadListener(getLogListener("测试")));
     }
 
-    private class TestCallback implements ICallback<String> {
+    private class TestCallback implements UICallback<String> {
         @Override
-        public void onSuccess(String s) {
+        public void onUISuccess(String s) {
+            invoke(v -> v.showMsg("成功:", s));
             LogUtils.test("成功:" + s);
         }
 
         @Override
-        public void onFailure(boolean b, String s) {
-            LogUtils.test("失败:" + s);
+        public void onUIFailure(boolean isCanceled, String msg) {
+            invoke(v -> v.showMsg("失败:", msg));
+            LogUtils.test("失败:" + msg);
         }
     }
 

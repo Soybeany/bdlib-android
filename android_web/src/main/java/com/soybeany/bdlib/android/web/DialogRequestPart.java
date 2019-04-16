@@ -8,6 +8,7 @@ import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
+import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 
 import java.io.IOException;
 
@@ -23,23 +24,31 @@ import okio.Timeout;
  * <br>Created by Soybeany on 2019/4/11.
  */
 public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
+    private DialogInfo mInfo;
 
-    public DialogRequestPart(OkHttpClient client) {
+    public DialogRequestPart(@Nullable DialogInfo info, OkHttpClient client) {
         super(client);
+        mInfo = info;
     }
 
-    public DialogCall newDialogCall(@Nullable DialogKeyProvider provider, IRequestSupplier supplier) {
-        return new DialogCall(provider, newCall(supplier));
+    @Override
+    public DialogCall newCall(IRequestSupplier supplier) {
+        return new DialogCall(mInfo, super.newCall(supplier));
     }
 
     @EverythingIsNonNull
     public static class DialogCall implements Call {
         @Nullable
-        DialogKeyProvider mProvider;
+        private DialogKeyProvider mProvider;
+        @Nullable
+        private DialogMsg mMsg;
         private Call mTarget;
 
-        DialogCall(@Nullable DialogKeyProvider provider, Call call) {
-            mProvider = provider;
+        DialogCall(@Nullable DialogInfo info, Call call) {
+            if (null != info) {
+                mProvider = info.provider;
+                mMsg = info.msg;
+            }
             mTarget = call;
         }
 
@@ -87,30 +96,30 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
             }
         }
 
-        public <T> void enqueue(@NonNull DialogMsg msg, @NonNull OkHttpUICallback<T> callback) {
+        public <T> void enqueue(@NonNull OkHttpCallback<T> callback) {
             // 若没有设置弹窗，则进行普通异步请求
             if (null == mProvider) {
-                enqueue(callback);
+                mTarget.enqueue(callback);
                 return;
             }
 
             // 显示弹窗、注册弹窗监听
-            MessageCenter.notifyNow(mProvider.showMsgKey, msg);
+            MessageCenter.notifyNow(mProvider.showMsgKey, mMsg);
             // 监听弹窗关闭的消息，取消请求任务
             MessageCenter.ICallback dialogCallback = reason -> mTarget.cancel();
             MessageCenter.register(HandlerThreadImpl.UI_THREAD, mProvider.onDismissDialogKey, dialogCallback);
             // 添加请求完成后关闭弹窗的回调
-            callback.addNonUICallback(new UICallback.Empty<T>() {
+            callback.addCallback(new UICallback.Empty<T>() {
                 @Override
                 public void onFinal(boolean isCanceled) {
                     callback.removeCallback(this);
                     // 关闭弹窗、注销弹窗监听
                     MessageCenter.unregister(dialogCallback);
-                    MessageCenter.notifyNow(mProvider.popMsgKey, msg);
+                    MessageCenter.notifyNow(mProvider.popMsgKey, mMsg);
                 }
             });
             // 异步请求
-            enqueue(callback);
+            mTarget.enqueue(callback);
         }
     }
 }

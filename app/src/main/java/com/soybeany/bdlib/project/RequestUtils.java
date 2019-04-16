@@ -2,6 +2,7 @@ package com.soybeany.bdlib.project;
 
 import android.support.annotation.Nullable;
 
+import com.soybeany.bdlib.android.web.DialogClientPart;
 import com.soybeany.bdlib.android.web.DialogRequestPart;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpClientFactory;
@@ -31,16 +32,16 @@ public class RequestUtils {
     /**
      * 常规客户端(自动附带COOKIE信息)
      */
-    public static DialogRequestPart client(@Nullable OkHttpClientFactory.IClientSetter setter) {
+    public static DialogRequestPart client(@Nullable OkHttpClientFactory.IClientSetter cs, @Nullable DialogClientPart.IDialogSetter ds) {
         return simpleClient(builder -> {
-            Optional.ofNullable(setter).ifPresent(s -> s.onSetup(builder));
-        });
+            Optional.ofNullable(cs).ifPresent(s -> s.onSetup(builder));
+        }, ds);
     }
 
     /**
      * 最简单的客户端
      */
-    public static DialogRequestPart simpleClient(OkHttpClientFactory.IClientSetter setter) {
-        return new DialogRequestPart(OkHttpClientFactory.getClient(setter));
+    public static DialogRequestPart simpleClient(@Nullable OkHttpClientFactory.IClientSetter cs, @Nullable DialogClientPart.IDialogSetter ds) {
+        return new DialogClientPart().newRequest(cs, ds);
     }
 }

@@ -1,5 +1,7 @@
 package com.soybeany.bdlib.android.template;
 
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,13 +14,14 @@ import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
+import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
  */
 public abstract class BaseFragment extends Fragment
         implements IInitialHelper, ButterKnifeObserver.ICallback<View> {
-    private LifecycleHelper mLifecycleHelper = new LifecycleHelper();
+    private BaseFuncHelper mFuncHelper = new BaseFuncHelper();
     private AbstractDialog mDialog;
     private View mContentV;
     private int mPreparedCount; // 已准备好的位置的计数
@@ -27,7 +30,7 @@ public abstract class BaseFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
-        mLifecycleHelper.addObservers(getLifecycle(), setupObservers(),
+        mFuncHelper.init(getLifecycle(), getViewModel(BaseFuncHelper.VM.class)).addObservers(setupObservers(),
                 new ButterKnifeObserver(this), mDialog = onGetNewDialog());
         onInit();
         trySignalDoBusiness();
@@ -66,6 +69,19 @@ public abstract class BaseFragment extends Fragment
 
     protected DialogKeyProvider getDialogKeys() {
         return mDialog.getKeyProvider();
+    }
+
+    protected <T extends ViewModel> T getViewModel(Class<T> modelClass) {
+        return ViewModelProviders.of(this).get(modelClass);
+    }
+
+    /**
+     * 注册回调，自动注销
+     *
+     * @return 用于监听的uid
+     */
+    protected String autoRegister(String key, MessageCenter.ICallback callback) {
+        return mFuncHelper.autoRegister(key, callback);
     }
 
     // //////////////////////////////////内部实现//////////////////////////////////
