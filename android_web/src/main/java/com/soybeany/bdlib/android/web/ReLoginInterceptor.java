@@ -13,7 +13,7 @@ import com.soybeany.bdlib.web.okhttp.core.HandledException;
 
 import java.io.IOException;
 
-import okhttp3.Call;
+import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -47,7 +47,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
         DialogMsg reRequestMsg = getReRequestMsg(oldMsg);
         try {
             showMsg(reRequestMsg);
-            return onReRequest(chain.call());
+            return onReRequest(chain.request());
         } catch (IOException e) {
             throw onReRequestException(e);
         } finally {
@@ -63,10 +63,6 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
 
     protected DialogMsg getReRequestMsg(DialogMsg oldMsg) {
         return oldMsg;
-    }
-
-    protected Response onReRequest(Call call) throws IOException {
-        return call.execute();
     }
 
     protected IOException onReRequestException(IOException e) {
@@ -98,4 +94,6 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     // //////////////////////////////////实现区//////////////////////////////////
 
     protected abstract Response onAuth() throws IOException;
+
+    protected abstract Response onReRequest(Request request) throws IOException;
 }
