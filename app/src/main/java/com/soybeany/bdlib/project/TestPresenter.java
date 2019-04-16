@@ -11,6 +11,8 @@ import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestFactory;
 import com.soybeany.bdlib.web.okhttp.parser.StringParser;
 
+import static com.soybeany.bdlib.project.RequestUtils.SERVER;
+
 /**
  * <br>Created by Soybeany on 2019/2/19.
  */
@@ -18,7 +20,7 @@ public class TestPresenter extends BasePresenter<ITestView> {
 
     public void testFile(DialogKeyProvider provider) {
         RequestUtils.client(new DialogInfo(provider, new DialogMsg("测试").cancelable(true)), null)
-                .newCall(() -> OkHttpRequestFactory.get("http://192.168.137.232:8080/mobile/auth//file").param("test", "测试").build())
+                .newCall(() -> OkHttpRequestFactory.get(SERVER + "/mobile/auth//file").param("test", "测试").build())
                 .enqueue(new OkHttpCallback<>(StringParser.get())
                         .addCallback(new TestCallback())
                         .downloadListener(getLogListener("测试")));

@@ -50,14 +50,16 @@ class DialogHelper {
         });
     }
 
-    public void popMsg() {
+    public void popMsg(boolean realPop) {
         if (null == mDialogCallback) {
             return;
         }
         invoke((provider, msg) -> {
             // 关闭弹窗、注销弹窗监听
             MessageCenter.unregister(mDialogCallback);
-            MessageCenter.notifyNow(provider.popMsgKey, msg);
+            if (realPop) {
+                MessageCenter.notifyNow(provider.popMsgKey, msg);
+            }
         });
         mDialogCallback = null;
     }

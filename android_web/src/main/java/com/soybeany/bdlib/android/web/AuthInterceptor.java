@@ -12,6 +12,8 @@ import okhttp3.Response;
  * <br>Created by Soybeany on 2019/4/9.
  */
 public abstract class AuthInterceptor implements Interceptor {
+    private int mRetryTimes;
+
     @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
@@ -27,10 +29,17 @@ public abstract class AuthInterceptor implements Interceptor {
         }
         // 响应无效则先关闭先前响应
         response.close();
-        return onInvalid(chain);
+        return onInvalid(++mRetryTimes, chain);
+    }
+
+    /**
+     * 重置重试次数
+     */
+    public void resetRetryTimes() {
+        mRetryTimes = 0;
     }
 
     protected abstract boolean isResponseValid(Response response);
 
-    protected abstract Response onInvalid(@NonNull Chain chain) throws IOException;
+    protected abstract Response onInvalid(int retryTimes, @NonNull Chain chain) throws IOException;
 }

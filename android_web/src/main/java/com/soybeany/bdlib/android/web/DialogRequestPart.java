@@ -99,7 +99,7 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
                 @Override
                 public void onFinal(boolean isCanceled) {
                     callback.removeCallback(this);
-                    mHelper.popMsg();
+                    mHelper.popMsg(true);
                 }
             });
             // 异步请求

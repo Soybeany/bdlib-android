@@ -25,7 +25,11 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     }
 
     @Override
-    protected Response onInvalid(@NonNull Chain chain) throws IOException {
+    protected Response onInvalid(int retryTimes, @NonNull Chain chain) throws IOException {
+        // 判断已重试次数
+        if (retryTimes > 1) {
+            throw new HandledException(getOutOfRetryTimesHint());
+        }
         // 尝试重登录
         Response authResponse = execute(this::getAuthMsg, this::onAuth, call -> {
             Response response = call.execute();
@@ -40,6 +44,10 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     }
 
     // //////////////////////////////////重写区//////////////////////////////////
+
+    protected String getOutOfRetryTimesHint() {
+        return "超出自动重登录的尝试次数";
+    }
 
     protected DialogMsg getAuthMsg(DialogMsg oldMsg) {
         return new DialogMsg(StdHintUtils.STD_RE_LOGIN_HINT).cancelable(oldMsg.isCancelable()).multiHint((hint, count, cancelable) -> hint);
@@ -77,9 +85,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
         } catch (IOException e) {
             throw eGetter.getException(e);
         } finally {
-            if (oldMsg != newMsg) {
-                helper.popMsg();
-            }
+            helper.popMsg(oldMsg != newMsg);
         }
     }
 
