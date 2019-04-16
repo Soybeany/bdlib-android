@@ -4,6 +4,7 @@ import com.soybeany.bdlib.android.mvp.BasePresenter;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
+import com.soybeany.bdlib.android.web.DialogInfo;
 import com.soybeany.bdlib.android.web.UICallback;
 import com.soybeany.bdlib.core.util.file.IProgressListener;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
@@ -16,7 +17,7 @@ import com.soybeany.bdlib.web.okhttp.parser.StringParser;
 public class TestPresenter extends BasePresenter<ITestView> {
 
     public void testFile(DialogKeyProvider provider) {
-        RequestUtils.client(null, info -> info.with(provider, new DialogMsg("测试").cancelable(true)))
+        RequestUtils.client(new DialogInfo(provider, new DialogMsg("测试").cancelable(true)), null)
                 .newCall(() -> OkHttpRequestFactory.get("http://192.168.137.232:8080/mobile/auth//file").param("test", "测试").build())
                 .enqueue(new OkHttpCallback<>(StringParser.get())
                         .addCallback(new TestCallback())

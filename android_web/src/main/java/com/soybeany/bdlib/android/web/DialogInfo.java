@@ -15,9 +15,8 @@ public class DialogInfo {
     @Nullable
     DialogMsg msg;
 
-    public DialogInfo with(@Nullable DialogKeyProvider provider, @NonNull DialogMsg msg) {
+    public DialogInfo(@Nullable DialogKeyProvider provider, @NonNull DialogMsg msg) {
         this.provider = provider;
         this.msg = msg;
-        return this;
     }
 }

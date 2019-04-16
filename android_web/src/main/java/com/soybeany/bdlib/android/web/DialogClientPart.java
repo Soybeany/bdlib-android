@@ -12,14 +12,10 @@ public class DialogClientPart extends OkHttpUtils.DefaultClientPart {
 
     @Override
     public DialogRequestPart newRequest(@Nullable OkHttpClientFactory.IClientSetter setter) {
-        return newRequest(setter, null);
+        return newRequest(null, setter);
     }
 
-    public DialogRequestPart newRequest(OkHttpClientFactory.IClientSetter cs, IDialogSetter ds) {
-        return new DialogRequestPart(null != ds ? ds.onSetup(new DialogInfo()) : null, OkHttpClientFactory.getNewClient(cs));
-    }
-
-    public interface IDialogSetter {
-        DialogInfo onSetup(DialogInfo info);
+    public DialogRequestPart newRequest(@Nullable DialogInfo info, @Nullable OkHttpClientFactory.IClientSetter setter) {
+        return new DialogRequestPart(info, OkHttpClientFactory.getNewClient(setter));
     }
 }

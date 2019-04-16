@@ -97,8 +97,8 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
         }
 
         public <T> void enqueue(@NonNull OkHttpCallback<T> callback) {
-            // 若没有设置弹窗，则进行普通异步请求
-            if (null == mProvider) {
+            // 若没有设置弹窗或信息，则进行普通异步请求
+            if (null == mProvider || null == mMsg) {
                 mTarget.enqueue(callback);
                 return;
             }
