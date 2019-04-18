@@ -20,7 +20,7 @@ public class TestPresenter extends BasePresenter<ITestView> {
 
     public void testFile(DialogKeyProvider provider) {
         RequestUtils.client(new DialogInfo(provider, new DialogMsg("测试").cancelable(true)), null)
-                .newCall(() -> OkHttpRequestFactory.get(SERVER + "/mobile/auth//file").param("test", "测试").build())
+                .newCall(OkHttpRequestFactory.get(SERVER + "/mobile/auth//file").param("test", "测试").build())
                 .enqueue(new OkHttpCallback<>(StringParser.get())
                         .addCallback(new TestCallback())
                         .downloadListener(getLogListener("测试")));
