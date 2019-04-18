@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.web;
 
 
+import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.web.okhttp.core.ICallback;
 
 import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
@@ -33,7 +34,9 @@ public interface UICallback<Result> extends ICallback<Result> {
     /**
      * 失败时的回调(UI线程)
      */
-    void onUIFailure(boolean isCanceled, String msg);
+    default void onUIFailure(boolean isCanceled, String msg) {
+        ToastUtils.show(msg);
+    }
 
     /**
      * 最终的回调(UI线程)
