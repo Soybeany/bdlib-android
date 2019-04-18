@@ -3,8 +3,8 @@ package com.soybeany.bdlib.project;
 import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
-import com.soybeany.bdlib.android.web.DialogClientPart;
 import com.soybeany.bdlib.android.web.DialogInfo;
+import com.soybeany.bdlib.android.web.DialogOkHttpUtils;
 import com.soybeany.bdlib.android.web.DialogRequestPart;
 import com.soybeany.bdlib.android.web.ReLoginInterceptor;
 import com.soybeany.bdlib.core.java8.Optional;
@@ -58,26 +58,19 @@ public class RequestUtils {
      * 获得登录Call
      */
     public static DialogRequestPart.DialogCall getLoginCall(@Nullable DialogInfo info, String uid, String pwd) {
-        return simpleClient(info, builder -> builder.addInterceptor(COOKIE_CACHE_INTERCEPTOR))
-                .newCall(() -> OkHttpRequestFactory.postForm(SERVER + "/mobile/auth/login").param("uid", uid).param("pwd", pwd).build());
+        return DialogOkHttpUtils.newClient(info, builder -> builder.addInterceptor(COOKIE_CACHE_INTERCEPTOR))
+                .newCall(OkHttpRequestFactory.postForm(SERVER + "/mobile/auth/login").param("uid", uid).param("pwd", pwd).build());
     }
 
     /**
      * 常规客户端(自动附带COOKIE信息)
      */
     public static DialogRequestPart client(@Nullable DialogInfo info, @Nullable OkHttpClientFactory.IClientSetter setter) {
-        return simpleClient(info, builder -> {
+        return DialogOkHttpUtils.newClient(info, builder -> {
             builder.addInterceptor(COOKIE_SETUP_INTERCEPTOR);
             builder.addInterceptor(new ReAuthInterceptor(info));
             Optional.ofNullable(setter).ifPresent(s -> s.onSetup(builder));
         });
-    }
-
-    /**
-     * 最简单的客户端
-     */
-    public static DialogRequestPart simpleClient(@Nullable DialogInfo info, @Nullable OkHttpClientFactory.IClientSetter setter) {
-        return new DialogClientPart().newRequest(info, setter);
     }
 
     private static class ReAuthInterceptor extends ReLoginInterceptor {
