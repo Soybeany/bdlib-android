@@ -1,5 +1,6 @@
 package com.soybeany.bdlib.project;
 
+import android.content.Intent;
 import android.view.View;
 
 import com.soybeany.bdlib.android.template.BaseActivity;
@@ -13,6 +14,6 @@ public class MainActivity extends BaseActivity {
     }
 
     public void onClick(View view) {
-        startNewActivity(SecondActivity.class);
+        startActivity(new Intent(this, SecondActivity.class));
     }
 }

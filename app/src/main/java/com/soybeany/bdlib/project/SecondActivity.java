@@ -2,15 +2,16 @@ package com.soybeany.bdlib.project;
 
 import android.view.View;
 
-import com.soybeany.bdlib.android.template.BaseActivity;
+import com.soybeany.bdlib.android.mvp.IPresenterProvider;
+import com.soybeany.bdlib.android.mvp.MvpActivity;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
-public class SecondActivity extends BaseActivity implements ITestView {
-    private TestPresenter pt;
+public class SecondActivity extends MvpActivity implements ITestView {
+    private TestPresenter mPt;
 
     @Override
     public int setupLayoutResId() {
@@ -18,9 +19,8 @@ public class SecondActivity extends BaseActivity implements ITestView {
     }
 
     @Override
-    public void onInit() {
-        pt = getViewModel(TestPresenter.class);
-        pt.autoBind(getLifecycle(), this);
+    public void onInitPresenters(IPresenterProvider provider) {
+        mPt = provider.getPresenter(TestPresenter.class, this);
     }
 
     @Override
@@ -30,6 +30,6 @@ public class SecondActivity extends BaseActivity implements ITestView {
     }
 
     public void onClick(View view) {
-        pt.testFile(getDialogKeys());
+        mPt.testFile(getDialogKeys());
     }
 }

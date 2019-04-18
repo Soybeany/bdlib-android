@@ -35,7 +35,8 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$rootProject.androidSupportVerion"
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     // BDLib
-    api 'com.github.Soybeany:bdlib-core:master-SNAPSHOT'
+    api "com.github.Soybeany.bdlib-core:core_java8:$rootProject.bdlibCoreVersion"
+    api "com.github.Soybeany.bdlib-core:core_util:$rootProject.bdlibCoreVersion"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

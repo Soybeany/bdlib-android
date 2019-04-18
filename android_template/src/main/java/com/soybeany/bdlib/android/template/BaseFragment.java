@@ -6,34 +6,29 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
-import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
  */
-public abstract class BaseFragment extends Fragment
-        implements IInitialHelper, ButterKnifeObserver.ICallback<View> {
-    private BaseFuncHelper mFuncHelper = new BaseFuncHelper();
-    private AbstractDialog mDialog;
+public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<View> {
+    private IBaseFunc mFuncImpl = new BaseFuncImpl(this);
     private View mContentV;
     private int mPreparedCount; // 已准备好的位置的计数
+
+    // //////////////////////////////////方法重写//////////////////////////////////
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
-        mFuncHelper.init(getLifecycle(), getViewModel(BaseFuncHelper.VM.class)).addObservers(setupObservers(),
-                new ButterKnifeObserver(this), mDialog = onGetNewDialog());
-        onInit();
-        trySignalDoBusiness();
     }
 
     @Nullable
@@ -46,7 +41,7 @@ public abstract class BaseFragment extends Fragment
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            trySignalDoBusiness();
+            signalDoBusiness();
         }
     }
 
@@ -55,43 +50,42 @@ public abstract class BaseFragment extends Fragment
         return mContentV;
     }
 
-    // //////////////////////////////////子类回调//////////////////////////////////
-
-    protected AbstractDialog onGetNewDialog() {
+    @Override
+    public AbstractDialog onGetNewDialog() {
         return new ProgressDialogImpl(this);
     }
 
-    // //////////////////////////////////便捷方法//////////////////////////////////
-
-    protected AbstractDialog getDialog() {
-        return mDialog;
+    @Override
+    public AbstractDialog getDialog() {
+        return mFuncImpl.getDialog();
     }
 
-    protected DialogKeyProvider getDialogKeys() {
-        return mDialog.getKeyProvider();
+    @Override
+    public DialogKeyProvider getDialogKeys() {
+        return mFuncImpl.getDialogKeys();
     }
 
-    protected <T extends ViewModel> T getViewModel(Class<T> modelClass) {
+    @Override
+    public <T extends ViewModel> T getViewModel(Class<T> modelClass) {
         return ViewModelProviders.of(this).get(modelClass);
     }
 
-    /**
-     * 注册回调，自动注销
-     *
-     * @return 用于监听的uid
-     */
-    protected String autoRegister(String key, MessageCenter.ICallback callback) {
-        return mFuncHelper.autoRegister(key, callback);
+    @Override
+    public void signalDoBusiness() {
+        if (mPreparedCount > 1) {
+            return;
+        } else if (mPreparedCount == 1) {
+            mContentV.post(this::doBusiness);
+        }
+        mPreparedCount++;
+    }
+
+    @Nullable
+    public <T extends ViewModel> T getActivityViewModel(Class<T> modelClass) {
+        FragmentActivity activity = getActivity();
+        return null != activity ? ViewModelProviders.of(activity).get(modelClass) : null;
     }
 
     // //////////////////////////////////内部实现//////////////////////////////////
 
-    private void trySignalDoBusiness() {
-        if (mPreparedCount > 1) {
-            return;
-        } else if (mPreparedCount == 1) {
-            doBusiness();
-        }
-        mPreparedCount++;
-    }
 }

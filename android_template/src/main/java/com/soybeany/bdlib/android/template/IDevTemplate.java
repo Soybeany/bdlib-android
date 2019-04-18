@@ -3,9 +3,10 @@ package com.soybeany.bdlib.android.template;
 import android.arch.lifecycle.LifecycleObserver;
 
 /**
+ * 开发模板
  * <br>Created by Soybeany on 2019/2/1.
  */
-public interface IInitialHelper {
+public interface IDevTemplate {
 
     int setupLayoutResId();
 
@@ -14,9 +15,15 @@ public interface IInitialHelper {
     }
 
     /**
-     * 初始化视图、ViewModel等
+     * 初始化ViewModel
      */
-    default void onInit() {
+    default void onInitViewModels(IVMProvider provider) {
+    }
+
+    /**
+     * 初始化视图
+     */
+    default void onInitViews() {
     }
 
     /**

@@ -1,0 +1,19 @@
+<resources>
+
+    <!--textSize-->
+    <dimen name="text_14">14dp</dimen>
+    <dimen name="text_16">16dp</dimen>
+
+    <!--length-->
+    <dimen name="length_2">2dp</dimen>
+    <dimen name="length_4">4dp</dimen>
+    <dimen name="length_8">8dp</dimen>
+    <dimen name="length_10">10dp</dimen>
+    <dimen name="length_12">12dp</dimen>
+    <dimen name="length_14">14dp</dimen>
+    <dimen name="length_16">16dp</dimen>
+    <dimen name="length_18">18dp</dimen>
+    <dimen name="length_20">20dp</dimen>
+    <dimen name="length_24">24dp</dimen>
+
+</resources>

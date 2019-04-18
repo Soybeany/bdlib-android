@@ -18,7 +18,7 @@ public abstract class BasePresenter<V extends IView> extends ViewModel implement
     /**
      * 绑定View，绑定后自动解绑
      */
-    public void autoBind(Lifecycle lifecycle, V view) {
+    public void bindView(Lifecycle lifecycle, V view) {
         if (!mStorage.containKey(lifecycle)) {
             lifecycle.addObserver(this);
         }
@@ -26,20 +26,26 @@ public abstract class BasePresenter<V extends IView> extends ViewModel implement
     }
 
     /**
-     * 此方法按需调用，不必强制调用({@link Lifecycle}生命周期结束时会自动解绑)
+     * 此方法按需调用，不必强制调用，({@link Lifecycle}生命周期结束时会自动解绑)
      */
-    public void unbind(Lifecycle lifecycle, V view) {
+    public void unbindView(Lifecycle lifecycle, V view) {
         mStorage.removeVal(lifecycle, view);
         if (!mStorage.containKey(lifecycle)) {
             lifecycle.removeObserver(this);
         }
     }
 
-    @Override
-    public void onDestroy(@NonNull LifecycleOwner owner) {
-        Lifecycle lifecycle = owner.getLifecycle();
+    /**
+     * 此方法按需调用，不必强制调用，({@link Lifecycle}生命周期结束时会自动解绑)
+     */
+    public void unbindViews(Lifecycle lifecycle) {
         mStorage.remove(lifecycle);
         lifecycle.removeObserver(this);
+    }
+
+    @Override
+    public void onDestroy(@NonNull LifecycleOwner owner) {
+        unbindViews(owner.getLifecycle());
     }
 
     /**
