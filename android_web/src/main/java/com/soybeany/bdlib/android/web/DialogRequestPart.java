@@ -28,8 +28,8 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
     }
 
     @Override
-    public DialogCall newCall(IRequestSupplier supplier) {
-        return new DialogCall(mInfo, super.newCall(supplier));
+    public DialogCall newCall(Request request) {
+        return new DialogCall(mInfo, super.newCall(request));
     }
 
     @EverythingIsNonNull
