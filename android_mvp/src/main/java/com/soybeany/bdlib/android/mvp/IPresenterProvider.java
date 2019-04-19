@@ -5,6 +5,6 @@ package com.soybeany.bdlib.android.mvp;
  */
 public interface IPresenterProvider {
 
-    <V extends IView, T extends BasePresenter<V>> T getPresenter(Class<T> clazz, V v);
+    <V extends IPresenterView, T extends BasePresenter<V>> T getPresenter(Class<T> clazz, V v);
 
 }

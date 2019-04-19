@@ -13,7 +13,7 @@ class PresenterProviderImpl implements IPresenterProvider {
     }
 
     @Override
-    public <V extends IView, T extends BasePresenter<V>> T getPresenter(Class<T> clazz, V v) {
+    public <V extends IPresenterView, T extends BasePresenter<V>> T getPresenter(Class<T> clazz, V v) {
         T presenter = mEx.getViewModel(clazz);
         presenter.bindView(mEx.getLifecycle(), v);
         return presenter;

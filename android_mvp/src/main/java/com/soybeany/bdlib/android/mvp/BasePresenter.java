@@ -12,7 +12,7 @@ import com.soybeany.bdlib.core.util.storage.KeySetStorage;
 /**
  * <br>Created by Soybeany on 2019/4/16.
  */
-public abstract class BasePresenter<V extends IView> extends ViewModel implements IObserver {
+public abstract class BasePresenter<V extends IPresenterView> extends ViewModel implements IObserver {
     private final KeySetStorage<Lifecycle, V> mStorage = new KeySetStorage<>();
 
     /**
