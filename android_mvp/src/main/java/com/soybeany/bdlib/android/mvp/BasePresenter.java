@@ -4,6 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.core.java8.function.Consumer;
@@ -18,7 +19,10 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     /**
      * 绑定View，绑定后自动解绑
      */
-    public void bindView(Lifecycle lifecycle, V view) {
+    public void bindView(@NonNull Lifecycle lifecycle, @Nullable V view) {
+        if (null == view) {
+            return;
+        }
         if (!mStorage.containKey(lifecycle)) {
             lifecycle.addObserver(this);
         }
@@ -28,7 +32,10 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     /**
      * 此方法按需调用，不必强制调用，({@link Lifecycle}生命周期结束时会自动解绑)
      */
-    public void unbindView(Lifecycle lifecycle, V view) {
+    public void unbindView(@NonNull Lifecycle lifecycle, @Nullable V view) {
+        if (null == view) {
+            return;
+        }
         mStorage.removeVal(lifecycle, view);
         if (!mStorage.containKey(lifecycle)) {
             lifecycle.removeObserver(this);
@@ -38,7 +45,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     /**
      * 此方法按需调用，不必强制调用，({@link Lifecycle}生命周期结束时会自动解绑)
      */
-    public void unbindViews(Lifecycle lifecycle) {
+    public void unbindViews(@NonNull Lifecycle lifecycle) {
         mStorage.remove(lifecycle);
         lifecycle.removeObserver(this);
     }
@@ -51,7 +58,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     /**
      * 执行全部View的方法
      */
-    protected void invoke(Consumer<V> consumer) {
+    protected void invoke(@NonNull Consumer<V> consumer) {
         mStorage.invokeAllVal(consumer);
     }
 }
