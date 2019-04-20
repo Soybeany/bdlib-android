@@ -70,7 +70,7 @@ public class BDApplication extends Application {
      * 设置检测阈值，默认1秒
      */
     protected long setupDetectValve() {
-        return 1;
+        return 1000;
     }
 
     /**
