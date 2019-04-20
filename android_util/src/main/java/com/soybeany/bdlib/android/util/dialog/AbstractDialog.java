@@ -2,9 +2,12 @@ package com.soybeany.bdlib.android.util.dialog;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.IObserver;
+import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.util.storage.MessageCenter;
 
 /**
@@ -19,6 +22,15 @@ public abstract class AbstractDialog implements IObserver {
     private MessageCenter.ICallback mCancelMsgCallback = data -> cancelMsg((DialogMsg) data);
     private MessageCenter.ICallback mDismissDialogCallback = data -> mVM.notifyDialogToDismiss((DialogViewModel.Reason) data);
     private MessageCenter.ICallback mOnDismissCallback = data -> onDismissDialog();
+
+    /**
+     * 使用弹窗进行包裹
+     */
+    public static void wrap(@Nullable DialogKeyProvider provider, @Nullable DialogMsg msg, @WorkerThread Runnable runnable) {
+        Optional.ofNullable(provider).ifPresent(p -> MessageCenter.notifyNow(p.showMsgKey, msg));
+        runnable.run();
+        Optional.ofNullable(provider).ifPresent(p -> MessageCenter.notifyNow(p.popMsgKey, msg));
+    }
 
     public AbstractDialog(DialogViewModel vm) {
         mVM = vm;
