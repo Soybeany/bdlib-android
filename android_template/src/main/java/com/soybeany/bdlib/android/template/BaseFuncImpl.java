@@ -16,6 +16,7 @@ import com.soybeany.bdlib.core.java8.Optional;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * 通用功能实现
@@ -65,10 +66,21 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
 
     @Override
     public DialogKeyProvider getDialogKeys() {
-        Looper mainLooper;
-        if (null == mDialog && Thread.currentThread() != (mainLooper = Looper.getMainLooper()).getThread()) {
-            activeDialogInUIThread(mainLooper);
+        if (null != mDialog) {
+            return mDialog.getKeyProvider();
         }
+
+        Thread curThread = Thread.currentThread();
+        Looper mainLooper = Looper.getMainLooper();
+
+        if (curThread != mainLooper.getThread()) {
+            new Handler(mainLooper).post(() -> {
+                getDialog();
+                LockSupport.unpark(curThread);
+            });
+            LockSupport.park();
+        }
+
         return getDialog().getKeyProvider();
     }
 
@@ -78,18 +90,6 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
     private void autoShowDialog() {
         if (mDialogVM.hasDialog) {
             getDialog(); // 触发弹窗的创建
-        }
-    }
-
-    private void activeDialogInUIThread(Looper mainLooper) {
-        try {
-            new Handler(mainLooper).post(() -> {
-                getDialog();
-                mDialogVM.notify();
-            });
-            mDialogVM.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
