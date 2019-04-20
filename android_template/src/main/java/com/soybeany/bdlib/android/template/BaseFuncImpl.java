@@ -4,6 +4,8 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ViewModel;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
@@ -63,6 +65,10 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
 
     @Override
     public DialogKeyProvider getDialogKeys() {
+        Looper mainLooper;
+        if (null == mDialog && Thread.currentThread() != (mainLooper = Looper.getMainLooper()).getThread()) {
+            activeDialogInUIThread(mainLooper);
+        }
         return getDialog().getKeyProvider();
     }
 
@@ -72,6 +78,18 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
     private void autoShowDialog() {
         if (mDialogVM.hasDialog) {
             getDialog(); // 触发弹窗的创建
+        }
+    }
+
+    private void activeDialogInUIThread(Looper mainLooper) {
+        try {
+            new Handler(mainLooper).post(() -> {
+                getDialog();
+                mDialogVM.notify();
+            });
+            mDialogVM.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

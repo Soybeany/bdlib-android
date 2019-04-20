@@ -28,6 +28,7 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        beforeSetupContentView();
         mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
     }
 

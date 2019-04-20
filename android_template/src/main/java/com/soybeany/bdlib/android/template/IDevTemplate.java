@@ -10,6 +10,15 @@ public interface IDevTemplate {
 
     int setupLayoutResId();
 
+    /**
+     * 设置内容视图前
+     */
+    default void beforeSetupContentView() {
+    }
+
+    /**
+     * 设置生命周期观察者
+     */
     default LifecycleObserver[] setupObservers() {
         return null;
     }
