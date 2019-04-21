@@ -2,6 +2,7 @@ package com.soybeany.bdlib.android.ui.style;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.Locale;
@@ -11,7 +12,7 @@ import java.util.Locale;
  */
 public class LanguageChanger implements IQualifierChanger<Locale> {
     @Override
-    public void change(AppCompatActivity activity, Locale locale) {
+    public void change(AppCompatActivity activity, @Nullable Locale locale) {
         Resources resources = activity.getResources();
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
@@ -19,7 +20,7 @@ public class LanguageChanger implements IQualifierChanger<Locale> {
     }
 
     @Override
-    public void recreate(AppCompatActivity activity, Locale locale) {
+    public void recreate(AppCompatActivity activity, @Nullable Locale locale) {
         IQualifierChanger.recreate(activity, activity.getResources().getConfiguration().locale, locale);
     }
 }

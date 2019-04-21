@@ -26,10 +26,10 @@ public interface IQualifierChanger<Data> {
     /**
      * 应用变化
      */
-    void change(AppCompatActivity activity, Data data);
+    void change(AppCompatActivity activity, @Nullable Data data);
 
     /**
      * 重新创建界面
      */
-    void recreate(AppCompatActivity activity, Data data);
+    void recreate(AppCompatActivity activity, @Nullable Data data);
 }
