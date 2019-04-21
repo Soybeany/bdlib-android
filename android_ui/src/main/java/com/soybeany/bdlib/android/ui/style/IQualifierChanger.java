@@ -14,6 +14,16 @@ import com.soybeany.bdlib.android.ui.R;
 public interface IQualifierChanger<Data> {
 
     /**
+     * 重新创建界面
+     */
+    static <Data> void recreate(AppCompatActivity activity, @NonNull Data oldData, @Nullable Data newData) {
+        if (!oldData.equals(newData)) {
+            activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
+            activity.recreate();
+        }
+    }
+
+    /**
      * 应用变化
      */
     void change(AppCompatActivity activity, Data data);
@@ -21,10 +31,5 @@ public interface IQualifierChanger<Data> {
     /**
      * 重新创建界面
      */
-    default void recreate(AppCompatActivity activity, @NonNull Data oldData, @Nullable Data newData) {
-        if (!oldData.equals(newData)) {
-            activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
-            activity.recreate();
-        }
-    }
+    void recreate(AppCompatActivity activity, Data data);
 }

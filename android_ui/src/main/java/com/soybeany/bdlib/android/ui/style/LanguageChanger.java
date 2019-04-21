@@ -17,4 +17,9 @@ public class LanguageChanger implements IQualifierChanger<Locale> {
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
+
+    @Override
+    public void recreate(AppCompatActivity activity, Locale locale) {
+        IQualifierChanger.recreate(activity, activity.getResources().getConfiguration().locale, locale);
+    }
 }

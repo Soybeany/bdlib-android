@@ -11,4 +11,9 @@ public class ThemeChanger implements IQualifierChanger<Integer> {
     public void change(AppCompatActivity activity, Integer mode) {
         AppCompatDelegate.setDefaultNightMode(mode);
     }
+
+    @Override
+    public void recreate(AppCompatActivity activity, Integer integer) {
+        IQualifierChanger.recreate(activity, AppCompatDelegate.getDefaultNightMode(), integer);
+    }
 }
