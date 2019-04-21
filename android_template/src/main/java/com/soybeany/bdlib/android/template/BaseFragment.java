@@ -22,12 +22,14 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     private IBaseFunc mFuncImpl = new BaseFuncImpl(this);
     private View mContentV;
     private int mPreparedCount; // 已准备好的位置的计数
+    private boolean mIsNew;
 
     // //////////////////////////////////方法重写//////////////////////////////////
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mIsNew = (null == savedInstanceState);
         beforeSetupContentView();
         mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
     }
@@ -76,7 +78,7 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
         if (mPreparedCount > 1) {
             return;
         } else if (mPreparedCount == 1) {
-            mContentV.post(this::doBusiness);
+            mContentV.post(() -> doBusiness(mIsNew));
         }
         mPreparedCount++;
     }

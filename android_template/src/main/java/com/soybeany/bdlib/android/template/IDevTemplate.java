@@ -37,7 +37,9 @@ public interface IDevTemplate {
 
     /**
      * 处理业务逻辑，如模拟点击、自动发起请求等
+     *
+     * @param isNew 此模板是否为新创建
      */
-    default void doBusiness() {
+    default void doBusiness(boolean isNew) {
     }
 }

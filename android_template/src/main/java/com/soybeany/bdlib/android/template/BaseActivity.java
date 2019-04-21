@@ -16,12 +16,14 @@ import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
  */
 public abstract class BaseActivity extends AppCompatActivity implements IBaseFunc.IEx<Activity> {
     private final IBaseFunc mFuncImpl = new BaseFuncImpl(this);
+    private boolean mIsNew;
 
     // //////////////////////////////////方法重写//////////////////////////////////
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mIsNew = (null == savedInstanceState);
         beforeSetupContentView();
         setContentView(setupLayoutResId());
     }
@@ -53,7 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
 
     @Override
     public void signalDoBusiness() {
-        getWindow().getDecorView().post(this::doBusiness);
+        getWindow().getDecorView().post(() -> doBusiness(mIsNew));
     }
 
     // //////////////////////////////////内部类//////////////////////////////////
