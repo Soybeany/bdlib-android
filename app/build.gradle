@@ -31,4 +31,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':android_web')
     implementation project(':android_mvp')
+    implementation project(':android_ui')
 }
