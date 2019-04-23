@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.ui.style;
+package com.soybeany.bdlib.android.util.style;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;

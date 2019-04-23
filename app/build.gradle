@@ -32,4 +32,5 @@ dependencies {
     implementation project(':android_web')
     implementation project(':android_mvp')
     implementation project(':android_ui')
+    implementation 'com.jaeger.statusbarutil:library:1.5.1'
 }

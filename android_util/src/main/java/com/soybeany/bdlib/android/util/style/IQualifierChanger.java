@@ -1,11 +1,12 @@
-package com.soybeany.bdlib.android.ui.style;
+package com.soybeany.bdlib.android.util.style;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.soybeany.bdlib.android.ui.R;
+import com.soybeany.bdlib.android.util.R;
+
 
 /**
  * 修饰符修改器

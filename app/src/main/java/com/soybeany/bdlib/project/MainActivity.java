@@ -1,23 +1,27 @@
 package com.soybeany.bdlib.project;
 
-import android.arch.lifecycle.MutableLiveData;
 import android.view.View;
 
 import com.soybeany.bdlib.android.template.BaseActivity;
-import com.soybeany.bdlib.android.ui.style.LanguageChanger;
+import com.soybeany.bdlib.android.util.style.LanguageChanger;
+import com.soybeany.bdlib.android.util.style.ThemeChanger;
 
 import java.util.Locale;
 
 
 public class MainActivity extends BaseActivity {
 
-    public static MutableLiveData<Locale> language = new MutableLiveData<>();
+    public static Locale language = Locale.CHINESE;
+    public static int theme = R.style.AppTheme;
 
-    LanguageChanger c = new LanguageChanger();
+
+    private LanguageChanger c = new LanguageChanger();
+    private ThemeChanger tc = new ThemeChanger();
 
     @Override
     public void beforeSetupContentView() {
-        c.change(this, language.getValue());
+        c.change(this, language);
+        tc.change(this, new ThemeChanger.ThemeMode(theme));
     }
 
     @Override
@@ -27,13 +31,12 @@ public class MainActivity extends BaseActivity {
 
     public void onClick(View view) {
 //        startActivity(new Intent(this, SecondActivity.class));
-        Locale value = language.getValue();
-        if (null == value || value == Locale.CHINESE) {
-            language.setValue(Locale.ENGLISH);
-        } else {
-            language.setValue(Locale.CHINESE);
-        }
+        language = (language == Locale.CHINESE ? Locale.ENGLISH : Locale.CHINESE);
+        view.postDelayed(() -> c.recreate(this, null), 200);
+    }
 
+    public void onClickTheme(View view) {
+        theme = (theme == R.style.AppTheme ? R.style.NoActionBar : R.style.AppTheme);
         view.postDelayed(() -> c.recreate(this, null), 200);
     }
 }
