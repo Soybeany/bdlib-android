@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">BDLibAndroid</string>
+    <string name="app_name" translatable="false">BDLibAndroid</string>
+    <string name="click_me">点我</string>
 </resources>
