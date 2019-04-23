@@ -31,6 +31,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "com.android.support:appcompat-v7:$rootProject.androidSupportVerion"
     implementation "com.android.support:design:$rootProject.androidSupportVerion"
+
+    api 'q.rorbin:badgeview:1.1.3'
+
     // BDLib
     api project(':android_util')
 
