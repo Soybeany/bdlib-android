@@ -21,6 +21,6 @@ public class LanguageChanger implements IQualifierChanger<Locale> {
 
     @Override
     public void recreate(AppCompatActivity activity, @Nullable Locale locale) {
-        IQualifierChanger.recreate(activity, activity.getResources().getConfiguration().locale, locale);
+        IQualifierChanger.recreate(activity, activity.getResources().getConfiguration().locale, locale, Locale.class);
     }
 }

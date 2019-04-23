@@ -26,7 +26,7 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
 
     @Override
     public void recreate(AppCompatActivity activity, @Nullable Mode mode) {
-        IQualifierChanger.recreate(activity, AppCompatDelegate.getDefaultNightMode(), mode);
+        IQualifierChanger.recreate(activity, AppCompatDelegate.getDefaultNightMode(), null != mode ? mode.data : null, Integer.class);
     }
 
     public static class Mode {

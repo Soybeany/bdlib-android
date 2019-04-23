@@ -17,8 +17,8 @@ public interface IQualifierChanger<Data> {
     /**
      * 重新创建界面
      */
-    static <Data> void recreate(AppCompatActivity activity, @NonNull Data oldData, @Nullable Data newData) {
-        if (!oldData.equals(newData)) {
+    static <Data> void recreate(AppCompatActivity activity, @NonNull Data oldData, @Nullable Data newData, Class<Data> clazz) {
+        if (null != newData && !oldData.equals(newData)) {
             activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
             activity.recreate();
         }
