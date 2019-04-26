@@ -16,21 +16,21 @@ import static com.soybeany.bdlib.android.util.BDContext.getResources;
 /**
  * <br>Created by Soybeany on 2019/4/25.
  */
-class DrawableStatusBarUtils {
+public class DrawableStatusBarUtils {
 
     /**
      * 全面应用，带有监听器监听每次布局的变化，需在{@link android.app.Activity#setContentView(int)}后调用
      *
      * @param res 资源值，为null时则使用主题默认的设置
      */
-    static void fullApply(@NonNull Activity activity, @DrawableRes Integer res) {
+    public static void fullApply(@NonNull Activity activity, @DrawableRes Integer res) {
         innerApply(activity, res, true);
     }
 
     /**
      * 简单应用，需在{@link android.app.Activity#setContentView(int)}后调用
      */
-    static void simpleApply(@NonNull Activity activity, @DrawableRes Integer res) {
+    public static void simpleApply(@NonNull Activity activity, @DrawableRes Integer res) {
         innerApply(activity, res, false);
     }
 
