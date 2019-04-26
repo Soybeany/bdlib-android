@@ -2,6 +2,7 @@ package com.soybeany.bdlib.android.util.style;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -39,7 +40,7 @@ public class DrawableStatusBarUtils {
             Resources resources = getResources();
             View statusBarV = decorView.findViewById(resources.getIdentifier("statusBarBackground", "id", "android"));
             Optional.ofNullable(statusBarV).ifPresent(v -> {
-                Drawable drawable = resources.getDrawable(Optional.ofNullable(res).orElseGet(() -> getDefaultDrawable(activity)));
+                Drawable drawable = null != res ? resources.getDrawable(res) : getDefaultDrawable(activity);
                 setBackground(v, drawable);
                 if (needAddListener) {
                     decorView.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> setBackground(v, drawable));
@@ -54,10 +55,9 @@ public class DrawableStatusBarUtils {
         }
     }
 
-    @DrawableRes
-    private static int getDefaultDrawable(@NonNull Activity activity) {
+    private static Drawable getDefaultDrawable(@NonNull Activity activity) {
         TypedValue typedValue = new TypedValue();
-        activity.getTheme().resolveAttribute(R.attr.colorPrimaryDark, typedValue, false);
-        return typedValue.data;
+        activity.getTheme().resolveAttribute(R.attr.colorPrimaryDark, typedValue, true);
+        return new ColorDrawable(typedValue.data);
     }
 }
