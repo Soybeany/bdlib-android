@@ -1,7 +1,6 @@
 package com.soybeany.bdlib.android.util.style;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
@@ -17,8 +16,8 @@ public interface IQualifierChanger<Data> {
     /**
      * 重新创建界面
      */
-    static <Data> void recreate(AppCompatActivity activity, @NonNull Data oldData, @Nullable Data newData, Class<Data> clazz) {
-        if (null != newData && !oldData.equals(newData)) {
+    static <Data> void recreate(AppCompatActivity activity, @Nullable Data oldData, @Nullable Data newData, Class<Data> clazz) {
+        if (null != newData && !newData.equals(oldData)) {
             activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
             activity.recreate();
         }

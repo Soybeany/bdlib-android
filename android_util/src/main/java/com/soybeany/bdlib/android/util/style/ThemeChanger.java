@@ -5,10 +5,14 @@ import android.support.annotation.StyleRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 
+import java.util.WeakHashMap;
+
 /**
  * <br>Created by Soybeany on 2019/4/21.
  */
 public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
+    private static final WeakHashMap<String, Mode> OLD_VALUE_MAP = new WeakHashMap<>();
+
     @Override
     public void change(AppCompatActivity activity, @Nullable Mode mode) {
         if (null == mode) {
@@ -22,11 +26,12 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
                 AppCompatDelegate.setDefaultNightMode(mode.data);
                 break;
         }
+        OLD_VALUE_MAP.put(activity.toString(), mode);
     }
 
     @Override
     public void recreate(AppCompatActivity activity, @Nullable Mode mode) {
-        IQualifierChanger.recreate(activity, AppCompatDelegate.getDefaultNightMode(), null != mode ? mode.data : null, Integer.class);
+        IQualifierChanger.recreate(activity, OLD_VALUE_MAP.get(activity.toString()), mode, Mode.class);
     }
 
     public static class Mode {
