@@ -1,17 +1,18 @@
 package com.soybeany.bdlib.android.util.style;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 
-import java.util.WeakHashMap;
+import java.io.Serializable;
 
 /**
  * <br>Created by Soybeany on 2019/4/21.
  */
 public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
-    private static final WeakHashMap<String, Mode> OLD_VALUE_MAP = new WeakHashMap<>();
+    private static final String OLD_VALUE_KEY = "THEME_CHANGER_OLD_VALUE";
 
     @Override
     public void change(AppCompatActivity activity, @Nullable Mode mode) {
@@ -26,15 +27,15 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
                 AppCompatDelegate.setDefaultNightMode(mode.data);
                 break;
         }
-        OLD_VALUE_MAP.put(activity.toString(), mode);
+        activity.setIntent(new Intent(activity.getIntent()).putExtra(OLD_VALUE_KEY, mode));
     }
 
     @Override
     public void recreate(AppCompatActivity activity, @Nullable Mode mode) {
-        IQualifierChanger.recreate(activity, OLD_VALUE_MAP.get(activity.toString()), mode, Mode.class);
+        IQualifierChanger.recreate(activity, (Mode) activity.getIntent().getSerializableExtra(OLD_VALUE_KEY), mode, Mode.class);
     }
 
-    public static class Mode {
+    public static class Mode implements Serializable {
         String type;
         int data;
 
