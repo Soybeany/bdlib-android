@@ -7,7 +7,7 @@ import com.soybeany.bdlib.android.template.BaseActivity;
  */
 public abstract class MvpActivity extends BaseActivity implements IMvpTemplate {
     @Override
-    public void onSignalDevCallbacks() {
+    public void signalAfterSetContentView() {
         onInitPresenters(new PresenterProviderImpl(this));
     }
 }

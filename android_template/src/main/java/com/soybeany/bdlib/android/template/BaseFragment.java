@@ -30,7 +30,7 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mIsNew = (null == savedInstanceState);
-        beforeSetupContentView();
+        signalBeforeSetContentView();
         mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
     }
 
@@ -44,13 +44,28 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            signalDoBusiness();
+            signalOnPostReady();
         }
     }
 
     @Override
     public View onGetButterKnifeSource() {
         return mContentV;
+    }
+
+    @Override
+    public void signalBeforeSetContentView() {
+        beforeSetupContentView();
+    }
+
+    @Override
+    public void signalOnPostReady() {
+        if (mPreparedCount > 1) {
+            return;
+        } else if (mPreparedCount == 1) {
+            mContentV.post(() -> doBusiness(mIsNew));
+        }
+        mPreparedCount++;
     }
 
     @Override
@@ -73,22 +88,9 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
         return ViewModelProviders.of(this).get(modelClass);
     }
 
-    @Override
-    public void signalDoBusiness() {
-        if (mPreparedCount > 1) {
-            return;
-        } else if (mPreparedCount == 1) {
-            mContentV.post(() -> doBusiness(mIsNew));
-        }
-        mPreparedCount++;
-    }
-
     @Nullable
     public <T extends ViewModel> T getActivityViewModel(Class<T> modelClass) {
         FragmentActivity activity = getActivity();
         return null != activity ? ViewModelProviders.of(activity).get(modelClass) : null;
     }
-
-    // //////////////////////////////////内部实现//////////////////////////////////
-
 }

@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModel;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.IObserver;
@@ -38,7 +39,7 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
         mDialogVM = mEx.getViewModel(DialogVM.class);
         autoShowDialog();
         addObservers();
-        onSignalDevCallbacks();
+        signalAfterSetContentView();
     }
 
     @Override
@@ -47,11 +48,11 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
     }
 
     @Override
-    public void onSignalDevCallbacks() {
-        mEx.onSignalDevCallbacks();
+    public void signalAfterSetContentView() {
+        mEx.signalAfterSetContentView();
         mEx.onInitViewModels(mEx);
         mEx.onInitViews();
-        mEx.signalDoBusiness();
+        mEx.signalOnPostReady();
     }
 
     @Override
@@ -95,12 +96,12 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
 
     private void addObservers() {
         Lifecycle lifecycle = mEx.getLifecycle();
-        Optional.ofNullable(mEx.setupObservers()).ifPresent(observers -> {
-            for (LifecycleObserver observer : observers) {
-                addObserver(lifecycle, observer);
-            }
-        }); // 添加开发者自定义的观察者
-        addObserver(lifecycle, new ButterKnifeObserver(mEx)); // 添加ButterKnife观察者
+        // 添加开发者自定义的观察者
+        addObservers(lifecycle, mEx.setupObservers());
+        // 添加应用自定义的观察者
+        addObservers(lifecycle, mEx.signalExObservers());
+        // 添加ButterKnife观察者
+        addObserver(lifecycle, new ButterKnifeObserver(mEx));
     }
 
     private void removeObservers() {
@@ -110,6 +111,14 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
             lifecycle.removeObserver(iterator.next());
             iterator.remove();
         }
+    }
+
+    private void addObservers(Lifecycle lifecycle, @Nullable LifecycleObserver[] observers) {
+        Optional.ofNullable(observers).ifPresent(list -> {
+            for (LifecycleObserver observer : list) {
+                addObserver(lifecycle, observer);
+            }
+        });
     }
 
     private void addObserver(Lifecycle lifecycle, LifecycleObserver observer) {

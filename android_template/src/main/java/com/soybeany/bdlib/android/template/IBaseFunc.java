@@ -1,6 +1,8 @@
 package com.soybeany.bdlib.android.template;
 
 import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
@@ -10,7 +12,7 @@ import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
  * <br>Created by Soybeany on 2019/4/18.
  */
 public interface IBaseFunc {
-    default void onSignalDevCallbacks() {
+    default void signalAfterSetContentView() {
     }
 
     AbstractDialog getDialog();
@@ -19,7 +21,15 @@ public interface IBaseFunc {
 
     interface IEx<Source> extends IBaseFunc, IDevTemplate, IVMProvider, ButterKnifeObserver.ICallback<Source> {
 
-        void signalDoBusiness();
+        default void signalBeforeSetContentView() {
+        }
+
+        void signalOnPostReady();
+
+        @Nullable
+        default LifecycleObserver[] signalExObservers() {
+            return null;
+        }
 
         Lifecycle getLifecycle();
 

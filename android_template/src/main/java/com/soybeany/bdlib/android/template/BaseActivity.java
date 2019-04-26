@@ -24,13 +24,23 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mIsNew = (null == savedInstanceState);
-        beforeSetupContentView();
+        signalBeforeSetContentView();
         setContentView(setupLayoutResId());
     }
 
     @Override
     public Activity onGetButterKnifeSource() {
         return this;
+    }
+
+    @Override
+    public void signalBeforeSetContentView() {
+        beforeSetupContentView();
+    }
+
+    @Override
+    public void signalOnPostReady() {
+        getWindow().getDecorView().post(() -> doBusiness(mIsNew));
     }
 
     @Override
@@ -52,11 +62,4 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
     public <T extends ViewModel> T getViewModel(Class<T> modelClass) {
         return ViewModelProviders.of(this).get(modelClass);
     }
-
-    @Override
-    public void signalDoBusiness() {
-        getWindow().getDecorView().post(() -> doBusiness(mIsNew));
-    }
-
-    // //////////////////////////////////内部类//////////////////////////////////
 }

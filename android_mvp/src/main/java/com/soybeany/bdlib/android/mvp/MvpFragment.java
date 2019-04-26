@@ -7,7 +7,7 @@ import com.soybeany.bdlib.android.template.BaseFragment;
  */
 public abstract class MvpFragment extends BaseFragment implements IMvpTemplate {
     @Override
-    public void onSignalDevCallbacks() {
+    public void signalAfterSetContentView() {
         onInitPresenters(new PresenterProviderImpl(this));
     }
 }
