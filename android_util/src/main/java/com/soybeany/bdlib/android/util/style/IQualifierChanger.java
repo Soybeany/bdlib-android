@@ -15,24 +15,31 @@ import com.soybeany.bdlib.android.util.R;
 public interface IQualifierChanger<Data> {
 
     /**
-     * 重新创建界面
+     * 应用变化(需要在{@link Activity#setContentView(int)}前调用)
      */
-    static <Data> void recreate(AppCompatActivity activity, @Nullable Data oldData, @Nullable Data newData, IQualifierChanger<Data> changer) {
-        if (null != newData && !newData.equals(oldData)) {
-            activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
-            changer.onRecreate(activity, oldData, newData);
+    default void applyChange(AppCompatActivity activity, @Nullable Data data) {
+        if (null == data || data.equals(getOldData(activity))) {
+            return;
         }
+        onApply(activity, data);
     }
 
     /**
-     * 应用变化(需要在{@link Activity#setContentView(int)}前调用)
-     */
-    void applyChange(AppCompatActivity activity, @Nullable Data data);
-
-    /**
      * 重新创建界面
      */
-    void recreate(AppCompatActivity activity, @Nullable Data data);
+    default void recreate(AppCompatActivity activity, @Nullable Data data) {
+        Data oldData;
+        if (null == data || data.equals(oldData = getOldData(activity))) {
+            return;
+        }
+        activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
+        onRecreate(activity, oldData, data);
+    }
+
+    /**
+     * 执行真正的应用
+     */
+    void onApply(AppCompatActivity activity, @NonNull Data newData);
 
     /**
      * 执行真正的重建
@@ -40,4 +47,6 @@ public interface IQualifierChanger<Data> {
     default void onRecreate(AppCompatActivity activity, @Nullable Data oldData, @NonNull Data newData) {
         activity.recreate();
     }
+
+    Data getOldData(AppCompatActivity activity);
 }

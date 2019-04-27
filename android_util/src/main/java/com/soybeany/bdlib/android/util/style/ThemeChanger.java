@@ -18,17 +18,9 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     private static final String OLD_VALUE_KEY = "THEME_CHANGER_OLD_VALUE";
 
     @Override
-    public void applyChange(AppCompatActivity activity, @Nullable Info info) {
-        if (null == info) {
-            return;
-        }
-        Optional.ofNullable(info.resId).ifPresent(activity::setTheme);
-        saveMode(activity, info);
-    }
-
-    @Override
-    public void recreate(AppCompatActivity activity, @Nullable Info info) {
-        IQualifierChanger.recreate(activity, getMode(activity), info, this);
+    public void onApply(AppCompatActivity activity, @NonNull Info newData) {
+        Optional.ofNullable(newData.resId).ifPresent(activity::setTheme);
+        saveMode(activity, newData);
     }
 
     @Override
@@ -39,6 +31,11 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
             return;
         }
         activity.recreate();
+    }
+
+    @Override
+    public Info getOldData(AppCompatActivity activity) {
+        return getMode(activity);
     }
 
     /**
