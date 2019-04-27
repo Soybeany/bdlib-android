@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.util.style;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v7.app.AppCompatActivity;
@@ -27,17 +28,30 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
                 AppCompatDelegate.setDefaultNightMode(mode.data);
                 break;
         }
-        activity.setIntent(new Intent(activity.getIntent()).putExtra(OLD_VALUE_KEY, mode));
+        saveMode(activity, mode);
     }
 
     @Override
     public void recreate(AppCompatActivity activity, @Nullable Mode mode) {
-        IQualifierChanger.recreate(activity, (Mode) activity.getIntent().getSerializableExtra(OLD_VALUE_KEY), mode, this);
+        IQualifierChanger.recreate(activity, getMode(activity), mode, this);
     }
 
     @Override
-    public void onRecreate(AppCompatActivity activity) {
-        activity.getDelegate().applyDayNight();
+    public void onRecreate(AppCompatActivity activity, @Nullable Mode oldMode, @NonNull Mode newMode) {
+        if (oldMode instanceof NightMode || newMode instanceof NightMode) {
+            activity.getDelegate().applyDayNight();
+            return;
+        }
+        activity.recreate();
+    }
+
+    private void saveMode(AppCompatActivity activity, @NonNull Mode mode) {
+        activity.setIntent(new Intent(activity.getIntent()).putExtra(OLD_VALUE_KEY, mode));
+    }
+
+    @Nullable
+    private Mode getMode(AppCompatActivity activity) {
+        return (Mode) activity.getIntent().getSerializableExtra(OLD_VALUE_KEY);
     }
 
     public static class Mode implements Serializable {

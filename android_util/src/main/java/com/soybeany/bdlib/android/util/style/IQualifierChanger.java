@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.util.style;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
@@ -19,7 +20,7 @@ public interface IQualifierChanger<Data> {
     static <Data> void recreate(AppCompatActivity activity, @Nullable Data oldData, @Nullable Data newData, IQualifierChanger<Data> changer) {
         if (null != newData && !newData.equals(oldData)) {
             activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
-            changer.onRecreate(activity);
+            changer.onRecreate(activity, oldData, newData);
         }
     }
 
@@ -36,7 +37,7 @@ public interface IQualifierChanger<Data> {
     /**
      * 执行真正的重建
      */
-    default void onRecreate(AppCompatActivity activity) {
+    default void onRecreate(AppCompatActivity activity, @Nullable Data oldData, @NonNull Data newData) {
         activity.recreate();
     }
 }
