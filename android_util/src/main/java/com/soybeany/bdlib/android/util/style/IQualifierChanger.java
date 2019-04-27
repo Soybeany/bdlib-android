@@ -16,20 +16,27 @@ public interface IQualifierChanger<Data> {
     /**
      * 重新创建界面
      */
-    static <Data> void recreate(AppCompatActivity activity, @Nullable Data oldData, @Nullable Data newData, Class<Data> clazz) {
+    static <Data> void recreate(AppCompatActivity activity, @Nullable Data oldData, @Nullable Data newData, IQualifierChanger<Data> changer) {
         if (null != newData && !newData.equals(oldData)) {
             activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
-            activity.recreate();
+            changer.onRecreate(activity);
         }
     }
 
     /**
      * 应用变化(需要在{@link Activity#setContentView(int)}前调用)
      */
-    void change(AppCompatActivity activity, @Nullable Data data);
+    void applyChange(AppCompatActivity activity, @Nullable Data data);
 
     /**
      * 重新创建界面
      */
     void recreate(AppCompatActivity activity, @Nullable Data data);
+
+    /**
+     * 执行真正的重建
+     */
+    default void onRecreate(AppCompatActivity activity) {
+        activity.recreate();
+    }
 }

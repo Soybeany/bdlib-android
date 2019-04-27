@@ -12,7 +12,7 @@ import java.util.Locale;
  */
 public class LanguageChanger implements IQualifierChanger<Locale> {
     @Override
-    public void change(AppCompatActivity activity, @Nullable Locale locale) {
+    public void applyChange(AppCompatActivity activity, @Nullable Locale locale) {
         Resources resources = activity.getResources();
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
@@ -21,6 +21,6 @@ public class LanguageChanger implements IQualifierChanger<Locale> {
 
     @Override
     public void recreate(AppCompatActivity activity, @Nullable Locale locale) {
-        IQualifierChanger.recreate(activity, activity.getResources().getConfiguration().locale, locale, Locale.class);
+        IQualifierChanger.recreate(activity, activity.getResources().getConfiguration().locale, locale, this);
     }
 }

@@ -15,7 +15,7 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
     private static final String OLD_VALUE_KEY = "THEME_CHANGER_OLD_VALUE";
 
     @Override
-    public void change(AppCompatActivity activity, @Nullable Mode mode) {
+    public void applyChange(AppCompatActivity activity, @Nullable Mode mode) {
         if (null == mode) {
             return;
         }
@@ -32,7 +32,12 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
 
     @Override
     public void recreate(AppCompatActivity activity, @Nullable Mode mode) {
-        IQualifierChanger.recreate(activity, (Mode) activity.getIntent().getSerializableExtra(OLD_VALUE_KEY), mode, Mode.class);
+        IQualifierChanger.recreate(activity, (Mode) activity.getIntent().getSerializableExtra(OLD_VALUE_KEY), mode, this);
+    }
+
+    @Override
+    public void onRecreate(AppCompatActivity activity) {
+        activity.getDelegate().applyDayNight();
     }
 
     public static class Mode implements Serializable {

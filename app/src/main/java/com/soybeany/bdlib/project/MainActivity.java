@@ -20,8 +20,8 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void beforeSetupContentView() {
-        c.change(this, language);
-        tc.change(this, new ThemeChanger.ThemeMode(theme));
+        c.applyChange(this, language);
+        tc.applyChange(this, new ThemeChanger.ThemeMode(theme));
     }
 
     @Override
