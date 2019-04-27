@@ -18,10 +18,9 @@ public interface IQualifierChanger<Data> {
      * 应用变化(需要在{@link Activity#setContentView(int)}前调用)
      */
     default void applyChange(AppCompatActivity activity, @Nullable Data data) {
-        if (null == data || data.equals(getOldData(activity))) {
-            return;
+        if (null != data) {
+            onApply(activity, data);
         }
-        onApply(activity, data);
     }
 
     /**
