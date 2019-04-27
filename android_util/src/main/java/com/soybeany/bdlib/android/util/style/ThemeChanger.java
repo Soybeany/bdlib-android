@@ -22,11 +22,7 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
         if (null == info) {
             return;
         }
-        // 设置主题
         Optional.ofNullable(info.resId).ifPresent(activity::setTheme);
-        // 设置模式
-        AppCompatDelegate.setDefaultNightMode(info.mode);
-
         saveMode(activity, info);
     }
 
@@ -38,6 +34,7 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     @Override
     public void onRecreate(AppCompatActivity activity, @Nullable Info oldInfo, @NonNull Info newInfo) {
         if (null != oldInfo && oldInfo.mode != newInfo.mode) {
+            AppCompatDelegate.setDefaultNightMode(newInfo.mode);
             activity.getDelegate().applyDayNight();
             return;
         }
