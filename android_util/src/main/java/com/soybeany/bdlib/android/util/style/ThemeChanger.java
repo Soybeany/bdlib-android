@@ -7,82 +7,75 @@ import android.support.annotation.StyleRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.soybeany.bdlib.core.java8.Optional;
+
 import java.io.Serializable;
 
 /**
  * <br>Created by Soybeany on 2019/4/21.
  */
-public class ThemeChanger implements IQualifierChanger<ThemeChanger.Mode> {
+public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     private static final String OLD_VALUE_KEY = "THEME_CHANGER_OLD_VALUE";
 
     @Override
-    public void applyChange(AppCompatActivity activity, @Nullable Mode mode) {
-        if (null == mode) {
+    public void applyChange(AppCompatActivity activity, @Nullable Info info) {
+        if (null == info) {
             return;
         }
-        switch (mode.type) {
-            case ThemeMode.TYPE:
-                activity.setTheme(mode.data);
-                break;
-            case NightMode.TYPE:
-                AppCompatDelegate.setDefaultNightMode(mode.data);
-                break;
-        }
-        saveMode(activity, mode);
+        // 设置主题
+        Optional.ofNullable(info.resId).ifPresent(activity::setTheme);
+        // 设置模式
+        AppCompatDelegate.setDefaultNightMode(info.mode);
+
+        saveMode(activity, info);
     }
 
     @Override
-    public void recreate(AppCompatActivity activity, @Nullable Mode mode) {
-        IQualifierChanger.recreate(activity, getMode(activity), mode, this);
+    public void recreate(AppCompatActivity activity, @Nullable Info info) {
+        IQualifierChanger.recreate(activity, getMode(activity), info, this);
     }
 
     @Override
-    public void onRecreate(AppCompatActivity activity, @Nullable Mode oldMode, @NonNull Mode newMode) {
-        if (oldMode instanceof NightMode || newMode instanceof NightMode) {
+    public void onRecreate(AppCompatActivity activity, @Nullable Info oldInfo, @NonNull Info newInfo) {
+        if (null != oldInfo && oldInfo.mode != newInfo.mode) {
             activity.getDelegate().applyDayNight();
             return;
         }
         activity.recreate();
     }
 
-    private void saveMode(AppCompatActivity activity, @NonNull Mode mode) {
-        activity.setIntent(new Intent(activity.getIntent()).putExtra(OLD_VALUE_KEY, mode));
+    /**
+     * 获得当前的夜间模式
+     */
+    public int getCurNightMode() {
+        return AppCompatDelegate.getDefaultNightMode();
+    }
+
+    private void saveMode(AppCompatActivity activity, @NonNull Info info) {
+        activity.setIntent(new Intent(activity.getIntent()).putExtra(OLD_VALUE_KEY, info));
     }
 
     @Nullable
-    private Mode getMode(AppCompatActivity activity) {
-        return (Mode) activity.getIntent().getSerializableExtra(OLD_VALUE_KEY);
+    private Info getMode(AppCompatActivity activity) {
+        return (Info) activity.getIntent().getSerializableExtra(OLD_VALUE_KEY);
     }
 
-    public static class Mode implements Serializable {
-        String type;
-        int data;
+    public static class Info implements Serializable {
+        int mode;
+        @Nullable
+        Integer resId;
 
-        Mode(String type, int data) {
-            this.type = type;
-            this.data = data;
+        public static Info theme(@StyleRes int resId) {
+            return new Info(AppCompatDelegate.MODE_NIGHT_NO, resId);
         }
-    }
 
-    /**
-     * 主题模式
-     */
-    public static class ThemeMode extends Mode {
-        static final String TYPE = "THEME";
-
-        public ThemeMode(@StyleRes int resId) {
-            super(TYPE, resId);
+        public static Info nightMode() {
+            return new Info(AppCompatDelegate.MODE_NIGHT_YES, null);
         }
-    }
 
-    /**
-     * 夜间模式
-     */
-    public static class NightMode extends Mode {
-        static final String TYPE = "NIGHT";
-
-        public NightMode(int mode) {
-            super(TYPE, mode);
+        Info(int mode, @Nullable @StyleRes Integer resId) {
+            this.mode = mode;
+            this.resId = resId;
         }
     }
 }
