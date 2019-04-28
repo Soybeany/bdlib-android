@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.util.dialog;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.soybeany.bdlib.android.util.R;
 import com.soybeany.bdlib.android.util.StdHintUtils;
@@ -23,6 +24,10 @@ public class DialogMsg implements Comparable<DialogMsg> {
 
     public DialogMsg(String hint) {
         hint(hint);
+    }
+
+    public DialogMsg(@StringRes int resId) {
+        this(getResources().getString(resId));
     }
 
     @Override
