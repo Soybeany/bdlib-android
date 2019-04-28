@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--*****基础颜色*****-->
+    <color name="bd_black">@android:color/black</color>
+    <color name="bd_white">@android:color/white</color>
+    <color name="bd_lightBlue">#0099CC</color>
+    <color name="bd_blue">#1ea1cf</color>
+    <color name="bd_red">#FF00</color>
+    <color name="bd_lightGray">#D7D4D4</color>
+    <color name="bd_green">#00af00</color>
+    <color name="bd_yellow">#ffff00</color>
+    <color name="bd_gray">#bbb</color>
+    <color name="bd_darkerGray">@android:color/darker_gray</color>
+    <color name="bd_bgMaterialLight">#fffafafa</color>
+    <color name="bd_textMaterialLight">@color/abc_primary_text_material_light</color>
+
+    <!--*****透明颜色*****-->
+    <color name="bd_transWhite9">#9fff</color>
+    <color name="bd_transWhiteD">#dfff</color>
+    <color name="bd_transWhite50">#50FFFFFF</color>
+    <color name="bd_transGray9">#99D7D4D4</color>
+
+</resources>

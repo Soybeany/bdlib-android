@@ -1,8 +1,14 @@
 <resources>
 
     <!--textSize-->
+    <dimen name="text_8">8dp</dimen>
+    <dimen name="text_10">10dp</dimen>
+    <dimen name="text_12">12dp</dimen>
     <dimen name="text_14">14dp</dimen>
     <dimen name="text_16">16dp</dimen>
+    <dimen name="text_18">18dp</dimen>
+    <dimen name="text_20">20dp</dimen>
+    <dimen name="text_22">22dp</dimen>
 
     <!--length-->
     <dimen name="length_2">2dp</dimen>

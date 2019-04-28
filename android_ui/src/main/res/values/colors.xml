@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--工具栏-->
+    <color name="bd_toolbar_primary">@color/bd_white</color>
+    <color name="bd_toolbar_secondary">@color/bd_white</color>
+
+    <!--溢出菜单-->
+    <color name="bd_toolbar_popup_background">@color/bd_bgMaterialLight</color>
+    <color name="bd_toolbar_popup_text">@color/bd_textMaterialLight</color>
+</resources>

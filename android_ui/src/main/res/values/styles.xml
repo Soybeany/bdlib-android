@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DarkToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!--工具栏主体颜色-->
+        <item name="android:textColorPrimary">@color/bd_toolbar_primary</item>
+        <!--副标题颜色-->
+        <item name="android:textColorSecondary">@color/bd_toolbar_secondary</item>
+        <!--菜单项文字样式-->
+        <item name="android:actionMenuTextAppearance">@style/MenuTextAppearance</item>
+    </style>
+
+    <!--菜单项文字样式-->
+    <style name="MenuTextAppearance" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="android:textSize">@dimen/text_16</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>
