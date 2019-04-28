@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bd_hint_no_connection_base">server not connect</string>
+    <string name="bd_hint_no_response_base">server no response</string>
+    <string name="bd_hint_cancel_prefix">canceled</string>
+    <string name="bd_hint_loading_prefix">try to</string>
+    <string name="bd_hint_timeout_suffix">is timeout</string>
+    <string name="bd_hint_fail_suffix">is fail</string>
+    <string name="bd_hint_success_suffix">is success</string>
+    <string name="bd_hint_retry_suffix2">, please retry it later</string>
+    <string name="bd_hint_reload_suffix2">, please reload it later</string>
+    <string name="bd_hint_loading_suffix2">, please wait \.\.\.</string>
+    <string name="bd_hint_login">login</string>
+    <string name="bd_hint_re_login">re-login</string>
+    <string name="bd_hint_get">get data</string>
+    <string name="bd_hint_post">post data</string>
+    <string name="bd_hint_download">download data</string>
+    <string name="bd_hint_upload">upload data</string>
+    <string name="bd_hint_request">request data</string>
+    <string name="bd_hint_read">read data</string>
+    <string name="bd_hint_write">write data</string>
+    <string name="bd_hint_read_write">read and write data</string>
+    <string name="bd_dialog_multi_hint">handle %1d task(s)</string>
+    <string name="bd_dialog_default_hint">handle task</string>
+</resources>

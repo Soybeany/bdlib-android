@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">android_util</string>
+    <string name="app_name" translatable="false">android_util</string>
+
+    <!--StdHintUtils-->
+    <string name="bd_hint_no_connection_base">无法连接到服务器</string>
+    <string name="bd_hint_no_response_base">服务器无响应</string>
+    <string name="bd_hint_cancel_prefix">您取消了</string>
+    <string name="bd_hint_loading_prefix">正在</string>
+    <string name="bd_hint_timeout_suffix">超时</string>
+    <string name="bd_hint_fail_suffix">失败</string>
+    <string name="bd_hint_success_suffix">成功</string>
+    <string name="bd_hint_retry_suffix2">，请稍后再试</string>
+    <string name="bd_hint_reload_suffix2">，请刷新页面</string>
+    <string name="bd_hint_loading_suffix2">，请稍候\.\.\.</string>
+    <string name="bd_hint_login">登录</string>
+    <string name="bd_hint_re_login">重新登录</string>
+    <string name="bd_hint_get">加载数据</string>
+    <string name="bd_hint_post">提交数据</string>
+    <string name="bd_hint_download">下载数据</string>
+    <string name="bd_hint_upload">上传数据</string>
+    <string name="bd_hint_request">请求数据</string>
+    <string name="bd_hint_read">读取数据</string>
+    <string name="bd_hint_write">写入数据</string>
+    <string name="bd_hint_read_write">读写数据</string>
+
+    <!--DialogMsg-->
+    <string name="bd_dialog_multi_hint">处理 %1d 项任务</string>
+    <string name="bd_dialog_default_hint">处理任务</string>
+
 </resources>

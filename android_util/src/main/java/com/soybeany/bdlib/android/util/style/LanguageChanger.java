@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
+import com.soybeany.bdlib.android.util.BDContext;
+
 import java.util.Locale;
 
 /**
@@ -13,7 +15,7 @@ import java.util.Locale;
 public class LanguageChanger implements IQualifierChanger<Locale> {
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Locale newData) {
-        Resources resources = activity.getResources();
+        Resources resources = BDContext.getResources();
         Configuration config = resources.getConfiguration();
         config.setLocale(newData);
         resources.updateConfiguration(config, resources.getDisplayMetrics());

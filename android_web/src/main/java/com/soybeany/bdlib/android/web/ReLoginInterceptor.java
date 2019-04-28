@@ -13,6 +13,8 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Response;
 
+import static com.soybeany.bdlib.android.util.BDContext.getResources;
+
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
@@ -46,15 +48,15 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     // //////////////////////////////////重写区//////////////////////////////////
 
     protected String getOutOfRetryTimesHint() {
-        return "超出自动重登录的尝试次数";
+        return getResources().getString(R.string.bd_out_of_retry_times);
     }
 
     protected DialogMsg getAuthMsg(DialogMsg oldMsg) {
-        return new DialogMsg(StdHintUtils.STD_RE_LOGIN_HINT).cancelable(oldMsg.isCancelable()).multiHint((hint, count, cancelable) -> hint);
+        return new DialogMsg(StdHintUtils.reLoginHint()).cancelable(oldMsg.isCancelable()).multiHint((hint, count, cancelable) -> hint);
     }
 
     protected IOException onAuthException(IOException e) {
-        return e instanceof HandledException ? e : new IOException("重登录异常:" + e.getMessage());
+        return e instanceof HandledException ? e : new IOException(getResources().getString(R.string.bd_re_login_exception) + ":" + e.getMessage());
     }
 
     protected Response onReRequest(Call call) throws IOException {
@@ -66,7 +68,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     }
 
     protected IOException onReRequestException(IOException e) {
-        return e instanceof HandledException ? e : new IOException("重请求异常:" + e.getMessage());
+        return e instanceof HandledException ? e : new IOException(getResources().getString(R.string.bd_re_request_exception) + ":" + e.getMessage());
     }
 
     // //////////////////////////////////内部区//////////////////////////////////

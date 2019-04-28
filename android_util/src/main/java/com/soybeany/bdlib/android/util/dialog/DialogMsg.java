@@ -2,18 +2,21 @@ package com.soybeany.bdlib.android.util.dialog;
 
 import android.support.annotation.NonNull;
 
+import com.soybeany.bdlib.android.util.R;
 import com.soybeany.bdlib.android.util.StdHintUtils;
 import com.soybeany.bdlib.core.java8.Optional;
+
+import static com.soybeany.bdlib.android.util.BDContext.getResources;
 
 /**
  * <br>Created by Soybeany on 2019/3/21.
  */
 public class DialogMsg implements Comparable<DialogMsg> {
 
-    String prefix = StdHintUtils.STD_LOADING_PREFIX;
-    String suffix = StdHintUtils.STD_LOADING_SUFFIX;
+    String prefix = StdHintUtils.loadingPrefix();
+    String suffix = StdHintUtils.loadingSuffix2();
     String hint;
-    IMultiHintListener hintListener = (msg, count, cancelable) -> "处理" + count + "项任务";
+    IMultiHintListener hintListener = (msg, count, cancelable) -> getResources().getString(R.string.bd_dialog_multi_hint, count);
     boolean cancelable;
 
     long showTime; // 此信息被show时的时间
@@ -31,7 +34,7 @@ public class DialogMsg implements Comparable<DialogMsg> {
      * 设置单项提示
      */
     public DialogMsg hint(String hint) {
-        this.hint = Optional.ofNullable(hint).orElseGet(() -> "处理任务");
+        this.hint = Optional.ofNullable(hint).orElseGet(() -> getResources().getString(R.string.bd_dialog_default_hint));
         return this;
     }
 

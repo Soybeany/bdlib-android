@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bd_re_login_exception">re-login exception</string>
+    <string name="bd_re_request_exception">re-request exception</string>
+    <string name="bd_out_of_retry_times">out of retry times</string>
+</resources>

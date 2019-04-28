@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">android_web</string>
+    <string name="app_name" translatable="false">android_web</string>
+
+    <!--ReLoginInterceptor-->
+    <string name="bd_out_of_retry_times">超出自动重登录的尝试次数</string>
+    <string name="bd_re_login_exception">重登录异常</string>
+    <string name="bd_re_request_exception">重请求异常</string>
+
 </resources>
