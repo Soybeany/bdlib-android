@@ -2,11 +2,11 @@
 <resources>
     <string name="bd_hint_no_connection_base">server not connect</string>
     <string name="bd_hint_no_response_base">server no response</string>
-    <string name="bd_hint_cancel_prefix">canceled</string>
-    <string name="bd_hint_loading_prefix">try to</string>
-    <string name="bd_hint_timeout_suffix">is timeout</string>
-    <string name="bd_hint_fail_suffix">is fail</string>
-    <string name="bd_hint_success_suffix">is success</string>
+    <string name="bd_hint_cancel_prefix">"canceled "</string>
+    <string name="bd_hint_loading_prefix">"try to "</string>
+    <string name="bd_hint_timeout_suffix">" is timeout"</string>
+    <string name="bd_hint_fail_suffix">" is fail"</string>
+    <string name="bd_hint_success_suffix">" is success"</string>
     <string name="bd_hint_retry_suffix2">, please retry it later</string>
     <string name="bd_hint_reload_suffix2">, please reload it later</string>
     <string name="bd_hint_loading_suffix2">, please wait \.\.\.</string>
