@@ -15,14 +15,23 @@ import java.util.Locale;
 public class LanguageChanger implements IQualifierChanger<Locale> {
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Locale newData) {
-        Resources resources = BDContext.getResources();
-        Configuration config = resources.getConfiguration();
-        config.setLocale(newData);
-        resources.updateConfiguration(config, resources.getDisplayMetrics());
+        setLocale(BDContext.getResources(), newData);
+        setLocale(activity.getResources(), newData);
     }
 
     @Override
     public Locale getOldData(AppCompatActivity activity) {
         return activity.getResources().getConfiguration().locale;
+    }
+
+    /**
+     * 设置本地
+     */
+    private void setLocale(Resources resources, @NonNull Locale newData) {
+        Configuration config = resources.getConfiguration();
+        if (!newData.equals(config.locale)) {
+            config.setLocale(newData);
+            resources.updateConfiguration(config, resources.getDisplayMetrics());
+        }
     }
 }

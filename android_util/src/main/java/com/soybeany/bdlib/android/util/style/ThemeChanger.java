@@ -19,7 +19,11 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
 
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Info newData) {
-        Optional.ofNullable(newData.resId).ifPresent(activity::setTheme);
+        Optional.ofNullable(newData.resId).ifPresent(resId -> {
+            activity.getApplication().setTheme(resId);
+            activity.setTheme(resId);
+        });
+
         saveMode(activity, newData);
     }
 
