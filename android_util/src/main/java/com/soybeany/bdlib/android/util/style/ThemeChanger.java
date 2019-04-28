@@ -7,8 +7,6 @@ import android.support.annotation.StyleRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 
-import com.soybeany.bdlib.core.java8.Optional;
-
 import java.io.Serializable;
 
 /**
@@ -19,10 +17,8 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
 
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Info newData) {
-        Optional.ofNullable(newData.resId).ifPresent(resId -> {
-            activity.getApplication().setTheme(resId);
-            activity.setTheme(resId);
-        });
+        activity.getApplication().setTheme(newData.resId);
+        activity.setTheme(newData.resId);
 
         saveMode(activity, newData);
     }
@@ -60,18 +56,17 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
 
     public static class Info implements Serializable {
         int mode;
-        @Nullable
-        Integer resId;
+        int resId;
 
         public static Info theme(@StyleRes int resId) {
             return new Info(AppCompatDelegate.MODE_NIGHT_NO, resId);
         }
 
-        public static Info nightMode() {
-            return new Info(AppCompatDelegate.MODE_NIGHT_YES, null);
+        public static Info nightMode(@StyleRes int resId) {
+            return new Info(AppCompatDelegate.MODE_NIGHT_YES, resId);
         }
 
-        Info(int mode, @Nullable @StyleRes Integer resId) {
+        Info(int mode, @StyleRes int resId) {
             this.mode = mode;
             this.resId = resId;
         }
