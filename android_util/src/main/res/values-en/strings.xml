@@ -11,6 +11,7 @@
     <string name="bd_hint_reload_suffix2">, please reload it later</string>
     <string name="bd_hint_loading_suffix2">, please wait \.\.\.</string>
     <string name="bd_hint_login">login</string>
+    <string name="bd_hint_logout">logout</string>
     <string name="bd_hint_re_login">re-login</string>
     <string name="bd_hint_get">get data</string>
     <string name="bd_hint_post">post data</string>

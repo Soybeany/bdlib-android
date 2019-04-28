@@ -100,6 +100,13 @@ public class StdHintUtils {
     }
 
     /**
+     * 登出
+     */
+    public static String logoutHint() {
+        return getString(R.string.bd_hint_logout);
+    }
+
+    /**
      * 重新登录
      */
     public static String reLoginHint() {
