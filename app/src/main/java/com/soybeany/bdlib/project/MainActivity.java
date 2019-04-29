@@ -1,12 +1,13 @@
 package com.soybeany.bdlib.project;
 
-import android.content.Intent;
 import android.view.View;
 
 import com.soybeany.bdlib.android.template.BaseActivity;
 import com.soybeany.bdlib.android.util.LogUtils;
+import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.style.LanguageChanger;
 import com.soybeany.bdlib.android.util.style.ThemeChanger;
+import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
 import java.util.Locale;
 
@@ -25,8 +26,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void beforeSetupContentView() {
-        LogUtils.test("全局:" + getApplication().getResources().getConfiguration().locale);
-        LogUtils.test("本地:" + getResources().getConfiguration().locale);
         c.applyChange(this, language);
         tc.applyChange(this, theme);
     }
@@ -36,10 +35,24 @@ public class MainActivity extends BaseActivity {
         return R.layout.activity_main;
     }
 
+    @Override
+    public void doBusiness(boolean isNew) {
+        LogUtils.test(this + " : " + isNew);
+    }
+
+    @Override
+    public String[] getEssentialPermissions() {
+        return new String[]{PermissionRequester.READ_EXTERNAL_STORAGE, PermissionRequester.WRITE_EXTERNAL_STORAGE};
+    }
+
     public void onClick(View view) {
-        startActivity(new Intent(this, SecondActivity.class));
+//        startActivity(new Intent(this, SecondActivity.class));
 //        language = (language == Locale.CHINESE ? Locale.ENGLISH : Locale.CHINESE);
 //        view.postDelayed(() -> c.recreate(this, language), 200);
+
+        requestPermissions(() -> {
+            ToastUtils.show("授权成功");
+        }, PermissionRequester.READ_PHONE_STATE);
     }
 
     public void onClickTheme(View view) {

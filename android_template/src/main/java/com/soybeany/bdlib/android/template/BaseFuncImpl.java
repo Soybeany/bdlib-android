@@ -13,6 +13,7 @@ import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
+import com.soybeany.bdlib.android.util.system.PermissionRequester;
 import com.soybeany.bdlib.core.java8.Optional;
 
 import java.util.Iterator;
@@ -28,6 +29,7 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
     private IBaseFunc.IEx mEx;
     private AbstractDialog mDialog;
     private DialogVM mDialogVM;
+    private PermissionRequester mPR;
 
     BaseFuncImpl(IBaseFunc.IEx ex) {
         mEx = ex;
@@ -40,6 +42,7 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
         autoShowDialog();
         addObservers();
         signalAfterSetContentView();
+        mPR = mEx.onGetNewPermissionRequester().withEPermission(mEx.getEssentialPermissionCallback(), mEx.getEssentialPermissions());
     }
 
     @Override
@@ -52,7 +55,6 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
         mEx.signalAfterSetContentView();
         mEx.onInitViewModels(mEx);
         mEx.onInitViews();
-        mEx.signalOnPostReady();
     }
 
     @Override
@@ -83,6 +85,16 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
         }
 
         return getDialog().getKeyProvider();
+    }
+
+    @Override
+    public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
+        return mPR.requestPermissions(callback, permissions);
+    }
+
+    @Override
+    public void checkPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mPR.checkResults(requestCode, permissions, grantResults);
     }
 
     /**

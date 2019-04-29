@@ -1,5 +1,6 @@
 package com.soybeany.bdlib.android.util;
 
+import android.support.annotation.StringRes;
 import android.widget.Toast;
 
 /**
@@ -38,6 +39,10 @@ public class ToastUtils {
      */
     public static void show(String msg) {
         show(mToast, msg);
+    }
+
+    public static void show(@StringRes int resId) {
+        show(BDContext.getResources().getString(resId));
     }
 
     /**

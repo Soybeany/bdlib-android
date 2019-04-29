@@ -3,6 +3,7 @@ package com.soybeany.bdlib.android.template;
 import android.arch.lifecycle.ViewModel;
 
 /**
+ * ViewModel提供者
  * <br>Created by Soybeany on 2019/4/18.
  */
 public interface IVMProvider {

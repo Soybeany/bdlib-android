@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.text.format.Formatter;
 
+import com.soybeany.bdlib.android.util.system.DeviceInfoUtils;
 import com.soybeany.bdlib.core.util.file.FileUtils;
 
 import java.io.File;

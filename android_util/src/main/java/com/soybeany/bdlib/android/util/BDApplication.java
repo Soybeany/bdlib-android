@@ -10,6 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 
+import com.soybeany.bdlib.android.util.system.DeviceInfoUtils;
+
 import java.util.Stack;
 
 /**

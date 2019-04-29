@@ -23,9 +23,16 @@
     <string name="bd_hint_read">读取数据</string>
     <string name="bd_hint_write">写入数据</string>
     <string name="bd_hint_read_write">读写数据</string>
+    <string name="bd_hint_dialog_title">温馨提示</string>
+    <string name="bd_hint_dialog_ok">确定</string>
+    <string name="bd_hint_dialog_cancel">取消</string>
 
     <!--DialogMsg-->
     <string name="bd_dialog_multi_hint">处理 %1d 项任务</string>
     <string name="bd_dialog_default_hint">处理任务</string>
+
+    <!--PermissionRequester-->
+    <string name="bd_permission_request">当前应用缺少必要权限，是否前往设置?</string>
+    <string name="bd_permission_deny">权限申请失败</string>
 
 </resources>

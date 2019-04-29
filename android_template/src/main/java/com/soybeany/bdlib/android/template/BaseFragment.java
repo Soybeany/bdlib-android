@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
+import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
@@ -24,7 +25,7 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     private int mPreparedCount; // 已准备好的位置的计数
     private boolean mIsNew;
 
-    // //////////////////////////////////方法重写//////////////////////////////////
+    // //////////////////////////////////官方方法重写//////////////////////////////////
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,9 +45,17 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            signalOnPostReady();
+            tryToSignalDoBusiness();
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        checkPermissionResult(requestCode, permissions, grantResults);
+    }
+
+    // //////////////////////////////////自定义方法重写//////////////////////////////////
 
     @Override
     public View onGetButterKnifeSource() {
@@ -56,16 +65,6 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     @Override
     public void signalBeforeSetContentView() {
         beforeSetupContentView();
-    }
-
-    @Override
-    public void signalOnPostReady() {
-        if (mPreparedCount > 1) {
-            return;
-        } else if (mPreparedCount == 1) {
-            mContentV.post(() -> doBusiness(mIsNew));
-        }
-        mPreparedCount++;
     }
 
     @Override
@@ -88,9 +87,42 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
         return ViewModelProviders.of(this).get(modelClass);
     }
 
+    @Override
+    public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
+        return mFuncImpl.requestPermissions(callback, permissions);
+    }
+
+    @Override
+    public void checkPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mFuncImpl.checkPermissionResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public PermissionRequester onGetNewPermissionRequester() {
+        return new PermissionRequester(getActivity(), (activity, permissions, requestCode) -> requestPermissions(permissions, requestCode));
+    }
+
+    @Override
+    public PermissionRequester.IPermissionCallback getEssentialPermissionCallback() {
+        return this::tryToSignalDoBusiness;
+    }
+
+    // //////////////////////////////////拓展方法//////////////////////////////////
+
     @Nullable
     public <T extends ViewModel> T getActivityViewModel(Class<T> modelClass) {
         FragmentActivity activity = getActivity();
         return null != activity ? ViewModelProviders.of(activity).get(modelClass) : null;
+    }
+
+    // //////////////////////////////////内部方法//////////////////////////////////
+
+    private void tryToSignalDoBusiness() {
+        if (mPreparedCount > 1) {
+            return;
+        } else if (mPreparedCount == 1) {
+            mContentV.post(() -> doBusiness(mIsNew));
+        }
+        mPreparedCount++;
     }
 }

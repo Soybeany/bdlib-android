@@ -23,4 +23,11 @@
     <string name="bd_hint_read_write">read and write data</string>
     <string name="bd_dialog_multi_hint">handle %1d task(s)</string>
     <string name="bd_dialog_default_hint">handle task</string>
+    <string name="bd_hint_dialog_title">@android:string/dialog_alert_title</string>
+    <string name="bd_hint_dialog_ok">@android:string/ok</string>
+    <string name="bd_hint_dialog_cancel">@android:string/cancel</string>
+    <string name="bd_permission_request">"Some necessary permissions are not given, would you
+        like to go and set? "
+    </string>
+    <string name="bd_permission_deny">fail to get permissions</string>
 </resources>

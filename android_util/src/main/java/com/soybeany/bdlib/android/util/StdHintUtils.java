@@ -203,10 +203,33 @@ public class StdHintUtils {
     /**
      * 标准加载中弹窗
      */
-    public static String loadingDialog() {
+    public static String loadingMsg() {
         return loadingPrefix() + requestHint() + loadingSuffix2();
     }
 
+
+    // //////////////////////////////////弹窗//////////////////////////////////
+
+    /**
+     * 弹窗标题
+     */
+    public static String dialogTitle() {
+        return getString(R.string.bd_hint_dialog_title);
+    }
+
+    /**
+     * 弹窗确认
+     */
+    public static String dialogOk() {
+        return getString(R.string.bd_hint_dialog_ok);
+    }
+
+    /**
+     * 弹窗取消
+     */
+    public static String dialogCancel() {
+        return getString(R.string.bd_hint_dialog_cancel);
+    }
 
     // //////////////////////////////////内部方法//////////////////////////////////
 

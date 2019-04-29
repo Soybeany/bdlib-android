@@ -124,7 +124,7 @@ public class LogUtils {
 
     private static void directWriteFile(LogInfo info) {
         try {
-            AFileUtils.writeToFile(info.log + "\n", info.file, null, true, null);
+            AFileUtils.writeToFile(info.log + "\n", info.file, true, null);
         } catch (IOException e) {
             e.printStackTrace();
         }

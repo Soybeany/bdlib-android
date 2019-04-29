@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.util;
+package com.soybeany.bdlib.android.util.system;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -9,6 +9,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
+import com.soybeany.bdlib.android.util.BDContext;
+import com.soybeany.bdlib.android.util.LogUtils;
 
 import java.io.File;
 
