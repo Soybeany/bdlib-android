@@ -9,40 +9,58 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.soybeany.bdlib.android.template.interfaces.IBaseFunc;
+import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.lifecycle.ButterKnifeObserver;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 import com.soybeany.bdlib.core.java8.Optional;
+import com.soybeany.bdlib.core.util.IterableUtils;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * 通用功能实现
+ * 启动器实现
  * <br>Created by Soybeany on 2019/4/16.
  */
-class BaseFuncImpl implements IBaseFunc, IObserver {
+class StarterImpl implements IBaseFunc.IStarter, IObserver {
     private final LinkedList<LifecycleObserver> mObservers = new LinkedList<>();
     private IBaseFunc.IEx mEx;
+    private Lifecycle mLC;
     private AbstractDialog mDialog;
     private DialogVM mDialogVM;
     private PermissionRequester mPR;
+    private final List<IExtendPlugin> mPlugins = new LinkedList<>();
 
-    BaseFuncImpl(IBaseFunc.IEx ex) {
+    StarterImpl(IBaseFunc.IEx ex) {
         mEx = ex;
-        addObserver(mEx.getLifecycle(), this);
+        mLC = mEx.onGetLifecycle();
+        addObserver(this);
     }
 
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
-        mDialogVM = mEx.getViewModel(DialogVM.class);
+        // 弹窗
         autoShowDialog();
+        // 观察者
         addObservers();
-        signalAfterSetContentView();
-        mPR = mEx.onGetNewPermissionRequester().withEPermission(mEx.getEssentialPermissionCallback(), mEx.getEssentialPermissions());
+        // 插件
+        addPlugins();
+        IterableUtils.forEach(mPlugins, (plugin, flag) -> plugin.signalBeforeSetContentView());
+        mEx.onSetContentView();
+        IterableUtils.forEach(mPlugins, (plugin, flag) -> plugin.signalAfterSetContentView());
+        new Handler().post(() -> IterableUtils.forEach(mPlugins, (plugin, flag) -> plugin.signalOnInitFinished()));
+        // 开发者
+        mEx.onInitViewModels(mEx);
+        mEx.onInitViews();
+        // 权限
+        mPR = mEx.onGetNewPermissionRequester().withEPermission(mEx.onGetEPermissionCallback(), mEx.onGetEssentialPermissions());
     }
 
     @Override
@@ -51,17 +69,10 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
     }
 
     @Override
-    public void signalAfterSetContentView() {
-        mEx.signalAfterSetContentView();
-        mEx.onInitViewModels(mEx);
-        mEx.onInitViews();
-    }
-
-    @Override
     public AbstractDialog getDialog() {
         if (null == mDialog) {
             mDialog = mEx.onGetNewDialog();
-            addObserver(mEx.getLifecycle(), mDialog);
+            addObserver(mDialog);
             mDialogVM.hasDialog = true;
         }
         return mDialog;
@@ -101,41 +112,45 @@ class BaseFuncImpl implements IBaseFunc, IObserver {
      * 自动显示上一次未关闭的弹窗
      */
     private void autoShowDialog() {
+        mDialogVM = mEx.getViewModel(DialogVM.class);
         if (mDialogVM.hasDialog) {
             getDialog(); // 触发弹窗的创建
         }
     }
 
+    private void addPlugins() {
+        mPlugins.add(mEx);
+        Optional.ofNullable(mEx.onGetNewPlugins()).ifPresent(plugins -> mPlugins.addAll(Arrays.asList(plugins)));
+    }
+
     private void addObservers() {
-        Lifecycle lifecycle = mEx.getLifecycle();
         // 添加开发者自定义的观察者
-        addObservers(lifecycle, mEx.setupObservers());
+        addObservers(mEx.setupObservers());
         // 添加应用自定义的观察者
-        addObservers(lifecycle, mEx.signalExObservers());
+        addObservers(mEx.onGetExObservers());
         // 添加ButterKnife观察者
-        addObserver(lifecycle, new ButterKnifeObserver(mEx));
+        addObserver(new ButterKnifeObserver(mEx));
     }
 
     private void removeObservers() {
         Iterator<LifecycleObserver> iterator = mObservers.iterator();
-        Lifecycle lifecycle = mEx.getLifecycle();
         while (iterator.hasNext()) {
-            lifecycle.removeObserver(iterator.next());
+            mLC.removeObserver(iterator.next());
             iterator.remove();
         }
     }
 
-    private void addObservers(Lifecycle lifecycle, @Nullable LifecycleObserver[] observers) {
+    private void addObservers(@Nullable LifecycleObserver[] observers) {
         Optional.ofNullable(observers).ifPresent(list -> {
             for (LifecycleObserver observer : list) {
-                addObserver(lifecycle, observer);
+                addObserver(observer);
             }
         });
     }
 
-    private void addObserver(Lifecycle lifecycle, LifecycleObserver observer) {
+    private void addObserver(LifecycleObserver observer) {
         mObservers.add(observer);
-        lifecycle.addObserver(observer);
+        mLC.addObserver(observer);
     }
 
     public static class DialogVM extends ViewModel {

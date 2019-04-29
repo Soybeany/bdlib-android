@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.template;
+package com.soybeany.bdlib.android.template.interfaces;
 
 import android.arch.lifecycle.LifecycleObserver;
 
@@ -9,12 +9,6 @@ import android.arch.lifecycle.LifecycleObserver;
 public interface IDevTemplate {
 
     int setupLayoutResId();
-
-    /**
-     * 设置内容视图前
-     */
-    default void beforeSetupContentView() {
-    }
 
     /**
      * 设置生命周期观察者

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.soybeany.bdlib.android.template.interfaces.IBaseFunc;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
@@ -20,7 +21,7 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
  * <br>Created by Soybeany on 2019/3/19.
  */
 public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<View> {
-    private IBaseFunc mFuncImpl = new BaseFuncImpl(this);
+    private IStarter mStarter = new StarterImpl(this);
     private View mContentV;
     private int mPreparedCount; // 已准备好的位置的计数
     private boolean mIsNew;
@@ -31,8 +32,6 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mIsNew = (null == savedInstanceState);
-        signalBeforeSetContentView();
-        mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
     }
 
     @Nullable
@@ -52,19 +51,19 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        checkPermissionResult(requestCode, permissions, grantResults);
+        mStarter.checkPermissionResult(requestCode, permissions, grantResults);
     }
 
     // //////////////////////////////////自定义方法重写//////////////////////////////////
 
     @Override
-    public View onGetButterKnifeSource() {
-        return mContentV;
+    public void onSetContentView() {
+        mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
     }
 
     @Override
-    public void signalBeforeSetContentView() {
-        beforeSetupContentView();
+    public View onGetButterKnifeSource() {
+        return mContentV;
     }
 
     @Override
@@ -74,12 +73,12 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
 
     @Override
     public AbstractDialog getDialog() {
-        return mFuncImpl.getDialog();
+        return mStarter.getDialog();
     }
 
     @Override
     public DialogKeyProvider getDialogKeys() {
-        return mFuncImpl.getDialogKeys();
+        return mStarter.getDialogKeys();
     }
 
     @Override
@@ -89,12 +88,7 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
 
     @Override
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
-        return mFuncImpl.requestPermissions(callback, permissions);
-    }
-
-    @Override
-    public void checkPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mFuncImpl.checkPermissionResult(requestCode, permissions, grantResults);
+        return mStarter.requestPermissions(callback, permissions);
     }
 
     @Override
@@ -103,7 +97,7 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     }
 
     @Override
-    public PermissionRequester.IPermissionCallback getEssentialPermissionCallback() {
+    public PermissionRequester.IPermissionCallback onGetEPermissionCallback() {
         return this::tryToSignalDoBusiness;
     }
 

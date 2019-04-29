@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.template;
 
 import android.app.Activity;
+import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.soybeany.bdlib.android.template.annotation.BackType;
+import com.soybeany.bdlib.android.template.interfaces.IBackIntercepter;
+import com.soybeany.bdlib.android.template.interfaces.IBaseFunc;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
@@ -21,7 +24,7 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
  * <br>Created by Soybeany on 2019/2/1.
  */
 public abstract class BaseActivity extends AppCompatActivity implements IBaseFunc.IEx<Activity>, IBackIntercepter {
-    private final IBaseFunc mFuncImpl = new BaseFuncImpl(this);
+    private final IStarter mStarter = new StarterImpl(this);
     private boolean mIsNew;
 
     // //////////////////////////////////官方方法重写//////////////////////////////////
@@ -30,8 +33,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mIsNew = (null == savedInstanceState);
-        signalBeforeSetContentView();
-        setContentView(setupLayoutResId());
     }
 
     @Override
@@ -51,7 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        checkPermissionResult(requestCode, permissions, grantResults);
+        mStarter.checkPermissionResult(requestCode, permissions, grantResults);
     }
 
     // //////////////////////////////////自定义方法重写//////////////////////////////////
@@ -70,13 +71,18 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
     }
 
     @Override
+    public void onSetContentView() {
+        setContentView(setupLayoutResId());
+    }
+
+    @Override
     public Activity onGetButterKnifeSource() {
         return this;
     }
 
     @Override
-    public void signalBeforeSetContentView() {
-        beforeSetupContentView();
+    public Lifecycle onGetLifecycle() {
+        return getLifecycle();
     }
 
     @Override
@@ -86,12 +92,12 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
 
     @Override
     public AbstractDialog getDialog() {
-        return mFuncImpl.getDialog();
+        return mStarter.getDialog();
     }
 
     @Override
     public DialogKeyProvider getDialogKeys() {
-        return mFuncImpl.getDialogKeys();
+        return mStarter.getDialogKeys();
     }
 
     @Override
@@ -101,12 +107,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
 
     @Override
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
-        return mFuncImpl.requestPermissions(callback, permissions);
-    }
-
-    @Override
-    public void checkPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mFuncImpl.checkPermissionResult(requestCode, permissions, grantResults);
+        return mStarter.requestPermissions(callback, permissions);
     }
 
     @Override
@@ -115,7 +116,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
     }
 
     @Override
-    public PermissionRequester.IPermissionCallback getEssentialPermissionCallback() {
+    public PermissionRequester.IPermissionCallback onGetEPermissionCallback() {
         return new PermissionRequester.IPermissionCallback() {
             @Override
             public void onPermissionPass() {
