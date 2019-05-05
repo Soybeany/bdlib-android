@@ -80,7 +80,7 @@ public class PermissionRequester implements IObserver {
         return AUTO_REQUEST_CODE++ % DEFAULT_REQUEST_CODE;
     }
 
-    public PermissionRequester(FragmentActivity activity, IPermissionDealer dealer) {
+    public PermissionRequester(@NonNull FragmentActivity activity, @NonNull IPermissionDealer dealer) {
         mActivity = activity;
         mDealer = dealer;
         mActivity.getLifecycle().addObserver(this);

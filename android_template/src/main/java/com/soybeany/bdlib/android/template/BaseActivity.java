@@ -20,13 +20,13 @@ import java.util.Set;
  * <br>Created by Soybeany on 2019/2/1.
  */
 public abstract class BaseActivity extends AppCompatActivity implements PluginDriver.ICallback,
-        StdDevelopPlugin.ITemplate, LifecyclePlugin.ITemplate,
-        ViewModelPlugin.ITemplate, BackInterceptorPlugin.ITemplate {
+        StdDevelopPlugin.ICallback, StdDevelopPlugin.IInvoker,
+        ViewModelPlugin.ICallback, ViewModelPlugin.IInvoker,
+        BackInterceptorPlugin.ICallback, BackInterceptorPlugin.IInvoker,
+        LifecyclePlugin.ICallback {
 
-    private StdDevelopPlugin mStdDevelopPlugin;
+    private StdDevelopPlugin mDevelopPlugin;
     private BackInterceptorPlugin mBackPlugin;
-
-    private boolean mIsNew;
 
     {
         PluginDriver.install(this, this);
@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIsNew = (null == savedInstanceState);
+        mDevelopPlugin = new StdDevelopPlugin(this, ActivityCompat::requestPermissions, savedInstanceState, this);
     }
 
     @Override
@@ -47,11 +47,15 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mStdDevelopPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mDevelopPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults, super::onRequestPermissionsResult);
     }
 
     // //////////////////////////////////自定义方法重写//////////////////////////////////
+
+    @Override
+    public void wannaBack(int backType) {
+        mBackPlugin.wannaBack(backType);
+    }
 
     @Override
     public void onPermitBack(@BackType int backType) {
@@ -60,10 +64,9 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
 
     @Override
     public void onSetupPlugins(Set<IExtendPlugin> plugins) {
-        plugins.add(mStdDevelopPlugin = new StdDevelopPlugin(new PermissionRequester(this,
-                ActivityCompat::requestPermissions), mIsNew, this));
+        plugins.add(mDevelopPlugin);
         plugins.add(new LifecyclePlugin(this));
-        plugins.add(new ViewModelPlugin(this));
+        plugins.add(new ViewModelPlugin(this, null));
         plugins.add(mBackPlugin = new BackInterceptorPlugin(this, this));
     }
 
@@ -74,6 +77,6 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
 
     @Override
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
-        return mStdDevelopPlugin.requestPermissions(callback, permissions);
+        return mDevelopPlugin.requestPermissions(callback, permissions);
     }
 }

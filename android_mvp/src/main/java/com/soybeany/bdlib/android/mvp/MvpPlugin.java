@@ -2,6 +2,7 @@ package com.soybeany.bdlib.android.mvp;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
+import android.support.annotation.NonNull;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.interfaces.IVMProvider;
@@ -23,6 +24,12 @@ public class MvpPlugin implements IExtendPlugin {
     @Override
     public void initAfterSetContentView() {
         mTemplate.onInitPresenters(new PresenterProviderImpl());
+    }
+
+    @NonNull
+    @Override
+    public String getGroupId() {
+        return "MVP";
     }
 
     private class PresenterProviderImpl implements IPresenterProvider {

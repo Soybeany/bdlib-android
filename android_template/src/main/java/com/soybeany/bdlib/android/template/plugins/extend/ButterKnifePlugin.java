@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
@@ -17,20 +18,21 @@ import butterknife.Unbinder;
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class ButterKnifePlugin implements IExtendPlugin {
-    private ITemplate mTemplate;
+    @Nullable
+    private ICallback mCallback;
     private Unbinder mUnBinder;
 
-    public ButterKnifePlugin(ITemplate template) {
-        mTemplate = template;
+    public ButterKnifePlugin(@Nullable ICallback callback) {
+        mCallback = callback;
     }
 
     @Override
     public void initBeforeSetContentView() {
-        if (null == mTemplate) {
+        if (null == mCallback) {
             return;
         }
-        Object target = mTemplate.onGetButterKnifeTarget();
-        Object source = mTemplate.onGetButterKnifeSource();
+        Object target = mCallback.onGetButterKnifeTarget();
+        Object source = mCallback.onGetButterKnifeSource();
         if (source instanceof Activity) {
             mUnBinder = ButterKnife.bind(target, (Activity) source);
         } else if (source instanceof View) {
@@ -47,7 +49,13 @@ public class ButterKnifePlugin implements IExtendPlugin {
         Optional.ofNullable(mUnBinder).ifPresent(Unbinder::unbind);
     }
 
-    public interface ITemplate {
+    @NonNull
+    @Override
+    public final String getGroupId() {
+        return "ButterKnife";
+    }
+
+    public interface ICallback {
         default Object onGetButterKnifeTarget() {
             return this;
         }

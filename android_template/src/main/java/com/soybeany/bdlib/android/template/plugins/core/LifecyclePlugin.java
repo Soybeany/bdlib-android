@@ -4,6 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 
@@ -16,8 +17,8 @@ import java.util.Set;
 public class LifecyclePlugin implements IExtendPlugin {
     private Set<LifecycleObserver> mObservers = new HashSet<>();
 
-    public LifecyclePlugin(ITemplate template) {
-        template.onSetupObservers(mObservers);
+    public LifecyclePlugin(@Nullable ICallback callback) {
+        IExtendPlugin.invokeOnNotNull(callback, c -> c.onSetupObservers(mObservers));
     }
 
     @Override
@@ -36,7 +37,13 @@ public class LifecyclePlugin implements IExtendPlugin {
         }
     }
 
-    public interface ITemplate {
+    @NonNull
+    @Override
+    public final String getGroupId() {
+        return "LifeCycle";
+    }
+
+    public interface ICallback {
 
         /**
          * 设置生命周期观察者

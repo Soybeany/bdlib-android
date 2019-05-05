@@ -52,9 +52,8 @@ public class PluginDriver implements IExtendPlugin {
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
         mCallback.onSetupPlugins(mPlugins);
-        for (IExtendPlugin plugin : mPlugins) {
-            mLifecycle.addObserver(plugin);
-        }
+        checkPlugins();
+        IterableUtils.forEach(mPlugins, (plugin, flag) -> mLifecycle.addObserver(plugin));
 
         initBeforeSetContentView();
         mCallback.onSetContentView(mCallback.setupLayoutResId());
@@ -64,11 +63,24 @@ public class PluginDriver implements IExtendPlugin {
 
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
-        for (IExtendPlugin plugin : mPlugins) {
-            mLifecycle.removeObserver(plugin);
-        }
+        IterableUtils.forEach(mPlugins, (plugin, flag) -> mLifecycle.removeObserver(plugin));
         mPlugins.clear();
         mLifecycle.removeObserver(this);
+    }
+
+    @NonNull
+    @Override
+    public String getGroupId() {
+        return "PluginDriver";
+    }
+
+    private void checkPlugins() {
+        Set<String> groupIdSet = new HashSet<>();
+        for (IExtendPlugin plugin : mPlugins) {
+            if (null != plugin && !groupIdSet.add(plugin.getGroupId())) {
+                throw new RuntimeException("不允许加载多个相同GroupId的插件");
+            }
+        }
     }
 
     public interface ICallback extends IInitTemplate {

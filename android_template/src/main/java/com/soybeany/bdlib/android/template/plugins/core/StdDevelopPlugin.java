@@ -1,8 +1,10 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.util.ToastUtils;
@@ -11,55 +13,81 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeOnNotNull;
 import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
 
 /**
- * 标准开发，需自行调用{@link #onRequestPermissionsResult(int, String[], int[])}
+ * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，在OnCreate中调用，
+ * 需自行调用{@link #onRequestPermissionsResult(int, String[], int[], ISuperOnRequestPermissionsResult)}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
+    protected boolean mIsNew; // 此模板是否为新创建（屏幕旋转、recreate等导致的重新创建，则为false）
+    @Nullable
+    protected ICallback mCallback;
+    @Nullable
     private PermissionRequester mPR;
-    private boolean mIsNew;
-    private ITemplate mTemplate;
 
-    /**
-     * @param pr    {@link PermissionRequester}构造器直接创建
-     * @param isNew 判断是否为新创建，null == savedInstanceState为true
-     */
-    public StdDevelopPlugin(@NonNull PermissionRequester pr, boolean isNew, ITemplate template) {
-        mIsNew = isNew;
-        mTemplate = template;
+    public StdDevelopPlugin(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer,
+                            @Nullable Bundle savedInstanceState, @Nullable ICallback callback) {
+        mCallback = callback;
+        mIsNew = (null == savedInstanceState);
 
         Set<String> permissionSet = new HashSet<>();
-        mTemplate.onSetupEssentialPermissions(permissionSet);
-        mPR = pr.withEPermission(this, permissionSet.toArray(new String[0]));
+        invokeOnNotNull(mCallback, c -> c.onSetupEssentialPermissions(permissionSet));
+        if (null != activity && null != dealer) {
+            mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
+        }
     }
 
     @Override
     public void initAfterSetContentView() {
-        mTemplate.onInitViews();
+        invokeOnNotNull(mCallback, ICallback::onInitViews);
     }
 
     @Override
     public void onPermissionPass() {
-        mTemplate.onEssentialPermissionsPass(mIsNew);
+        invokeOnNotNull(mCallback, callback -> callback.onEssentialPermissionsPass(mIsNew));
     }
 
     @Override
     public void onPermissionDeny() {
-        mTemplate.onEssentialPermissionsDeny();
+        invokeOnNotNull(mCallback, ICallback::onEssentialPermissionsDeny);
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mPR.checkResults(requestCode, permissions, grantResults);
+    @NonNull
+    @Override
+    public final String getGroupId() {
+        return "Develop";
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, @NonNull ISuperOnRequestPermissionsResult callback) {
+        callback.onInvoke(requestCode, permissions, grantResults);
+        invokeOnNotNull(mPR, pr -> pr.checkResults(requestCode, permissions, grantResults));
     }
 
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
-        return mPR.requestPermissions(callback, permissions);
+        return null != mPR && mPR.requestPermissions(callback, permissions);
     }
 
+    public interface ISuperOnRequestPermissionsResult {
+        void onInvoke(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults);
+    }
 
-    public interface ITemplate {
+    /**
+     * 主动执行
+     */
+    public interface IInvoker {
+        /**
+         * 请求权限
+         */
+        boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions);
+    }
+
+    /**
+     * 回调
+     */
+    public interface ICallback {
         /**
          * 初始化视图
          */
@@ -73,11 +101,6 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
          */
         default void doBusiness(boolean isNew) {
         }
-
-        /**
-         * 请求权限
-         */
-        boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions);
 
         /**
          * 设置必要的权限

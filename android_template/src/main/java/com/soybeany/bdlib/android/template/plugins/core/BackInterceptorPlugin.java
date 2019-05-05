@@ -1,6 +1,8 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.annotation.BackType;
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
@@ -11,18 +13,35 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
  */
 public class BackInterceptorPlugin implements IExtendPlugin {
     private Activity mActivity;
-    private ITemplate mTemplate;
+    @Nullable
+    private ICallback mCallback;
 
-    public BackInterceptorPlugin(Activity activity, ITemplate template) {
+    public BackInterceptorPlugin(@NonNull Activity activity, @Nullable ICallback callback) {
         mActivity = activity;
-        mTemplate = template;
+        mCallback = callback;
+    }
+
+    @NonNull
+    @Override
+    public final String getGroupId() {
+        return "BackInterceptor";
     }
 
     public void onBackPressed() {
-        mTemplate.wannaBack(BackType.BACK_KEY);
+        wannaBack(BackType.BACK_KEY);
     }
 
-    public void onPermitBack(@BackType int backType, ISuperOnBackPressed callback) {
+    public void wannaBack(@BackType int backType) {
+        if (null == mCallback) {
+            mActivity.onBackPressed();
+            return;
+        }
+        if (!mCallback.shouldInterceptBack(backType)) {
+            mCallback.onPermitBack(backType);
+        }
+    }
+
+    public void onPermitBack(@BackType int backType, @NonNull ISuperOnBackPressed callback) {
         switch (backType) {
             case BackType.BACK_KEY:
                 callback.onInvoke();
@@ -38,14 +57,11 @@ public class BackInterceptorPlugin implements IExtendPlugin {
         void onInvoke();
     }
 
-    public interface ITemplate {
+    public interface IInvoker {
+        void wannaBack(@BackType int backType);
+    }
 
-        default void wannaBack(@BackType int backType) {
-            if (!shouldInterceptBack(backType)) {
-                onPermitBack(backType);
-            }
-        }
-
+    public interface ICallback {
         default boolean shouldInterceptBack(@BackType int backType) {
             return false;
         }
