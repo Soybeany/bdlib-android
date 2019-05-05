@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
 import android.app.Activity;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,8 +16,8 @@ import java.util.Locale;
 public class LanguagePlugin extends StylePlugin<Locale> {
     private static final LanguageChanger CHANGER = new LanguageChanger();
 
-    public LanguagePlugin(@NonNull AppCompatActivity activity) {
-        super(activity, CHANGER);
+    public LanguagePlugin(@NonNull AppCompatActivity activity, @NonNull MutableLiveData<Locale> data) {
+        super(activity, CHANGER, data);
     }
 
     @NonNull

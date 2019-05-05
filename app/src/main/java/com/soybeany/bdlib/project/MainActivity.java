@@ -1,11 +1,13 @@
 package com.soybeany.bdlib.project;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Intent;
 import android.view.View;
 
 import com.soybeany.bdlib.android.template.BaseActivity;
+import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
-import com.soybeany.bdlib.android.util.style.LanguageChanger;
 import com.soybeany.bdlib.android.util.style.ThemeChanger;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
@@ -21,15 +23,9 @@ public class MainActivity extends BaseActivity {
     public static Locale language = Locale.CHINESE;
     public static ThemeChanger.Info theme = theme1;
 
+    public static MutableLiveData<ThemeChanger.Info> THEME_DATA = new MutableLiveData<>();
 
-    private LanguageChanger c = new LanguageChanger();
-    private ThemeChanger tc = new ThemeChanger();
-
-    @Override
-    public void initBeforeSetContentView() {
-        c.applyChange(this, language);
-        tc.applyChange(this, theme);
-    }
+    private ThemePlugin mThemePlugin;
 
     @Override
     public int setupLayoutResId() {
@@ -57,8 +53,14 @@ public class MainActivity extends BaseActivity {
 //        }, PermissionRequester.READ_PHONE_STATE);
     }
 
+    @Override
+    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+        super.onSetupPlugins(plugins);
+        plugins.add(mThemePlugin = new ThemePlugin(this, THEME_DATA));
+    }
+
     public void onClickTheme(View view) {
         theme = (theme == theme1 ? theme2 : theme1);
-        view.postDelayed(() -> tc.recreate(this, theme), 200);
+        view.postDelayed(() -> mThemePlugin.toTheme(theme), 200);
     }
 }

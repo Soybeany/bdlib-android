@@ -6,8 +6,10 @@ import com.soybeany.bdlib.android.mvp.IPresenterProvider;
 import com.soybeany.bdlib.android.mvp.MvpPlugin;
 import com.soybeany.bdlib.android.template.BaseActivity;
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
+import com.soybeany.bdlib.android.util.style.ThemeChanger;
 
 import java.util.Set;
 
@@ -15,6 +17,8 @@ import java.util.Set;
  * <br>Created by Soybeany on 2019/4/15.
  */
 public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ITemplate {
+    private ThemePlugin mThemePlugin;
+
     private TestPresenter mPt;
 
     @Override
@@ -34,12 +38,14 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     public void onClick(View view) {
-        mPt.testFile(null);
+//        mPt.testFile(null);
+        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
     }
 
     @Override
     public void onSetupPlugins(Set<IExtendPlugin> plugins) {
         super.onSetupPlugins(plugins);
-        plugins.add(new MvpPlugin(this, this::getViewModel, this));
+        plugins.add(new MvpPlugin(this, this, this));
+        plugins.add(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
     }
 }
