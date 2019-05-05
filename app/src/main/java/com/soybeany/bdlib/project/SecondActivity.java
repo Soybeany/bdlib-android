@@ -9,6 +9,8 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
 
+import java.util.Set;
+
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
@@ -32,11 +34,12 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     public void onClick(View view) {
-        mPt.testFile(getDialogKeys());
+        mPt.testFile(null);
     }
 
     @Override
-    public IExtendPlugin[] onGetNewPlugins() {
-        return new IExtendPlugin[]{new MvpPlugin<>(this)};
+    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+        super.onSetupPlugins(plugins);
+        plugins.add(new MvpPlugin(this, this::getViewModel, this));
     }
 }

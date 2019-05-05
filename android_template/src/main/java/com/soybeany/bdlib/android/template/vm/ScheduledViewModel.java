@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.template.lifecycle;
+package com.soybeany.bdlib.android.template.vm;
 
 import android.arch.lifecycle.ViewModel;
 

@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.template.plugins;
+package com.soybeany.bdlib.android.template.plugins.extend;
 
 /**
  * <br>Created by Soybeany on 2019/4/29.

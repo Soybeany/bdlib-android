@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.template.lifecycle;
+package com.soybeany.bdlib.android.template.plugins.extend;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -6,7 +6,7 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.soybeany.bdlib.android.util.IObserver;
+import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.core.java8.Optional;
 
 import butterknife.ButterKnife;
@@ -14,17 +14,23 @@ import butterknife.Unbinder;
 
 /**
  * 使用时需在项目的依赖中添加 annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'(版本按需修改)
- * <br>Created by Soybeany on 2019/3/16.
+ * <br>Created by Soybeany on 2019/4/30.
  */
-public class ButterKnifeObserver implements IObserver {
+public class ButterKnifePlugin implements IExtendPlugin {
+    private ITemplate mTemplate;
     private Unbinder mUnBinder;
 
-    public ButterKnifeObserver(ICallback callback) {
-        if (null == callback) {
+    public ButterKnifePlugin(ITemplate template) {
+        mTemplate = template;
+    }
+
+    @Override
+    public void initBeforeSetContentView() {
+        if (null == mTemplate) {
             return;
         }
-        Object target = callback.onGetButterKnifeTarget();
-        Object source = callback.onGetButterKnifeSource();
+        Object target = mTemplate.onGetButterKnifeTarget();
+        Object source = mTemplate.onGetButterKnifeSource();
         if (source instanceof Activity) {
             mUnBinder = ButterKnife.bind(target, (Activity) source);
         } else if (source instanceof View) {
@@ -41,11 +47,11 @@ public class ButterKnifeObserver implements IObserver {
         Optional.ofNullable(mUnBinder).ifPresent(Unbinder::unbind);
     }
 
-    public interface ICallback<T> {
+    public interface ITemplate {
         default Object onGetButterKnifeTarget() {
             return this;
         }
 
-        T onGetButterKnifeSource();
+        Object onGetButterKnifeSource();
     }
 }

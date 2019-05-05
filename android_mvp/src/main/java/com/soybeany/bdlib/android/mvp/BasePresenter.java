@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.soybeany.bdlib.android.template.interfaces.IBaseFunc;
+import com.soybeany.bdlib.android.template.plugins.extend.DialogPlugin;
 import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
@@ -74,7 +74,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
      */
     protected DialogKeyProvider getTopProvider() {
         Activity activity = BDApplication.getTopActivity();
-        return activity instanceof IBaseFunc ? ((IBaseFunc) activity).getDialogKeys() : null;
+        return activity instanceof DialogPlugin.ITemplate ? ((DialogPlugin.ITemplate) activity).getDialogKeys() : null;
     }
 
     /**

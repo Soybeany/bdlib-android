@@ -10,6 +10,7 @@ import com.soybeany.bdlib.android.util.style.ThemeChanger;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
 import java.util.Locale;
+import java.util.Set;
 
 
 public class MainActivity extends BaseActivity {
@@ -25,7 +26,7 @@ public class MainActivity extends BaseActivity {
     private ThemeChanger tc = new ThemeChanger();
 
     @Override
-    public void signalBeforeSetContentView() {
+    public void initBeforeSetContentView() {
         c.applyChange(this, language);
         tc.applyChange(this, theme);
     }
@@ -41,8 +42,9 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public String[] onGetEssentialPermissions() {
-        return new String[]{PermissionRequester.READ_EXTERNAL_STORAGE, PermissionRequester.WRITE_EXTERNAL_STORAGE};
+    public void onSetupEssentialPermissions(Set<String> permissions) {
+        permissions.add(PermissionRequester.READ_EXTERNAL_STORAGE);
+        permissions.add(PermissionRequester.WRITE_EXTERNAL_STORAGE);
     }
 
     public void onClick(View view) {

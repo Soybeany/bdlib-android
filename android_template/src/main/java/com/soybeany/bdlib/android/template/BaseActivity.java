@@ -1,31 +1,36 @@
 package com.soybeany.bdlib.android.template;
 
-import android.app.Activity;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 
 import com.soybeany.bdlib.android.template.annotation.BackType;
-import com.soybeany.bdlib.android.template.interfaces.IBackIntercepter;
-import com.soybeany.bdlib.android.template.interfaces.IBaseFunc;
-import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
-import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
-import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
-import com.soybeany.bdlib.android.util.system.KeyboardUtils;
+import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.plugins.core.BackInterceptorPlugin;
+import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
+import com.soybeany.bdlib.android.template.plugins.core.StdDevelopPlugin;
+import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
+
+import java.util.Set;
 
 /**
  * <br>Created by Soybeany on 2019/2/1.
  */
-public abstract class BaseActivity extends AppCompatActivity implements IBaseFunc.IEx<Activity>, IBackIntercepter {
-    private final IStarter mStarter = new StarterImpl(this);
+public abstract class BaseActivity extends AppCompatActivity implements PluginDriver.ICallback,
+        StdDevelopPlugin.ITemplate, LifecyclePlugin.ITemplate,
+        ViewModelPlugin.ITemplate, BackInterceptorPlugin.ITemplate {
+
+    private StdDevelopPlugin mStdDevelopPlugin;
+    private BackInterceptorPlugin mBackPlugin;
+
     private boolean mIsNew;
+
+    {
+        PluginDriver.install(this, this);
+    }
 
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
@@ -36,97 +41,39 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseFun
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (android.R.id.home == item.getItemId()) {
-            KeyboardUtils.closeKeyboard(this);
-            wannaBack(BackType.BACK_ITEM);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onBackPressed() {
-        wannaBack(BackType.BACK_KEY);
+        mBackPlugin.onBackPressed();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mStarter.checkPermissionResult(requestCode, permissions, grantResults);
+        mStdDevelopPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     // //////////////////////////////////自定义方法重写//////////////////////////////////
 
     @Override
     public void onPermitBack(@BackType int backType) {
-        switch (backType) {
-            case BackType.BACK_KEY:
-                super.onBackPressed();
-                break;
-            case BackType.BACK_ITEM:
-            case BackType.BACK_OTHER:
-                finish();
-                break;
-        }
+        mBackPlugin.onPermitBack(backType, super::onBackPressed);
     }
 
     @Override
-    public void onSetContentView() {
-        setContentView(setupLayoutResId());
+    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+        plugins.add(mStdDevelopPlugin = new StdDevelopPlugin(new PermissionRequester(this,
+                ActivityCompat::requestPermissions), mIsNew, this));
+        plugins.add(new LifecyclePlugin(this));
+        plugins.add(new ViewModelPlugin(this));
+        plugins.add(mBackPlugin = new BackInterceptorPlugin(this, this));
     }
 
     @Override
-    public Activity onGetButterKnifeSource() {
-        return this;
-    }
-
-    @Override
-    public Lifecycle onGetLifecycle() {
-        return getLifecycle();
-    }
-
-    @Override
-    public AbstractDialog onGetNewDialog() {
-        return new ProgressDialogImpl(this);
-    }
-
-    @Override
-    public AbstractDialog getDialog() {
-        return mStarter.getDialog();
-    }
-
-    @Override
-    public DialogKeyProvider getDialogKeys() {
-        return mStarter.getDialogKeys();
-    }
-
-    @Override
-    public <T extends ViewModel> T getViewModel(Class<T> modelClass) {
-        return ViewModelProviders.of(this).get(modelClass);
+    public void onSetContentView(int resId) {
+        setContentView(resId);
     }
 
     @Override
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
-        return mStarter.requestPermissions(callback, permissions);
-    }
-
-    @Override
-    public PermissionRequester onGetNewPermissionRequester() {
-        return new PermissionRequester(this, ActivityCompat::requestPermissions);
-    }
-
-    @Override
-    public PermissionRequester.IPermissionCallback onGetEPermissionCallback() {
-        return new PermissionRequester.IPermissionCallback() {
-            @Override
-            public void onPermissionPass() {
-                getWindow().getDecorView().post(() -> doBusiness(mIsNew));
-            }
-
-            @Override
-            public void onPermissionDeny() {
-                finish();
-            }
-        };
+        return mStdDevelopPlugin.requestPermissions(callback, permissions);
     }
 }

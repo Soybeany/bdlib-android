@@ -5,7 +5,7 @@ import com.soybeany.bdlib.android.template.annotation.BackType;
 /**
  * <br>Created by Soybeany on 2019/4/29.
  */
-public interface IBackIntercepter {
+public interface IBackInterceptor {
 
     default void wannaBack(@BackType int backType) {
         if (!shouldInterceptBack(backType)) {

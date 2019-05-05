@@ -11,20 +11,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.soybeany.bdlib.android.template.interfaces.IBaseFunc;
-import com.soybeany.bdlib.android.util.dialog.AbstractDialog;
-import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
-import com.soybeany.bdlib.android.util.dialog.ProgressDialogImpl;
+import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
+import com.soybeany.bdlib.android.template.plugins.core.StdDevelopPlugin;
+import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
+
+import java.util.Set;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
  */
-public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<View> {
-    private IStarter mStarter = new StarterImpl(this);
+public abstract class BaseFragment extends Fragment implements PluginDriver.ICallback,
+        StdDevelopPlugin.ITemplate, LifecyclePlugin.ITemplate, ViewModelPlugin.ITemplate {
+
+    private StdDevelopPlugin mStdDevelopPlugin;
+
     private View mContentV;
     private int mPreparedCount; // 已准备好的位置的计数
     private boolean mIsNew;
+
+    {
+        PluginDriver.install(this, this);
+    }
 
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
@@ -51,54 +60,32 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mStarter.checkPermissionResult(requestCode, permissions, grantResults);
+        mStdDevelopPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     // //////////////////////////////////自定义方法重写//////////////////////////////////
 
     @Override
-    public void onSetContentView() {
+    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+        plugins.add(mStdDevelopPlugin = new StdDevelopPlugin(new PermissionRequester(getActivity(),
+                (activity, permissions, requestCode) -> requestPermissions(permissions, requestCode)), mIsNew, this));
+        plugins.add(new LifecyclePlugin(this));
+        plugins.add(new ViewModelPlugin(this));
+    }
+
+    @Override
+    public void onSetContentView(int resId) {
         mContentV = getLayoutInflater().inflate(setupLayoutResId(), null, false);
     }
 
     @Override
-    public View onGetButterKnifeSource() {
-        return mContentV;
-    }
-
-    @Override
-    public AbstractDialog onGetNewDialog() {
-        return new ProgressDialogImpl(this);
-    }
-
-    @Override
-    public AbstractDialog getDialog() {
-        return mStarter.getDialog();
-    }
-
-    @Override
-    public DialogKeyProvider getDialogKeys() {
-        return mStarter.getDialogKeys();
-    }
-
-    @Override
-    public <T extends ViewModel> T getViewModel(Class<T> modelClass) {
-        return ViewModelProviders.of(this).get(modelClass);
-    }
-
-    @Override
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
-        return mStarter.requestPermissions(callback, permissions);
+        return mStdDevelopPlugin.requestPermissions(callback, permissions);
     }
 
     @Override
-    public PermissionRequester onGetNewPermissionRequester() {
-        return new PermissionRequester(getActivity(), (activity, permissions, requestCode) -> requestPermissions(permissions, requestCode));
-    }
-
-    @Override
-    public PermissionRequester.IPermissionCallback onGetEPermissionCallback() {
-        return this::tryToSignalDoBusiness;
+    public void onEssentialPermissionsPass(boolean isNew) {
+        tryToSignalDoBusiness();
     }
 
     // //////////////////////////////////拓展方法//////////////////////////////////
@@ -115,7 +102,7 @@ public abstract class BaseFragment extends Fragment implements IBaseFunc.IEx<Vie
         if (mPreparedCount > 1) {
             return;
         } else if (mPreparedCount == 1) {
-            mContentV.post(() -> doBusiness(mIsNew));
+            IExtendPlugin.invokeInUiThread(() -> doBusiness(mIsNew));
         }
         mPreparedCount++;
     }
