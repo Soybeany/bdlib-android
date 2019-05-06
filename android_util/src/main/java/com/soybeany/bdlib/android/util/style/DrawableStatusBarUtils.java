@@ -2,6 +2,8 @@ package com.soybeany.bdlib.android.util.style;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -59,7 +61,10 @@ public class DrawableStatusBarUtils {
             return;
         }
         // 设置为默认资源
-        statusBarV.setBackgroundColor(defaultColor);
+        Drawable drawable = statusBarV.getBackground();
+        if (drawable instanceof ColorDrawable && ((ColorDrawable) drawable).getColor() != defaultColor) {
+            statusBarV.setBackgroundColor(defaultColor);
+        }
     }
 
     @ColorInt
