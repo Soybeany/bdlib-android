@@ -47,7 +47,8 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mDevelopPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults, super::onRequestPermissionsResult);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mDevelopPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     // //////////////////////////////////自定义方法重写//////////////////////////////////

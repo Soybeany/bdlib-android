@@ -19,7 +19,7 @@ import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
 /**
  * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，
  * 需自行调用{@link #onCreate(Bundle)}、
- * {@link #onRequestPermissionsResult(int, String[], int[], ISuperOnRequestPermissionsResult)}
+ * {@link #onRequestPermissionsResult(int, String[], int[])}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
@@ -65,17 +65,12 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
         mIsNew = (null == savedInstanceState);
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, @NonNull ISuperOnRequestPermissionsResult callback) {
-        callback.onInvoke(requestCode, permissions, grantResults);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         invokeOnNotNull(mPR, pr -> pr.checkResults(requestCode, permissions, grantResults));
     }
 
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
         return null != mPR && mPR.requestPermissions(callback, permissions);
-    }
-
-    public interface ISuperOnRequestPermissionsResult {
-        void onInvoke(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults);
     }
 
     /**

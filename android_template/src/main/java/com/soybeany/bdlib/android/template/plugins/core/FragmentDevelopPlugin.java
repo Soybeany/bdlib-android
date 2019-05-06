@@ -16,7 +16,7 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 
 /**
  * 在Attach时创建，需额外自行调用{}{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
- * {@link #setUserVisibleHint(boolean, ISuperSetUserVisibleHint)}
+ * {@link #setUserVisibleHint(boolean)}
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class FragmentDevelopPlugin extends StdDevelopPlugin {
@@ -37,8 +37,11 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
         return mContentV;
     }
 
-    public void setUserVisibleHint(boolean isVisibleToUser, ISuperSetUserVisibleHint callback) {
-        callback.onInvoke(isVisibleToUser);
+    public View getContentView() {
+        return mContentV;
+    }
+
+    public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisibleToUser) {
             tryToSignalDoBusiness();
         }
@@ -61,8 +64,8 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
         mPreparedCount++;
     }
 
-    public interface ISuperSetUserVisibleHint {
-        void onInvoke(boolean isVisibleToUser);
+    public interface IInvoker extends StdDevelopPlugin.IInvoker {
+        View getContentView();
     }
 
     public interface ICallback extends StdDevelopPlugin.ICallback {
