@@ -9,6 +9,7 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
+import com.soybeany.bdlib.android.util.style.ThemeChanger;
 
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     public void onClick(View view) {
-        mPt.testFile(null);
-//        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
+//        mPt.testFile(null);
+        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
     }
 
     @Override
