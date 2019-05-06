@@ -2,7 +2,7 @@ package com.soybeany.bdlib.android.util.style;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.util.TypedValue;
@@ -38,28 +38,34 @@ public class DrawableStatusBarUtils {
         Optional.ofNullable(activity.getWindow().getDecorView()).ifPresent(decorView -> decorView.post(() -> {
             Resources resources = getResources();
             View statusBarV = decorView.findViewById(resources.getIdentifier("statusBarBackground", "id", "android"));
-            Optional.ofNullable(statusBarV).ifPresent(v -> {
-                setBackground(v, activity, res);
-                if (needAddListener) {
-                    decorView.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> setBackground(v, activity, res));
-                }
-            });
+            if (null == statusBarV) {
+                return;
+            }
+            int defaultColor = getDefaultColor(activity);
+            setBackground(statusBarV, res, defaultColor);
+            if (needAddListener) {
+                decorView.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> setBackground(statusBarV, res, defaultColor));
+            }
         }));
     }
 
     /**
      * 每次均创建，以免不能触发底色替换
      */
-    private static void setBackground(@NonNull View statusBarV, @NonNull Activity activity, @DrawableRes Integer res) {
+    private static void setBackground(@NonNull View statusBarV, @DrawableRes Integer res, int defaultColor) {
         // 设置为指定资源
         if (null != res) {
             statusBarV.setBackgroundResource(res);
             return;
         }
         // 设置为默认资源
+        statusBarV.setBackgroundColor(defaultColor);
+    }
+
+    @ColorInt
+    private static int getDefaultColor(@NonNull Activity activity) {
         TypedValue typedValue = new TypedValue();
         activity.getTheme().resolveAttribute(R.attr.colorPrimaryDark, typedValue, true);
-        int data = typedValue.data;
-        statusBarV.setBackground(new ColorDrawable(data));
+        return typedValue.data;
     }
 }
