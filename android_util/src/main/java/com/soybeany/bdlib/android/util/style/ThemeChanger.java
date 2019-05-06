@@ -17,7 +17,7 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
 
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Info newData) {
-        activity.getApplication().setTheme(newData.resId);
+//        activity.getApplication().setTheme(newData.resId);
         activity.setTheme(newData.resId);
 
         saveMode(activity, newData);
