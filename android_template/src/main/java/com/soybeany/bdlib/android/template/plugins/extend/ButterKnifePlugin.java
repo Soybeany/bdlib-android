@@ -27,7 +27,7 @@ public class ButterKnifePlugin implements IExtendPlugin {
     }
 
     @Override
-    public void initBeforeSetContentView() {
+    public void initAfterSetContentView() {
         if (null == mCallback) {
             return;
         }
