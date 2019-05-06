@@ -10,13 +10,14 @@ import com.soybeany.bdlib.core.util.IterableUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 插件驱动
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class PluginDriver implements IExtendPlugin {
-    private final Set<IExtendPlugin> mPlugins = new HashSet<>(); // 需加载的插件
+    private final Set<IExtendPlugin> mPlugins = new TreeSet<>(); // 需加载的插件
     private ICallback mCallback;
     private Lifecycle mLifecycle;
 

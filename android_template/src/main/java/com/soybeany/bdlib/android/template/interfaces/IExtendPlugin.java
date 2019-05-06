@@ -13,7 +13,9 @@ import com.soybeany.bdlib.core.java8.function.Consumer;
  * 可拓展插件
  * <br>Created by Soybeany on 2019/4/29.
  */
-public interface IExtendPlugin extends IInitTemplate, IObserver {
+public interface IExtendPlugin extends IInitTemplate, IObserver, Comparable {
+    int DEFAULT_ORDER = 0;
+
     static void invokeInUiThread(Runnable runnable) {
         new Handler(Looper.getMainLooper()).post(runnable);
     }
@@ -27,4 +29,18 @@ public interface IExtendPlugin extends IInitTemplate, IObserver {
      */
     @NonNull
     String getGroupId();
+
+    @Override
+    default int compareTo(Object o) {
+        return o instanceof IExtendPlugin ? getLoadOrder() - ((IExtendPlugin) o).getLoadOrder() : 0;
+    }
+
+    /**
+     * 默认加载顺序
+     *
+     * @return 值越小越早被加载
+     */
+    default int getLoadOrder() {
+        return DEFAULT_ORDER;
+    }
 }

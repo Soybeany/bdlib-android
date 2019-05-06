@@ -55,6 +55,11 @@ public class ButterKnifePlugin implements IExtendPlugin {
         return "ButterKnife";
     }
 
+    @Override
+    public int getLoadOrder() {
+        return DEFAULT_ORDER - 1;
+    }
+
     public interface ICallback {
         default Object onGetButterKnifeTarget() {
             return this;
