@@ -57,6 +57,10 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (null == mDevelopPlugin) {
+            super.setUserVisibleHint(isVisibleToUser);
+            return;
+        }
         mDevelopPlugin.setUserVisibleHint(isVisibleToUser, super::setUserVisibleHint);
     }
 
