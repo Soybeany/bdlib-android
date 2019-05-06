@@ -11,6 +11,7 @@ import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.style.ThemeChanger;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -54,7 +55,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+    public void onSetupPlugins(List<IExtendPlugin> plugins) {
         super.onSetupPlugins(plugins);
         plugins.add(mThemePlugin = new ThemePlugin(this, THEME_DATA));
     }

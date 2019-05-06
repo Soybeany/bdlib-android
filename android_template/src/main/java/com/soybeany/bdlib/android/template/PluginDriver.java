@@ -8,16 +8,18 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.interfaces.IInitTemplate;
 import com.soybeany.bdlib.core.util.IterableUtils;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * 插件驱动
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class PluginDriver implements IExtendPlugin {
-    private final Set<IExtendPlugin> mPlugins = new TreeSet<>(); // 需加载的插件
+    private final List<IExtendPlugin> mPlugins = new LinkedList<>(); // 需加载的插件
     private ICallback mCallback;
     private Lifecycle mLifecycle;
 
@@ -53,7 +55,7 @@ public class PluginDriver implements IExtendPlugin {
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
         mCallback.onSetupPlugins(mPlugins);
-        checkPlugins();
+        checkAndSortPlugins();
         IterableUtils.forEach(mPlugins, (plugin, flag) -> mLifecycle.addObserver(plugin));
 
         initBeforeSetContentView();
@@ -75,13 +77,14 @@ public class PluginDriver implements IExtendPlugin {
         return "PluginDriver";
     }
 
-    private void checkPlugins() {
+    private void checkAndSortPlugins() {
         Set<String> groupIdSet = new HashSet<>();
         for (IExtendPlugin plugin : mPlugins) {
             if (null != plugin && !groupIdSet.add(plugin.getGroupId())) {
                 throw new RuntimeException("不允许加载多个相同GroupId的插件");
             }
         }
+        Collections.sort(mPlugins);
     }
 
     public interface ICallback extends IInitTemplate {
@@ -89,7 +92,7 @@ public class PluginDriver implements IExtendPlugin {
 
         int setupLayoutResId();
 
-        default void onSetupPlugins(Set<IExtendPlugin> plugins) {
+        default void onSetupPlugins(List<IExtendPlugin> plugins) {
         }
     }
 }

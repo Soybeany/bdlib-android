@@ -14,7 +14,7 @@ import com.soybeany.bdlib.android.template.plugins.core.StdDevelopPlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * <br>Created by Soybeany on 2019/2/1.
@@ -64,7 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     }
 
     @Override
-    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+    public void onSetupPlugins(List<IExtendPlugin> plugins) {
         plugins.add(mDevelopPlugin);
         plugins.add(new LifecyclePlugin(this));
         plugins.add(new ViewModelPlugin(this, null));

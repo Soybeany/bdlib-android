@@ -9,9 +9,8 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
-import com.soybeany.bdlib.android.util.style.ThemeChanger;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
@@ -38,12 +37,12 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     public void onClick(View view) {
-//        mPt.testFile(null);
-        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
+        mPt.testFile(null);
+//        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
     }
 
     @Override
-    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+    public void onSetupPlugins(List<IExtendPlugin> plugins) {
         super.onSetupPlugins(plugins);
         plugins.add(new MvpPlugin(this, this, this));
         plugins.add(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));

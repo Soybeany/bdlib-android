@@ -18,7 +18,7 @@ import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
@@ -72,7 +72,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     // //////////////////////////////////自定义方法重写//////////////////////////////////
 
     @Override
-    public void onSetupPlugins(Set<IExtendPlugin> plugins) {
+    public void onSetupPlugins(List<IExtendPlugin> plugins) {
         plugins.add(mDevelopPlugin);
         plugins.add(new LifecyclePlugin(this));
         plugins.add(new ViewModelPlugin(this, null));

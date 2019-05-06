@@ -13,7 +13,7 @@ import com.soybeany.bdlib.core.java8.function.Consumer;
  * 可拓展插件
  * <br>Created by Soybeany on 2019/4/29.
  */
-public interface IExtendPlugin extends IInitTemplate, IObserver, Comparable {
+public interface IExtendPlugin extends IInitTemplate, IObserver, Comparable<IExtendPlugin> {
     int DEFAULT_ORDER = 0;
 
     static void invokeInUiThread(Runnable runnable) {
@@ -31,8 +31,8 @@ public interface IExtendPlugin extends IInitTemplate, IObserver, Comparable {
     String getGroupId();
 
     @Override
-    default int compareTo(Object o) {
-        return o instanceof IExtendPlugin ? getLoadOrder() - ((IExtendPlugin) o).getLoadOrder() : 0;
+    default int compareTo(IExtendPlugin plugin) {
+        return getLoadOrder() - plugin.getLoadOrder();
     }
 
     /**
