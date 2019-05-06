@@ -41,7 +41,7 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
     }
 
     @Override
-    public void initAfterSetContentView() {
+    public void initFinished() {
         invokeOnNotNull(mCallback, ICallback::onInitViews);
     }
 
