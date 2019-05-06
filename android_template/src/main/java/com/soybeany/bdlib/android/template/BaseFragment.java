@@ -84,6 +84,11 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     }
 
     @Override
+    public View getContentView() {
+        return mDevelopPlugin.getContentView();
+    }
+
+    @Override
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
         return mDevelopPlugin.requestPermissions(callback, permissions);
     }
