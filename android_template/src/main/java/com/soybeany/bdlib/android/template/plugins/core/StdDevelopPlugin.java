@@ -17,8 +17,9 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
 
 /**
- * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，在OnCreate中调用，
- * 需自行调用{@link #onRequestPermissionsResult(int, String[], int[], ISuperOnRequestPermissionsResult)}
+ * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，
+ * 需自行调用{@link #onCreate(Bundle)}、
+ * {@link #onRequestPermissionsResult(int, String[], int[], ISuperOnRequestPermissionsResult)}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
@@ -29,9 +30,8 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
     private PermissionRequester mPR;
 
     public StdDevelopPlugin(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer,
-                            @Nullable Bundle savedInstanceState, @Nullable ICallback callback) {
+                            @Nullable ICallback callback) {
         mCallback = callback;
-        mIsNew = (null == savedInstanceState);
 
         Set<String> permissionSet = new HashSet<>();
         invokeOnNotNull(mCallback, c -> c.onSetupEssentialPermissions(permissionSet));
@@ -59,6 +59,10 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
     @Override
     public final String getGroupId() {
         return "Develop";
+    }
+
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        mIsNew = (null == savedInstanceState);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, @NonNull ISuperOnRequestPermissionsResult callback) {

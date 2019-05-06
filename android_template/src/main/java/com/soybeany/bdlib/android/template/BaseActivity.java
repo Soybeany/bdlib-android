@@ -25,7 +25,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
         BackInterceptorPlugin.ICallback, BackInterceptorPlugin.IInvoker,
         LifecyclePlugin.ICallback {
 
-    private StdDevelopPlugin mDevelopPlugin;
+    private StdDevelopPlugin mDevelopPlugin = new StdDevelopPlugin(this, ActivityCompat::requestPermissions, this);
     private BackInterceptorPlugin mBackPlugin;
 
     {
@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDevelopPlugin = new StdDevelopPlugin(this, ActivityCompat::requestPermissions, savedInstanceState, this);
+        mDevelopPlugin.onCreate(savedInstanceState);
     }
 
     @Override

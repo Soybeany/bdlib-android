@@ -15,7 +15,7 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeOnNotNull;
 
 /**
- * 需额外自行调用{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+ * 在Attach时创建，需额外自行调用{}{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
  * {@link #setUserVisibleHint(boolean, ISuperSetUserVisibleHint)}
  * <br>Created by Soybeany on 2019/5/5.
  */
@@ -27,8 +27,8 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     private View mContentV;
 
     public FragmentDevelopPlugin(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer,
-                                 @Nullable Bundle savedInstanceState, @Nullable ICallback callback) {
-        super(activity, dealer, savedInstanceState, callback);
+                                 @Nullable ICallback callback) {
+        super(activity, dealer, callback);
         invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
     }
 
