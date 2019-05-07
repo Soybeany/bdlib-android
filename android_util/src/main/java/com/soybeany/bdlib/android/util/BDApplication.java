@@ -6,9 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import com.soybeany.bdlib.android.util.system.DeviceInfoUtils;
 
@@ -44,7 +42,6 @@ public class BDApplication extends Application {
         DeviceInfoUtils.print();
         registerActivityLifecycleCallbacks(mCallback.hint(setupHackedHint()).detectValve(setupDetectValve()));
         registerDeviceBtnWatcher();
-        setPolicy();
     }
 
     @Override
@@ -73,15 +70,6 @@ public class BDApplication extends Application {
      */
     protected long setupDetectValve() {
         return 1000;
-    }
-
-    /**
-     * 设置访问政策
-     */
-    private void setPolicy() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
-        }
     }
 
     /**
