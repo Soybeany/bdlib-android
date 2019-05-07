@@ -51,9 +51,6 @@ public class DrawableStatusBarUtils {
         }));
     }
 
-    /**
-     * 每次均创建，以免不能触发底色替换
-     */
     private static void setBackground(@NonNull View statusBarV, @DrawableRes Integer res, int defaultColor) {
         // 设置为指定资源
         if (null != res) {
