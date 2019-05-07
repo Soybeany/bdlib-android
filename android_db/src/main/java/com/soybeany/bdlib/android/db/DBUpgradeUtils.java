@@ -1,6 +1,9 @@
 package com.soybeany.bdlib.android.db;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.soybeany.bdlib.android.util.LogUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +15,39 @@ import java.util.Map;
  * <br>Created by Soybeany on 2018/1/19.
  */
 public class DBUpgradeUtils {
+
+    /**
+     * 执行升级操作(默认)
+     */
+    public static void upgrade(SQLiteDatabase db, int oldVersion, int newVersion, IMigration[] migrations, boolean printSql) {
+        upgrade(oldVersion, newVersion, new IUpgradeExecutor() {
+            @Override
+            public IMigration[] getMigrations() {
+                return migrations;
+            }
+
+            @Override
+            public Cursor onRawQuery(String sql) {
+                return db.rawQuery(sql, null);
+            }
+
+            @Override
+            public void onExecute(List<String> sqlList) {
+                db.beginTransaction();
+                try {
+                    for (String sql : sqlList) {
+                        db.execSQL(sql);
+                        if (printSql) {
+                            LogUtils.i("数据库升级", "升级语句 - " + sql);
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            }
+        });
+    }
 
     /**
      * 执行升级操作
