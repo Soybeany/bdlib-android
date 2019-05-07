@@ -5,16 +5,14 @@ import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
+import com.soybeany.bdlib.web.okhttp.part.DefaultCall;
 
-import java.io.IOException;
+import java.util.LinkedList;
 
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.internal.annotations.EverythingIsNonNull;
-import okio.Timeout;
 
 /**
  * <br>Created by Soybeany on 2019/4/11.
@@ -33,7 +31,7 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
     }
 
     @EverythingIsNonNull
-    public static class DialogCall implements Call {
+    public static class DialogCall extends DefaultCall {
         @Nullable
         private DialogInfo mInfo;
         @NonNull
@@ -42,49 +40,15 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
         private DialogHelper mHelper;
 
         DialogCall(@Nullable DialogInfo info, @NonNull Call call) {
+            super(call, new LinkedList<>());
             mTarget = call;
             mHelper = new DialogHelper(mInfo = info);
         }
 
         @Override
-        public Request request() {
-            return mTarget.request();
-        }
-
-        @Override
-        public Response execute() throws IOException {
-            return mTarget.execute();
-        }
-
-        @Override
-        public void enqueue(Callback responseCallback) {
-            mTarget.enqueue(responseCallback);
-        }
-
-        @Override
-        public void cancel() {
-            mTarget.cancel();
-        }
-
-        @Override
-        public boolean isExecuted() {
-            return mTarget.isExecuted();
-        }
-
-        @Override
-        public boolean isCanceled() {
-            return mTarget.isCanceled();
-        }
-
-        @Override
-        public Timeout timeout() {
-            return mTarget.timeout();
-        }
-
-        @Override
         @SuppressWarnings("MethodDoesntCallSuperMethod")
         public Call clone() {
-            return new DialogCall(mInfo, mTarget.clone());
+            return new DialogCall(mInfo, super.clone());
         }
 
         public <T> void enqueue(@NonNull OkHttpCallback<T> callback) {
