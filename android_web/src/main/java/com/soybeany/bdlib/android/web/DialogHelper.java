@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.dialog.DialogKeyProvider;
 import com.soybeany.bdlib.android.util.dialog.DialogMsg;
-import com.soybeany.bdlib.core.util.storage.MessageCenter;
+import com.soybeany.bdlib.core.util.notify.MessageCenter;
 
 import okhttp3.Call;
 

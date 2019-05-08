@@ -1,7 +1,7 @@
 package com.soybeany.bdlib.android.util.dialog;
 
 import com.soybeany.bdlib.android.util.BDContext;
-import com.soybeany.bdlib.core.util.storage.MessageCenter;
+import com.soybeany.bdlib.core.util.notify.MessageCenter;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.

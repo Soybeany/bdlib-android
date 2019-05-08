@@ -4,14 +4,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
+import com.soybeany.bdlib.web.okhttp.core.NotifyRequest;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 import com.soybeany.bdlib.web.okhttp.part.DefaultCall;
 
-import java.util.LinkedList;
-
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.internal.annotations.EverythingIsNonNull;
 
 /**
@@ -26,8 +24,8 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
     }
 
     @Override
-    public DialogCall newCall(Request request) {
-        return new DialogCall(mInfo, super.newCall(request));
+    public DialogCall newCall(NotifyRequest request) {
+        return new DialogCall(mInfo, super.newCall(request), request.key);
     }
 
     @EverythingIsNonNull
@@ -36,19 +34,20 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
         private DialogInfo mInfo;
         @NonNull
         private Call mTarget;
-
+        private String mNotifyKey;
         private DialogHelper mHelper;
 
-        DialogCall(@Nullable DialogInfo info, @NonNull Call call) {
-            super(call, new LinkedList<>());
+        DialogCall(@Nullable DialogInfo info, @NonNull Call call, String notifyKey) {
+            super(call, notifyKey);
             mTarget = call;
+            mNotifyKey = notifyKey;
             mHelper = new DialogHelper(mInfo = info);
         }
 
         @Override
         @SuppressWarnings("MethodDoesntCallSuperMethod")
         public Call clone() {
-            return new DialogCall(mInfo, super.clone());
+            return new DialogCall(mInfo, super.clone(), mNotifyKey);
         }
 
         public <T> void enqueue(@NonNull OkHttpCallback<T> callback) {

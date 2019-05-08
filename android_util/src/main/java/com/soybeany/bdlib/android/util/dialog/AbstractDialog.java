@@ -8,7 +8,7 @@ import android.support.annotation.WorkerThread;
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.core.java8.Optional;
-import com.soybeany.bdlib.core.util.storage.MessageCenter;
+import com.soybeany.bdlib.core.util.notify.MessageCenter;
 
 /**
  * 抽象弹窗，用一个弹窗管理多条信息
