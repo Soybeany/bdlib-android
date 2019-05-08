@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.core.NotifyRequest;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
-import com.soybeany.bdlib.web.okhttp.part.DefaultCall;
+import com.soybeany.bdlib.web.okhttp.part.NotifyCall;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -24,12 +24,12 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
     }
 
     @Override
-    public DialogCall newCall(NotifyRequest request) {
+    public NotifyCall newCall(NotifyRequest request) {
         return new DialogCall(mInfo, super.newCall(request), request.key);
     }
 
     @EverythingIsNonNull
-    public static class DialogCall extends DefaultCall {
+    public static class DialogCall extends NotifyCall {
         @Nullable
         private DialogInfo mInfo;
         @NonNull
@@ -45,9 +45,8 @@ public class DialogRequestPart extends OkHttpUtils.DefaultRequestPart {
         }
 
         @Override
-        @SuppressWarnings("MethodDoesntCallSuperMethod")
         public Call clone() {
-            return new DialogCall(mInfo, super.clone(), mNotifyKey);
+            return new DialogCall(mInfo, cloneTarget(), mNotifyKey);
         }
 
         public <T> void enqueue(@NonNull OkHttpCallback<T> callback) {
