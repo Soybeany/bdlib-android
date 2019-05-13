@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.web;
+package com.soybeany.bdlib.android.web.auth;
 
 import android.support.annotation.NonNull;
 

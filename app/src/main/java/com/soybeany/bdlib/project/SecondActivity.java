@@ -9,7 +9,10 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
-import com.soybeany.bdlib.android.util.style.ThemeChanger;
+import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
+import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
+import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
+import com.soybeany.bdlib.core.util.notify.Notifier;
 
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     private ThemePlugin mThemePlugin;
 
     private TestPresenter mPt;
+    private Notifier<DialogInvokerMsg, DialogCallbackMsg> mDialogNotifier;
 
     @Override
     public int setupLayoutResId() {
@@ -32,14 +36,21 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     @Override
+    public void onInitViews() {
+        ProgressNotifyDialogFragment fragment = new ProgressNotifyDialogFragment();
+        fragment.bind(this);
+        mDialogNotifier = fragment.getNotifier();
+    }
+
+    @Override
     public void showMsg(String desc, String msg) {
         LogUtils.test(desc + "有效果");
         ToastUtils.show(desc + msg);
     }
 
     public void onClick(View view) {
-//        mPt.testFile(null);
-        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
+        mPt.testFile(mDialogNotifier);
+//        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
     }
 
     @Override
