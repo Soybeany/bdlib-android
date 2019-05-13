@@ -68,7 +68,7 @@ public class RequestUtils {
      * 常规客户端(自动附带COOKIE信息)
      */
     public static DialogClientPart.DialogRequestPart newClient(@Nullable OkHttpClientFactory.IClientSetter setter) {
-        return newClientPart(setter).addSetter(DEFAULT_SETTER).newRequest(); //.configBinder(s -> s.add(new ReLoginCallDealer()));
+        return newClientPart(setter).addSetter(DEFAULT_SETTER).newRequest(); //.configBinder(s -> s.add(new ReLoginConnector()));
     }
 
     /**
