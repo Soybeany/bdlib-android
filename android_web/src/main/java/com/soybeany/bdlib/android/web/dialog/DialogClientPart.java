@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.web.dialog;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
@@ -9,6 +10,7 @@ import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpClientFactory;
 import com.soybeany.bdlib.web.okhttp.notify.NotifyCall;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import okhttp3.OkHttpClient;
@@ -38,6 +40,8 @@ public class DialogClientPart extends OkHttpUtils.ClientPart {
 
     public static class DialogRequestPart extends OkHttpUtils.RequestPart {
         private final RequestDialogConnector mConnector = new RequestDialogConnector();
+        private final Set<IBinderOnCallDealer> mDealers = new HashSet<>();
+        @Nullable
         private Notifier<DialogInvokerMsg, DialogCallbackMsg> mDialogNotifier;
 
         DialogRequestPart(OkHttpClient client) {
@@ -51,21 +55,15 @@ public class DialogClientPart extends OkHttpUtils.ClientPart {
 
         public NotifyCall newCall(OkHttpUtils.RequestGetter getter, boolean addDefaultDealers) {
             if (addDefaultDealers) {
-                mConnector.requestParts.add(new StdRequestCallDealer());
-                mConnector.dialogParts.add(new StdDialogCallDealer());
+                mConnector.dealers.add(new StdBinderOnCallDealer());
             }
             NotifyCall call = super.newCall(getter);
             mConnector.connect(call.getNotifier(), mDialogNotifier);
             return call;
         }
 
-        public DialogRequestPart configRequestPart(@NonNull IRequestPartSetter setter) {
-            setter.onSetup(mConnector.requestParts);
-            return this;
-        }
-
-        public DialogRequestPart configDialogPart(@NonNull IDialogPartSetter setter) {
-            setter.onSetup(mConnector.dialogParts);
+        public DialogRequestPart configBinder(@NonNull IBinderSetter setter) {
+            setter.onSetup(mConnector.dealers);
             return this;
         }
 
@@ -78,11 +76,7 @@ public class DialogClientPart extends OkHttpUtils.ClientPart {
 
     // //////////////////////////////////接口区//////////////////////////////////
 
-    public interface IRequestPartSetter {
-        void onSetup(Set<IRequestOnCallDealer> list);
-    }
-
-    public interface IDialogPartSetter {
-        void onSetup(Set<IDialogOnCallDealer> list);
+    public interface IBinderSetter {
+        void onSetup(Set<IBinderOnCallDealer> dealers);
     }
 }

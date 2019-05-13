@@ -55,7 +55,6 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
 
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
-        mNotifier.register();
         mNotifier.invoker().addDealer(this);
     }
 
@@ -63,7 +62,6 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
     public void onDestroy(@NonNull LifecycleOwner owner) {
         dismiss(OTHER);
         mNotifier.invoker().removeDealer(this);
-        mNotifier.unregister();
         mLifecycle.removeObserver(this);
     }
 

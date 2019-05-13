@@ -10,6 +10,8 @@ import com.soybeany.bdlib.web.okhttp.notify.RequestInvokerMsg;
 /**
  * <br>Created by Soybeany on 2019/5/10.
  */
-public interface IDialogOnCallDealer extends IOnCallDealer {
-    void onBindRequest(Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier, Notifier<RequestInvokerMsg, RequestCallbackMsg> requestNotifier);
+public interface IBinderOnCallDealer extends IOnCallDealer {
+    void onBindNotifier(Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier, Notifier<RequestInvokerMsg, RequestCallbackMsg> requestNotifier);
+
+    void onBindDialogMsgProvider(IDialogMsgProvider msgProvider);
 }

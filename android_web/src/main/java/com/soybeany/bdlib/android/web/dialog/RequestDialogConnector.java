@@ -17,8 +17,7 @@ import java.util.Set;
  * <br>Created by Soybeany on 2019/5/9.
  */
 class RequestDialogConnector {
-    final Set<IRequestOnCallDealer> requestParts = new HashSet<>();
-    final Set<IDialogOnCallDealer> dialogParts = new HashSet<>();
+    final Set<IBinderOnCallDealer> dealers = new HashSet<>();
     @Nullable
     private IDialogMsgProvider mMsgProvider;
 
@@ -28,18 +27,15 @@ class RequestDialogConnector {
 
     void connect(@Nullable Notifier<RequestInvokerMsg, RequestCallbackMsg> requestNotifier, @Nullable Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier) {
         // 信息不完整则不再
-        if (requestParts.isEmpty() || dialogParts.isEmpty() || null == requestNotifier
-                || null == dialogNotifier || null == mMsgProvider) {
+        if (dealers.isEmpty() || null == requestNotifier || null == dialogNotifier || null == mMsgProvider) {
             return;
         }
         // 绑定
-        IterableUtils.forEach(requestParts, (part, flag) -> {
-            requestNotifier.callback().addDealer(part);
-            part.onBindDialog(requestNotifier, dialogNotifier, mMsgProvider);
-        });
-        IterableUtils.forEach(dialogParts, (part, flag) -> {
-            dialogNotifier.callback().addDealer(part);
-            part.onBindRequest(dialogNotifier, requestNotifier);
+        IterableUtils.forEach(dealers, (dealer, flag) -> {
+            requestNotifier.callback().addDealer(dealer);
+            dialogNotifier.callback().addDealer(dealer);
+            dealer.onBindNotifier(dialogNotifier, requestNotifier);
+            dealer.onBindDialogMsgProvider(mMsgProvider);
         });
     }
 }

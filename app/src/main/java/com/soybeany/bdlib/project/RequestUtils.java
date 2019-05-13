@@ -2,7 +2,6 @@ package com.soybeany.bdlib.project;
 
 import android.support.annotation.Nullable;
 
-import com.soybeany.bdlib.android.web.auth.ReLoginCallDealer;
 import com.soybeany.bdlib.android.web.auth.ReLoginInterceptor;
 import com.soybeany.bdlib.android.web.dialog.DialogClientPart;
 import com.soybeany.bdlib.web.okhttp.core.HandledException;
@@ -53,7 +52,7 @@ public class RequestUtils {
     static {
         // 设置全局客户端
         OkHttpClientFactory.setupDefaultClient(builder -> {
-            OkHttpClientFactory.setupTimeout(builder, 5); // 设置默认超时
+            OkHttpClientFactory.setupTimeout(builder, 10); // 设置默认超时
         });
     }
 
@@ -69,7 +68,7 @@ public class RequestUtils {
      * 常规客户端(自动附带COOKIE信息)
      */
     public static DialogClientPart.DialogRequestPart newClient(@Nullable OkHttpClientFactory.IClientSetter setter) {
-        return newClientPart(setter).addSetter(DEFAULT_SETTER).newRequest().configRequestPart(s -> s.add(new ReLoginCallDealer()));
+        return newClientPart(setter).addSetter(DEFAULT_SETTER).newRequest(); //.configBinder(s -> s.add(new ReLoginCallDealer()));
     }
 
     /**
