@@ -139,7 +139,7 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
         }
         mMsgSet.clear();
         mUnableCancelSet.clear();
-        if (mRealDialog.isDialogShowing()) {
+        if (DialogDismissReason.CANCEL.equals(reason) || mRealDialog.isDialogShowing()) {
             mRealDialog.realDismiss();
             notifyCallback(TYPE_ON_DISMISS_DIALOG, reason);
         }

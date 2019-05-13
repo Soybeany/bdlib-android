@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.core.util.notify.INotifyMsg;
+import com.soybeany.bdlib.core.util.notify.IOnCallDealer;
 import com.soybeany.bdlib.core.util.notify.Notifier;
 import com.soybeany.bdlib.web.okhttp.notify.RequestCallbackMsg;
 import com.soybeany.bdlib.web.okhttp.notify.RequestInvokerMsg;
@@ -36,9 +37,9 @@ public class RequestPartDelegate implements IRequestOnCallDealer {
         }
     }
 
-    public void removeSelf() {
+    public void removeDealer(IOnCallDealer dealer) {
         if (null != mRequestNotifier) {
-            mRequestNotifier.callback().removeDealer(this);
+            mRequestNotifier.callback().removeDealer(dealer);
         }
     }
 }

@@ -46,6 +46,6 @@ public class StdRequestCallDealer extends RequestCallDealer implements IRequestO
     @Override
     protected void onFinish(RequestFinishReason requestFinishReason) {
         mDelegate.dialogInvoke(TYPE_POP_MSG, mDialogMsg);
-        mDelegate.removeSelf();
+        mDelegate.removeDealer(this);
     }
 }

@@ -9,6 +9,7 @@ import com.soybeany.bdlib.android.web.dialog.RequestPartDelegate;
 import com.soybeany.bdlib.core.util.notify.INotifyMsg;
 import com.soybeany.bdlib.core.util.notify.Notifier;
 import com.soybeany.bdlib.web.okhttp.notify.RequestCallbackMsg;
+import com.soybeany.bdlib.web.okhttp.notify.RequestFinishReason;
 import com.soybeany.bdlib.web.okhttp.notify.RequestInvokerMsg;
 
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_POP_MSG;
@@ -40,6 +41,9 @@ public class ReLoginCallDealer implements IRequestOnCallDealer {
             case ReLoginInterceptor.TYPE_ON_RE_REQUEST_FINISH:
                 onReRequestFinish();
                 break;
+            case RequestCallbackMsg.TYPE_ON_FINISH:
+                onFinish((RequestFinishReason) msg.getData());
+                break;
         }
     }
 
@@ -57,6 +61,10 @@ public class ReLoginCallDealer implements IRequestOnCallDealer {
 
     protected void onReRequestFinish() {
         mDelegate.dialogInvoke(TYPE_POP_MSG, mReRequestMsg);
+    }
+
+    protected void onFinish(RequestFinishReason reason) {
+        mDelegate.removeDealer(this);
     }
 
     @Override
