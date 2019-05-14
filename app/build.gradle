@@ -36,4 +36,8 @@ dependencies {
     implementation project(':android_mvp')
     implementation project(':android_ui')
     implementation 'com.jaeger.statusbarutil:library:1.5.1'
+    // 测试
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }

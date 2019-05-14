@@ -19,7 +19,7 @@ import butterknife.Unbinder;
  */
 public class ButterKnifePlugin implements IExtendPlugin {
     @Nullable
-    private ICallback mCallback;
+    private final ICallback mCallback;
     private Unbinder mUnBinder;
 
     public ButterKnifePlugin(@Nullable ICallback callback) {

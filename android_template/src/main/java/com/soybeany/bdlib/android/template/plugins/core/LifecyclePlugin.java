@@ -15,7 +15,7 @@ import java.util.Set;
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class LifecyclePlugin implements IExtendPlugin {
-    private Set<LifecycleObserver> mObservers = new HashSet<>();
+    private final Set<LifecycleObserver> mObservers = new HashSet<>();
 
     public LifecyclePlugin(@Nullable ICallback callback) {
         IExtendPlugin.invokeOnNotNull(callback, c -> c.onSetupObservers(mObservers));

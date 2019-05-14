@@ -13,10 +13,12 @@ import com.soybeany.bdlib.android.util.style.DrawableStatusBarUtils;
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class DrawableStatusBarPlugin implements IExtendPlugin {
-    private Activity mActivity;
-    private ICallback mCallback;
+    @NonNull
+    private final Activity mActivity;
+    @Nullable
+    private final ICallback mCallback;
 
-    public DrawableStatusBarPlugin(@NonNull Activity activity, ICallback callback) {
+    public DrawableStatusBarPlugin(@NonNull Activity activity, @Nullable ICallback callback) {
         mActivity = activity;
         mCallback = callback;
     }

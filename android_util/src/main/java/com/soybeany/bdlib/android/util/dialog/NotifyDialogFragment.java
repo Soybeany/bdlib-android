@@ -13,7 +13,7 @@ import com.soybeany.bdlib.core.java8.function.Supplier;
 import com.soybeany.bdlib.core.util.notify.Notifier;
 
 /**
- * DialogFragment实现，使用{@link #getFragment(FragmentActivity, Supplier)}获得实例
+ * DialogFragment实现，使用{@link #getFragment(FragmentActivity, String, Supplier)}获得实例
  * <br>Created by Soybeany on 2019/5/10.
  */
 public abstract class NotifyDialogFragment extends DialogFragment implements NotifyDialogDelegate.IRealDialog {
@@ -23,8 +23,8 @@ public abstract class NotifyDialogFragment extends DialogFragment implements Not
     private NotifyDialogDelegate mDelegate;
 
     @SuppressWarnings("unchecked")
-    public static <T extends NotifyDialogFragment> T getFragment(@NonNull FragmentActivity activity, @NonNull Supplier<? extends T> other) {
-        NotifyDialogDelegate delegate = NotifyDialogDelegate.getNew(activity);
+    public static <T extends NotifyDialogFragment> T getFragment(@NonNull FragmentActivity activity, String type, @NonNull Supplier<? extends T> other) {
+        NotifyDialogDelegate delegate = NotifyDialogDelegate.getNew(activity, type);
         T fragment = (T) activity.getSupportFragmentManager().findFragmentByTag(delegate.uid);
         if (null == fragment) {
             fragment = other.get();

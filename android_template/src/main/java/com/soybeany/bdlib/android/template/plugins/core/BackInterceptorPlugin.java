@@ -12,9 +12,9 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class BackInterceptorPlugin implements IExtendPlugin {
-    private Activity mActivity;
+    private final Activity mActivity;
     @Nullable
-    private ICallback mCallback;
+    private final ICallback mCallback;
 
     public BackInterceptorPlugin(@NonNull Activity activity, @Nullable ICallback callback) {
         mActivity = activity;

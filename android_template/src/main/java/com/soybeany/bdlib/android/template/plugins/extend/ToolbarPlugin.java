@@ -22,9 +22,9 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
  * <br>Created by Soybeany on 2019/4/29.
  */
 public class ToolbarPlugin implements IExtendPlugin {
-    private Activity mActivity;
+    private final Activity mActivity;
     @Nullable
-    private ICallback mCallback;
+    private final ICallback mCallback;
 
     public ToolbarPlugin(@NonNull Activity activity, @Nullable ICallback callback) {
         mActivity = activity;

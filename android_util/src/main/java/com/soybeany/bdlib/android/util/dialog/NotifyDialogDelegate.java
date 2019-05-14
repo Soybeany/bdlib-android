@@ -37,7 +37,7 @@ import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_T
 
 /**
  * 通知弹窗代理，使用者需注意:
- * 1.使用{@link #getNew(FragmentActivity)}获得实例，而不要直接new
+ * 1.使用{@link #getNew(FragmentActivity, String)}获得实例，而不要直接new
  * 2.弹窗关闭监听中调用{@link #onCancel()}
  * <br>Created by Soybeany on 2019/5/10.
  */
@@ -60,8 +60,8 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
     @Nullable
     private IRealDialog mRealDialog;
 
-    public static NotifyDialogDelegate getNew(FragmentActivity activity) {
-        NotifyDialogDelegate delegate = ViewModelProviders.of(activity).get(NotifyDialogDelegate.class);
+    public static NotifyDialogDelegate getNew(FragmentActivity activity, String type) {
+        NotifyDialogDelegate delegate = ViewModelProviders.of(activity).get(type, NotifyDialogDelegate.class);
         activity.getLifecycle().addObserver(delegate); // 引入生命周期监听
         return delegate;
     }

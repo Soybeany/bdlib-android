@@ -17,8 +17,8 @@ import com.soybeany.bdlib.core.java8.Optional;
  */
 public class ViewModelPlugin implements IExtendPlugin {
     @Nullable
-    private ICallback mCallback;
-    private IVMProvider mProvider;
+    private final ICallback mCallback;
+    private final IVMProvider mProvider;
 
     public ViewModelPlugin(@Nullable ICallback callback, @Nullable IVMProvider provider) {
         mCallback = callback;
