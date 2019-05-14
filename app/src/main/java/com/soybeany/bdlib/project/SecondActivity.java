@@ -9,6 +9,8 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
+import com.soybeany.bdlib.android.util.dialog.NotifyDialogDelegate;
+import com.soybeany.bdlib.android.util.dialog.NotifyDialogFragment;
 import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
@@ -37,7 +39,7 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
 
     @Override
     public void onInitViews() {
-        ProgressNotifyDialogFragment fragment = new ProgressNotifyDialogFragment();
+        ProgressNotifyDialogFragment fragment = NotifyDialogFragment.getFragment(this, NotifyDialogDelegate.getNew(this), ProgressNotifyDialogFragment::new);
         fragment.bind(this);
         mDialogNotifier = fragment.getNotifier();
     }

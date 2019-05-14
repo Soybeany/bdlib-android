@@ -1,31 +1,35 @@
 package com.soybeany.bdlib.android.util.dialog;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.core.java8.Optional;
+import com.soybeany.bdlib.core.java8.function.Supplier;
 import com.soybeany.bdlib.core.util.notify.Notifier;
 
 /**
- * DialogFragment实现
+ * DialogFragment实现，需在创建后调用{@link #bind(AppCompatActivity)}绑定Activity
  * <br>Created by Soybeany on 2019/5/10.
  */
 public abstract class NotifyDialogFragment extends DialogFragment implements NotifyDialogDelegate.IRealDialog {
-    @Nullable
-    private NotifyDialogDelegate mDelegate;
+
+    @SuppressWarnings("unchecked")
+    public static <T extends NotifyDialogFragment> T getFragment(@NonNull FragmentActivity activity, @NonNull NotifyDialogDelegate delegate, @NonNull Supplier<? extends T> other) {
+        T fragment = (T) activity.getSupportFragmentManager().findFragmentByTag(delegate.uid);
+        return null != fragment ? fragment : other.get();
+    }
+
     @Nullable
     private AppCompatActivity mActivity;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    @Nullable
+    private NotifyDialogDelegate mDelegate;
 
     @Override
     public void onCancel(DialogInterface dialog) {
@@ -35,7 +39,9 @@ public abstract class NotifyDialogFragment extends DialogFragment implements Not
 
     @Override
     public void realShow() {
-        Optional.ofNullable(mActivity).ifPresent(activity -> show(activity.getSupportFragmentManager(), null));
+        if (null != mDelegate) {
+            Optional.ofNullable(mActivity).ifPresent(activity -> show(activity.getSupportFragmentManager(), mDelegate.uid));
+        }
     }
 
     @Override
@@ -43,12 +49,20 @@ public abstract class NotifyDialogFragment extends DialogFragment implements Not
         dismiss();
     }
 
+    // //////////////////////////////////外部调用区//////////////////////////////////
+
+    @Nullable
     public Notifier<DialogInvokerMsg, DialogCallbackMsg> getNotifier() {
         return null != mDelegate ? mDelegate.getNotifier() : null;
     }
 
-    public void bind(@NonNull AppCompatActivity activity) {
+    /**
+     * onCreate中调用
+     */
+    public NotifyDialogFragment bind(@NonNull AppCompatActivity activity) {
         mActivity = activity;
-        mDelegate = new NotifyDialogDelegate(activity, this);
+        mDelegate = ViewModelProviders.of(activity).get(NotifyDialogDelegate.class);
+        mDelegate.init(activity, this);
+        return this;
     }
 }

@@ -2,9 +2,16 @@ package com.soybeany.bdlib.android.util.dialog;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
+import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
@@ -21,7 +28,6 @@ import java.util.TreeSet;
 
 import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.CANCEL;
 import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.NORM;
-import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.OTHER;
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_DISMISS_DIALOG;
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_POP;
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_SHOW;
@@ -32,37 +38,55 @@ import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_S
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_TO_PROGRESS;
 
 /**
- * 通知弹窗代理，使用者需在弹窗关闭监听中调用{@link #onCancel()}
+ * 通知弹窗代理，使用者需注意:
+ * 1.准备好后使用{@link #init(AppCompatActivity, IRealDialog)}进行初始化
+ * 2.弹窗关闭监听中调用{@link #onCancel()}
  * <br>Created by Soybeany on 2019/5/10.
  */
-public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
+public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IObserver {
+    /**
+     * 标识此delegate的uid
+     */
+    public final String uid = BDContext.getUID();
+
     private final SortedSet<IDialogMsg> mMsgSet = new TreeSet<>(); // 收录的弹窗信息
     private final Set<IDialogMsg> mUnableCancelSet = new HashSet<>(); // 收录的弹窗信息(不可取消)
     private final Notifier<DialogInvokerMsg, DialogCallbackMsg> mNotifier = new Notifier<>(HandlerThreadImpl.UI_THREAD);
 
-    private final Lifecycle mLifecycle;
     private final DialogInvokerMsg mInvokerMsg = new DialogInvokerMsg();
     private final DialogCallbackMsg mCallbackMsg = new DialogCallbackMsg();
-    private final IRealDialog mRealDialog;
 
-    public NotifyDialogDelegate(@NonNull LifecycleOwner owner, @NonNull IRealDialog realDialog) {
-        mLifecycle = owner.getLifecycle();
-        mLifecycle.addObserver(this);
-        mRealDialog = realDialog;
+    private final MutableLiveData<String> mHint = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mCancelable = new MutableLiveData<>();
+
+    @Nullable
+    private IRealDialog mRealDialog;
+    @Nullable
+    private Lifecycle mLifecycle;
+
+    public static NotifyDialogDelegate getNew(FragmentActivity activity) {
+        return ViewModelProviders.of(activity).get(NotifyDialogDelegate.class);
+    }
+
+    {
+        mNotifier.invoker().addDealer(this);
     }
 
     // //////////////////////////////////重写区//////////////////////////////////
 
     @Override
-    public void onCreate(@NonNull LifecycleOwner owner) {
-        mNotifier.invoker().addDealer(this);
+    public void onDestroy(@NonNull LifecycleOwner owner) {
+        if (null != mLifecycle) {
+            mLifecycle.removeObserver(this);
+            mLifecycle = null;
+        }
+        mRealDialog = null;
     }
 
     @Override
-    public void onDestroy(@NonNull LifecycleOwner owner) {
-        dismiss(OTHER);
+    protected void onCleared() {
+        super.onCleared();
         mNotifier.invoker().removeDealer(this);
-        mLifecycle.removeObserver(this);
     }
 
     @Override
@@ -84,6 +108,17 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
     }
 
     // //////////////////////////////////调用区//////////////////////////////////
+
+    public void init(@NonNull AppCompatActivity activity, @NonNull IRealDialog realDialog) {
+        mLifecycle = activity.getLifecycle();
+        mLifecycle.addObserver(this);
+
+        if (mRealDialog == realDialog) {
+            return;
+        }
+        mRealDialog = realDialog;
+        mRealDialog.onObserveMsg(activity, mHint, mCancelable);
+    }
 
     public Notifier<DialogInvokerMsg, DialogCallbackMsg> getNotifier() {
         return mNotifier;
@@ -122,16 +157,21 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
     }
 
     public void toProgress(float percent) {
-        mRealDialog.realToProgress(percent);
+        if (null != mRealDialog) {
+            mRealDialog.realToProgress(percent);
+        }
     }
 
     public void cancel() {
-        if (dialogCancelable()) {
+        if (null != mRealDialog && dialogCancelable()) {
             mRealDialog.realCancel();
         }
     }
 
     public void dismiss(DialogDismissReason reason) {
+        if (null == mRealDialog) {
+            return;
+        }
         for (IDialogMsg msg : mMsgSet) {
             notifyCallback(TYPE_ON_POP, msg);
         }
@@ -150,6 +190,9 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
     // //////////////////////////////////内部区//////////////////////////////////
 
     private void showNewestMsg(boolean isReShow) {
+        if (null == mRealDialog) {
+            return;
+        }
         if (!mRealDialog.isDialogShowing()) {
             notifyCallback(TYPE_ON_SHOW_DIALOG, null);
             mRealDialog.realShow();
@@ -158,7 +201,8 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
         if (!isReShow) {
             notifyCallback(TYPE_ON_SHOW, msg);
         }
-        mRealDialog.signalSetupMsg(msg.hint(), dialogCancelable());
+        mHint.setValue(msg.hint());
+        mCancelable.setValue(dialogCancelable());
     }
 
     private boolean dialogCancelable() {
@@ -169,10 +213,10 @@ public class NotifyDialogDelegate implements IOnCallDealer, IObserver {
         mNotifier.callback().notifyNow(mCallbackMsg.type(type).data(data));
     }
 
-    // //////////////////////////////////接口区//////////////////////////////////
+    // //////////////////////////////////内部类区//////////////////////////////////
 
     public interface IRealDialog {
-        void signalSetupMsg(String hint, boolean cancelable);
+        void onObserveMsg(@NonNull LifecycleOwner owner, @NonNull LiveData<String> hint, @NonNull LiveData<Boolean> cancelable);
 
         void realShow();
 

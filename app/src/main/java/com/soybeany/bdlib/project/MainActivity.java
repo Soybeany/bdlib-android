@@ -8,6 +8,7 @@ import com.soybeany.bdlib.android.template.BaseActivity;
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
+import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
 import com.soybeany.bdlib.android.util.style.ThemeChanger;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
@@ -27,6 +28,8 @@ public class MainActivity extends BaseActivity {
     public static MutableLiveData<ThemeChanger.Info> THEME_DATA = new MutableLiveData<>();
 
     private ThemePlugin mThemePlugin;
+
+    ProgressNotifyDialogFragment fragment = new ProgressNotifyDialogFragment();
 
     @Override
     public int setupLayoutResId() {
@@ -52,6 +55,7 @@ public class MainActivity extends BaseActivity {
 //        requestPermissions(() -> {
 //            ToastUtils.show("授权成功");
 //        }, PermissionRequester.READ_PHONE_STATE);
+//        fragment.show(getSupportFragmentManager(), null);
     }
 
     @Override
