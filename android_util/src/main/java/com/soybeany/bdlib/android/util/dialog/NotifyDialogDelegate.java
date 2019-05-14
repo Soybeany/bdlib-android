@@ -1,6 +1,5 @@
 package com.soybeany.bdlib.android.util.dialog;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -9,7 +8,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 
 import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
@@ -39,7 +37,7 @@ import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_T
 
 /**
  * 通知弹窗代理，使用者需注意:
- * 1.准备好后使用{@link #init(AppCompatActivity, IRealDialog)}进行初始化
+ * 1.使用{@link #getNew(FragmentActivity)}获得实例，而不要直接new
  * 2.弹窗关闭监听中调用{@link #onCancel()}
  * <br>Created by Soybeany on 2019/5/10.
  */
@@ -61,11 +59,11 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
 
     @Nullable
     private IRealDialog mRealDialog;
-    @Nullable
-    private Lifecycle mLifecycle;
 
     public static NotifyDialogDelegate getNew(FragmentActivity activity) {
-        return ViewModelProviders.of(activity).get(NotifyDialogDelegate.class);
+        NotifyDialogDelegate delegate = ViewModelProviders.of(activity).get(NotifyDialogDelegate.class);
+        activity.getLifecycle().addObserver(delegate); // 引入生命周期监听
+        return delegate;
     }
 
     {
@@ -76,10 +74,6 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
 
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
-        if (null != mLifecycle) {
-            mLifecycle.removeObserver(this);
-            mLifecycle = null;
-        }
         mRealDialog = null;
     }
 
@@ -109,15 +103,12 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
 
     // //////////////////////////////////调用区//////////////////////////////////
 
-    public void init(@NonNull AppCompatActivity activity, @NonNull IRealDialog realDialog) {
-        mLifecycle = activity.getLifecycle();
-        mLifecycle.addObserver(this);
-
-        if (mRealDialog == realDialog) {
-            return;
+    NotifyDialogDelegate init(@NonNull IRealDialog realDialog) {
+        if (mRealDialog != realDialog) {
+            mRealDialog = realDialog;
+            mRealDialog.onObserveMsg(mHint, mCancelable);
         }
-        mRealDialog = realDialog;
-        mRealDialog.onObserveMsg(activity, mHint, mCancelable);
+        return this;
     }
 
     public Notifier<DialogInvokerMsg, DialogCallbackMsg> getNotifier() {
@@ -216,7 +207,7 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
     // //////////////////////////////////内部类区//////////////////////////////////
 
     public interface IRealDialog {
-        void onObserveMsg(@NonNull LifecycleOwner owner, @NonNull LiveData<String> hint, @NonNull LiveData<Boolean> cancelable);
+        void onObserveMsg(@NonNull LiveData<String> hint, @NonNull LiveData<Boolean> cancelable);
 
         void realShow();
 
