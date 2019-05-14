@@ -78,7 +78,7 @@ public class DialogClientPart extends OkHttpUtils.ClientPart {
         }
 
         private void connect(@Nullable Notifier<RequestInvokerMsg, RequestCallbackMsg> requestNotifier) {
-            // 信息不完整则不再
+            // 信息不完整则不再继续
             if (mConnectors.isEmpty() || null == requestNotifier || null == mDialogNotifier || null == mMsgProvider) {
                 return;
             }

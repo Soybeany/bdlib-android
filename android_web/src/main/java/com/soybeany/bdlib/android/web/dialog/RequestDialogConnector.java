@@ -55,14 +55,14 @@ public abstract class RequestDialogConnector implements IOnCallDealer {
     protected void onDismissDialog(DialogDismissReason reason) {
         // 弹窗部分不再需要监听
         if (null != mDialogNotifier) {
-            mDialogNotifier.callback().removeDealer(this);
+            mDialogNotifier.callback().delayRemoveDealer(this);
         }
     }
 
     protected void onFinish(RequestFinishReason requestFinishReason) {
         // 请求部分不再需要监听
         if (null != mRequestNotifier) {
-            mRequestNotifier.callback().removeDealer(this);
+            mRequestNotifier.callback().delayRemoveDealer(this);
         }
     }
 

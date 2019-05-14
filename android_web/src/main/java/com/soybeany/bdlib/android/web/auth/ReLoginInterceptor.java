@@ -38,7 +38,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
             throw new HandledException(getOutOfRetryTimesHint());
         }
         // 提取通知键
-        Notifier notifier = chain.call() instanceof NotifyCall ? ((NotifyCall) chain.call()).getNotifier() : null;
+        Notifier<RequestInvokerMsg, RequestCallbackMsg> notifier = chain.call() instanceof NotifyCall ? ((NotifyCall) chain.call()).getNotifier() : null;
         // 尝试重登录
         Response authResponse = execute(notifier, TYPE_ON_RE_AUTH_START, TYPE_ON_RE_AUTH_FINISH, this::onAuth, call -> {
             Response response = call.execute();
@@ -72,7 +72,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
 
     // //////////////////////////////////内部区//////////////////////////////////
 
-    private Response execute(@Nullable Notifier notifier, String startType, String finishType, ICGetter cGetter, IRGetter rGetter, IEGetter eGetter) throws IOException {
+    private Response execute(@Nullable Notifier<RequestInvokerMsg, RequestCallbackMsg> notifier, String startType, String finishType, ICGetter cGetter, IRGetter rGetter, IEGetter eGetter) throws IOException {
         IOnCallDealer cancelDealer = null;
         try {
             Call call = cGetter.getCall();
