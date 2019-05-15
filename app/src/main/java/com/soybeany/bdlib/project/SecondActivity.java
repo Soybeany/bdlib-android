@@ -6,25 +6,23 @@ import com.soybeany.bdlib.android.mvp.IPresenterProvider;
 import com.soybeany.bdlib.android.mvp.MvpPlugin;
 import com.soybeany.bdlib.android.template.BaseActivity;
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.plugins.extend.DialogFragmentPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.NotifyDialogFragment;
 import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
-import com.soybeany.bdlib.core.util.notify.Notifier;
 
 import java.util.List;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
-public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ITemplate {
+public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ITemplate, DialogFragmentPlugin.ICallback {
     private ThemePlugin mThemePlugin;
+    private DialogFragmentPlugin mDialogPlugin;
 
     private TestPresenter mPt;
-    private Notifier<DialogInvokerMsg, DialogCallbackMsg> mDialogNotifier;
 
     @Override
     public int setupLayoutResId() {
@@ -37,19 +35,14 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     @Override
-    public void onInitViews() {
-        ProgressNotifyDialogFragment fragment = NotifyDialogFragment.getFragment(this, ProgressNotifyDialogFragment::new);
-        mDialogNotifier = fragment.getNotifier();
-    }
-
-    @Override
     public void showMsg(String desc, String msg) {
         LogUtils.test(desc + "有效果");
         ToastUtils.show(desc + msg);
     }
 
     public void onClick(View view) {
-        mPt.testFile(mDialogNotifier);
+//        mPt.testFile(mDialogPlugin.getDialogNotifier());
+        mPt.testAsync();
 //        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
 //        new Thread(() -> {
 //            List<IDialogMsg> mDataList = new LinkedList<>();
@@ -82,5 +75,11 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
         super.onSetupPlugins(plugins);
         plugins.add(new MvpPlugin(this, this, this));
         plugins.add(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
+        plugins.add(mDialogPlugin = new DialogFragmentPlugin(this, this));
+    }
+
+    @Override
+    public NotifyDialogFragment onGetNewDialogFragment(String type) {
+        return new ProgressNotifyDialogFragment();
     }
 }
