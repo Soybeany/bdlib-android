@@ -28,6 +28,21 @@ public class TestPresenter extends BasePresenter<ITestView> {
 //        invoke(v -> v.showToast("有反应"));
     }
 
+    public void testAsync() {
+        Notifier<DialogInvokerMsg, DialogCallbackMsg> notifier = getTopDialogNotifier();
+        new Thread(() -> {
+            LogUtils.test("任务开始");
+            wrapDialog(notifier, new StdDialogMsg().hint("测试异步"), () -> {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            LogUtils.test("任务结束");
+        }).start();
+    }
+
     private class TestCallback implements UICallback<String> {
         @Override
         public void onUISuccess(String s) {
