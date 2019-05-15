@@ -7,14 +7,11 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
-import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.plugins.extend.DialogFragmentPlugin;
 import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.LogUtils;
-import com.soybeany.bdlib.android.util.dialog.NotifyDialogFragment;
-import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
@@ -88,8 +85,6 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
         Activity activity = BDApplication.getTopActivity();
         if (activity instanceof DialogFragmentPlugin.IInvoker) {
             return ((DialogFragmentPlugin.IInvoker) activity).getDialogNotifier(type);
-        } else if (activity instanceof FragmentActivity) {
-            return NotifyDialogFragment.getFragment((FragmentActivity) activity, type, ProgressNotifyDialogFragment::new).getNotifier();
         }
         return null;
     }
