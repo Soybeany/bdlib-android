@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.soybeany.bdlib.android.util.system.DeviceInfoUtils;
 
@@ -40,7 +42,8 @@ public class BDApplication extends Application {
         super.onCreate();
         BDContext.init(this);
         DeviceInfoUtils.print();
-        registerActivityLifecycleCallbacks(mCallback.hint(setupHackedHint()).detectValve(setupDetectValve()));
+        registerActivityLifecycleCallbacks(mCallback.hint(setupHackedHint())
+                .keyDetectValve(setupKeyDetectValve()).onStartDetectValve(setupOnStartDetectValve()));
         registerDeviceBtnWatcher();
     }
 
@@ -66,9 +69,16 @@ public class BDApplication extends Application {
     }
 
     /**
-     * 设置检测阈值，默认1秒
+     * 设置key检测阈值，默认1秒
      */
-    protected long setupDetectValve() {
+    protected long setupKeyDetectValve() {
+        return 1000;
+    }
+
+    /**
+     * 设置onStart检测阈值，默认1秒
+     */
+    protected long setupOnStartDetectValve() {
         return 1000;
     }
 
@@ -96,7 +106,11 @@ public class BDApplication extends Application {
 
         private boolean mNeedHint = true; // 是否需要劫持提示
         private String mHint; // 提示语
-        private long mDetectValve; // 检测阈值
+        private long mKeyDetectValve = 1000; // Key检测阈值
+        private long mOnStartDetectValve = 1000; // onStart检测阈值
+
+        private long mLastStartTime; // 最后一次调用onStart的时间
+        private Handler mHandler = new Handler(Looper.getMainLooper());
 
         LifecycleCallback(DeviceBtnClickWatcher watcher) {
             mWatcher = watcher;
@@ -109,7 +123,7 @@ public class BDApplication extends Application {
 
         @Override
         public void onActivityStarted(Activity activity) {
-            // 留空
+            mLastStartTime = System.currentTimeMillis();
         }
 
         @Override
@@ -127,8 +141,13 @@ public class BDApplication extends Application {
 
         @Override
         public void onActivityStopped(Activity activity) {
-            if (mNeedHint && activity == getTopActivity() && mWatcher.getDeltaTime() > mDetectValve) {
-                ToastUtils.showLong(mHint);
+            if (mNeedHint && activity == getTopActivity() && mWatcher.getDeltaTime() > mKeyDetectValve) {
+                // 一定延迟后若页面还没恢复，则认为是被劫持
+                mHandler.postDelayed(() -> {
+                    if (System.currentTimeMillis() - mLastStartTime > mOnStartDetectValve) {
+                        ToastUtils.showLong(mHint);
+                    }
+                }, mOnStartDetectValve);
             }
         }
 
@@ -154,10 +173,22 @@ public class BDApplication extends Application {
         }
 
         /**
-         * 设置检测阈值
+         * 设置Key检测阈值(0 ~ 10秒)
          */
-        LifecycleCallback detectValve(long valve) {
-            mDetectValve = valve;
+        LifecycleCallback keyDetectValve(long valve) {
+            if (valve > 0 && valve <= 10000) {
+                mKeyDetectValve = valve;
+            }
+            return this;
+        }
+
+        /**
+         * 设置onStart检测阈值(0 ~ 10秒)
+         */
+        LifecycleCallback onStartDetectValve(long valve) {
+            if (valve > 0 && valve <= 10000) {
+                mOnStartDetectValve = valve;
+            }
             return this;
         }
 
