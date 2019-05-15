@@ -71,7 +71,7 @@ public class DialogClientPart extends OkHttpUtils.ClientPart {
             return this;
         }
 
-        public DialogRequestPart showDialog(Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier, IDialogMsgProvider provider) {
+        public DialogRequestPart showDialog(@Nullable Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier, @Nullable IDialogMsgProvider provider) {
             mDialogNotifier = dialogNotifier;
             mMsgProvider = provider;
             return this;
