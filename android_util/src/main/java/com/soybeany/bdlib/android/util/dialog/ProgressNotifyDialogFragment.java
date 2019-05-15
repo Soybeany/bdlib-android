@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,26 +27,21 @@ public class ProgressNotifyDialogFragment extends NotifyDialogFragment {
     @Nullable
     private LiveData<Boolean> mCancelable;
 
+    @NonNull
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         mDialog = new ProgressDialog(getContext());
         mDialog.setCanceledOnTouchOutside(false);
         // 使用预设置好的信息
         Optional.ofNullable(mHint).ifPresent(hint -> mHintObserver.onChanged(hint.getValue()));
         Optional.ofNullable(mCancelable).ifPresent(cancelable -> mCancelableObserver.onChanged(cancelable.getValue()));
+        return mDialog;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroy() {
+        super.onDestroy();
         mDialog = null;
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        return null != mDialog ? mDialog : super.onCreateDialog(savedInstanceState);
     }
 
     @Override
