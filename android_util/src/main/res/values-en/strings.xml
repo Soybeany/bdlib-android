@@ -30,4 +30,5 @@
         like to go and set? "
     </string>
     <string name="bd_permission_deny">fail to get permissions</string>
+    <string name="bd_double_click_exit">press once more to exit</string>
 </resources>

@@ -12,13 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
 import com.soybeany.bdlib.android.template.plugins.core.FragmentDevelopPlugin;
 import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
-
-import java.util.List;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
@@ -72,10 +70,10 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     // //////////////////////////////////自定义方法重写//////////////////////////////////
 
     @Override
-    public void onSetupPlugins(List<IExtendPlugin> plugins) {
-        plugins.add(mDevelopPlugin);
-        plugins.add(new LifecyclePlugin(this));
-        plugins.add(new ViewModelPlugin(this, null));
+    public void onSetupPlugins(IPluginManager manager) {
+        manager.add(mDevelopPlugin);
+        manager.add(new LifecyclePlugin(this));
+        manager.add(new ViewModelPlugin(this, null));
     }
 
     @Override

@@ -7,14 +7,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.soybeany.bdlib.android.template.annotation.BackType;
-import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
 import com.soybeany.bdlib.android.template.plugins.core.BackInterceptorPlugin;
 import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
 import com.soybeany.bdlib.android.template.plugins.core.StdDevelopPlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
-
-import java.util.List;
 
 /**
  * <br>Created by Soybeany on 2019/2/1.
@@ -64,11 +62,11 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     }
 
     @Override
-    public void onSetupPlugins(List<IExtendPlugin> plugins) {
-        plugins.add(mDevelopPlugin);
-        plugins.add(new LifecyclePlugin(this));
-        plugins.add(new ViewModelPlugin(this, null));
-        plugins.add(mBackPlugin = new BackInterceptorPlugin(this, this));
+    public void onSetupPlugins(IPluginManager manager) {
+        manager.add(mDevelopPlugin);
+        manager.add(new LifecyclePlugin(this));
+        manager.add(new ViewModelPlugin(this, null));
+        manager.add(mBackPlugin = new BackInterceptorPlugin(this, this));
     }
 
     @Override

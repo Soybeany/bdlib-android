@@ -23,6 +23,8 @@ import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
+    public static final String GROUP_ID = "Develop";
+
     protected boolean mIsNew; // 此模板是否为新创建（屏幕旋转、recreate等导致的重新创建，则为false）
     @Nullable
     protected ICallback mCallback;
@@ -58,7 +60,7 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
     @NonNull
     @Override
     public final String getGroupId() {
-        return "Develop";
+        return GROUP_ID;
     }
 
     public void onCreate(@Nullable Bundle savedInstanceState) {

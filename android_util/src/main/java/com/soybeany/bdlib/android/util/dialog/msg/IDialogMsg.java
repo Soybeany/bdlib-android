@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.util.dialog.msg;
 
-import static com.soybeany.bdlib.android.util.BDContext.getResources;
+import static com.soybeany.bdlib.android.util.BDContext.getString;
 
 /**
  * <br>Created by Soybeany on 2019/5/8.
@@ -36,7 +36,7 @@ public interface IDialogMsg extends Comparable<IDialogMsg> {
 
         @Override
         public IDialogMsg hint(int resId) {
-            return hint(getResources().getString(resId));
+            return hint(getString(resId));
         }
 
         @Override

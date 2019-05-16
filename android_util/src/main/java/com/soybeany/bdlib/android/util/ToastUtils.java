@@ -3,6 +3,8 @@ package com.soybeany.bdlib.android.util;
 import android.support.annotation.StringRes;
 import android.widget.Toast;
 
+import static com.soybeany.bdlib.android.util.BDContext.getString;
+
 /**
  * 吐司工具类，维护着一个吐司单例
  * <br>Created by Soybeany on 2017/3/13.
@@ -42,7 +44,7 @@ public class ToastUtils {
     }
 
     public static void show(@StringRes int resId) {
-        show(BDContext.getResources().getString(resId));
+        show(getString(resId));
     }
 
     /**

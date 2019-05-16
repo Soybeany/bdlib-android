@@ -5,15 +5,13 @@ import android.view.View;
 import com.soybeany.bdlib.android.mvp.IPresenterProvider;
 import com.soybeany.bdlib.android.mvp.MvpPlugin;
 import com.soybeany.bdlib.android.template.BaseActivity;
-import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
 import com.soybeany.bdlib.android.template.plugins.extend.DialogFragmentPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.NotifyDialogFragment;
 import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
-
-import java.util.List;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
@@ -71,11 +69,11 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     @Override
-    public void onSetupPlugins(List<IExtendPlugin> plugins) {
-        super.onSetupPlugins(plugins);
-        plugins.add(new MvpPlugin(this, this, this));
-        plugins.add(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
-        plugins.add(mDialogPlugin = new DialogFragmentPlugin(this, this));
+    public void onSetupPlugins(IPluginManager manager) {
+        super.onSetupPlugins(manager);
+        manager.add(new MvpPlugin(this, this, this));
+        manager.add(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
+        manager.add(mDialogPlugin = new DialogFragmentPlugin(this, this));
     }
 
     @Override

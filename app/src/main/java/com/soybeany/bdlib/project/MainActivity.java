@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.view.View;
 
 import com.soybeany.bdlib.android.template.BaseActivity;
-import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.annotation.BackType;
+import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
-import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
 import com.soybeany.bdlib.android.util.style.ThemeChanger;
+import com.soybeany.bdlib.android.util.system.DoubleClickChecker;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -28,8 +28,7 @@ public class MainActivity extends BaseActivity {
     public static MutableLiveData<ThemeChanger.Info> THEME_DATA = new MutableLiveData<>();
 
     private ThemePlugin mThemePlugin;
-
-    ProgressNotifyDialogFragment fragment = new ProgressNotifyDialogFragment();
+    private DoubleClickChecker mChecker = new DoubleClickChecker();
 
     @Override
     public int setupLayoutResId() {
@@ -47,6 +46,15 @@ public class MainActivity extends BaseActivity {
         permissions.add(PermissionRequester.WRITE_EXTERNAL_STORAGE);
     }
 
+    @Override
+    public boolean shouldInterceptBack(int backType) {
+        if (BackType.BACK_KEY == backType) {
+            mChecker.check(this::finish);
+            return true;
+        }
+        return false;
+    }
+
     public void onClick(View view) {
         startActivity(new Intent(this, SecondActivity.class));
 //        language = (language == Locale.CHINESE ? Locale.ENGLISH : Locale.CHINESE);
@@ -59,9 +67,9 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onSetupPlugins(List<IExtendPlugin> plugins) {
-        super.onSetupPlugins(plugins);
-        plugins.add(mThemePlugin = new ThemePlugin(this, THEME_DATA));
+    public void onSetupPlugins(IPluginManager manager) {
+        super.onSetupPlugins(manager);
+        manager.add(mThemePlugin = new ThemePlugin(this, THEME_DATA));
     }
 
     public void onClickTheme(View view) {

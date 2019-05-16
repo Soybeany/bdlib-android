@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.util;
 
-import android.support.annotation.StringRes;
+import static com.soybeany.bdlib.android.util.BDContext.getString;
 
 /**
  * 标准提示语工具类
@@ -229,11 +229,5 @@ public class StdHintUtils {
      */
     public static String dialogCancel() {
         return getString(R.string.bd_hint_dialog_cancel);
-    }
-
-    // //////////////////////////////////内部方法//////////////////////////////////
-
-    private static String getString(@StringRes int resId) {
-        return BDContext.getResources().getString(resId);
     }
 }

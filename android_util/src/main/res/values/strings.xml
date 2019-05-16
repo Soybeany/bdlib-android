@@ -35,4 +35,7 @@
     <string name="bd_permission_request">当前应用缺少必要权限，是否前往设置?</string>
     <string name="bd_permission_deny">权限申请失败</string>
 
+    <!--DoubleClickChecker-->
+    <string name="bd_double_click_exit">再按一次退出</string>
+
 </resources>
