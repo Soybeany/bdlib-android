@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.util.TypedValue;
 import android.view.View;
 
+import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.R;
 import com.soybeany.bdlib.core.java8.Optional;
 
@@ -43,7 +42,7 @@ public class DrawableStatusBarUtils {
             if (null == statusBarV) {
                 return;
             }
-            int defaultColor = getDefaultColor(activity);
+            int defaultColor = BDContext.getAttributeValue(R.attr.colorPrimaryDark).data;
             setBackground(statusBarV, res, defaultColor);
             if (needAddListener) {
                 decorView.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> setBackground(statusBarV, res, defaultColor));
@@ -62,12 +61,5 @@ public class DrawableStatusBarUtils {
         if (drawable instanceof ColorDrawable && ((ColorDrawable) drawable).getColor() != defaultColor) {
             statusBarV.setBackgroundColor(defaultColor);
         }
-    }
-
-    @ColorInt
-    private static int getDefaultColor(@NonNull Activity activity) {
-        TypedValue typedValue = new TypedValue();
-        activity.getTheme().resolveAttribute(R.attr.colorPrimaryDark, typedValue, true);
-        return typedValue.data;
     }
 }

@@ -8,10 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.NotifyDialogFragment;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
-import com.soybeany.bdlib.core.util.notify.Notifier;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +18,7 @@ import java.util.Set;
  * todo 使用liveData记录所需的弹窗信息
  * <br>Created by Soybeany on 2019/4/30.
  */
-public class DialogFragmentPlugin implements IExtendPlugin {
+public class DialogFragmentPlugin implements IExtendPlugin, DialogNotifier.IProvider {
     @NonNull
     private final FragmentActivity mActivity;
     @Nullable
@@ -49,12 +47,8 @@ public class DialogFragmentPlugin implements IExtendPlugin {
     }
 
     @Nullable
-    public Notifier<DialogInvokerMsg, DialogCallbackMsg> getDialogNotifier() {
-        return getDialogNotifier(IInvoker.TYPE_DEFAULT);
-    }
-
-    @Nullable
-    public Notifier<DialogInvokerMsg, DialogCallbackMsg> getDialogNotifier(String type) {
+    @Override
+    public DialogNotifier getDialogNotifier(String type) {
         if (null == mCallback) {
             return null;
         }
@@ -62,14 +56,7 @@ public class DialogFragmentPlugin implements IExtendPlugin {
         return NotifyDialogFragment.getFragment(mActivity, type, () -> mCallback.onGetNewDialogFragment(type)).getNotifier();
     }
 
-    public interface IInvoker {
-        String TYPE_DEFAULT = "default";
-
-        @Nullable
-        Notifier<DialogInvokerMsg, DialogCallbackMsg> getDialogNotifier();
-
-        @Nullable
-        Notifier<DialogInvokerMsg, DialogCallbackMsg> getDialogNotifier(String type);
+    public interface IInvoker extends DialogNotifier.IProvider {
     }
 
     public interface ICallback {

@@ -76,10 +76,16 @@ public class BDContext {
      *
      * @return 颜色值
      */
-    public static int getColorPrimary(Context context) {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
-        return typedValue.data;
+    public static int getColorPrimary() {
+        return getAttributeValue(R.attr.colorPrimary).data;
     }
 
+    /**
+     * 获得应用当前主题下的资源值(非引用)
+     */
+    public static TypedValue getAttributeValue(int resId) {
+        TypedValue typedValue = new TypedValue();
+        getContext().getTheme().resolveAttribute(resId, typedValue, true);
+        return typedValue;
+    }
 }

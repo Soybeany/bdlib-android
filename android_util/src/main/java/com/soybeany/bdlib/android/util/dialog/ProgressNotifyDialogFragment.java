@@ -56,11 +56,6 @@ public class ProgressNotifyDialogFragment extends NotifyDialogFragment {
     }
 
     @Override
-    public boolean isDialogShowing() {
-        return null != mDialog && mDialog.isShowing();
-    }
-
-    @Override
     public void onObserveMsg(@NonNull LiveData<String> hint, @NonNull LiveData<Boolean> cancelable) {
         mHint = hint;
         mCancelable = cancelable;

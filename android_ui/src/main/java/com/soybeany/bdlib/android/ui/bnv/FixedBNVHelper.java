@@ -19,7 +19,7 @@ import q.rorbin.badgeview.QBadgeView;
  * 固定数目的BNV辅助器
  * <br>Created by Soybeany on 2019/4/22.
  */
-public class FixBNVHelper {
+public class FixedBNVHelper {
     private final List<Integer> mIdList = new ArrayList<>(); // 下标转id
     private final SparseIntArray mIndexArr = new SparseIntArray(); // id转下标
     private final SparseArray<QBadgeView> badgeViews = new SparseArray<>(); // 角标视图
@@ -27,7 +27,7 @@ public class FixBNVHelper {
     private BottomNavigationView mBNV;
     private BottomNavigationView.OnNavigationItemSelectedListener mListener;
 
-    public FixBNVHelper(@NonNull BottomNavigationView view) {
+    public FixedBNVHelper(@NonNull BottomNavigationView view) {
         // 设值
         mBNV = view;
         // 存储Id

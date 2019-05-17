@@ -3,25 +3,26 @@ package com.soybeany.bdlib.android.web.dialog;
 import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
+import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.core.util.notify.INotifyMsg;
-import com.soybeany.bdlib.core.util.notify.IOnCallDealer;
-import com.soybeany.bdlib.core.util.notify.Notifier;
+import com.soybeany.bdlib.core.util.notify.IOnCallListener;
 import com.soybeany.bdlib.web.okhttp.notify.RequestCallbackMsg;
 import com.soybeany.bdlib.web.okhttp.notify.RequestFinishReason;
 import com.soybeany.bdlib.web.okhttp.notify.RequestInvokerMsg;
+import com.soybeany.bdlib.web.okhttp.notify.RequestNotifier;
 
 /**
  * <br>Created by Soybeany on 2019/5/10.
  */
-public abstract class RequestDialogConnector implements IOnCallDealer {
+public abstract class RequestDialogConnector implements IOnCallListener {
     private final DialogInvokerMsg mInvokerMsg = new DialogInvokerMsg();
 
     @Nullable
-    private Notifier<DialogInvokerMsg, DialogCallbackMsg> mDialogNotifier;
+    private DialogNotifier mDialogNotifier;
     @Nullable
-    private Notifier<RequestInvokerMsg, RequestCallbackMsg> mRequestNotifier;
+    private RequestNotifier mRequestNotifier;
 
     @Override
     public void onCall(INotifyMsg msg) {
@@ -35,7 +36,7 @@ public abstract class RequestDialogConnector implements IOnCallDealer {
         }
     }
 
-    public void onBindNotifier(Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier, Notifier<RequestInvokerMsg, RequestCallbackMsg> requestNotifier) {
+    public void onBindNotifier(DialogNotifier dialogNotifier, RequestNotifier requestNotifier) {
         mDialogNotifier = dialogNotifier;
         mRequestNotifier = requestNotifier;
     }

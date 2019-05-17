@@ -10,14 +10,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.util.BDContext;
-import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
 import com.soybeany.bdlib.core.util.notify.INotifyMsg;
-import com.soybeany.bdlib.core.util.notify.IOnCallDealer;
-import com.soybeany.bdlib.core.util.notify.Notifier;
+import com.soybeany.bdlib.core.util.notify.IOnCallListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +39,7 @@ import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_T
  * 2.弹窗关闭监听中调用{@link #onCancel()}
  * <br>Created by Soybeany on 2019/5/10.
  */
-public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IObserver {
+public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, IObserver {
     /**
      * 标识此delegate的uid
      */
@@ -49,7 +47,7 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
 
     private final SortedSet<IDialogMsg> mMsgSet = new TreeSet<>(); // 收录的弹窗信息
     private final Set<IDialogMsg> mUnableCancelSet = new HashSet<>(); // 收录的弹窗信息(不可取消)
-    private final Notifier<DialogInvokerMsg, DialogCallbackMsg> mNotifier = new Notifier<>(HandlerThreadImpl.UI_THREAD);
+    private final DialogNotifier mNotifier = DialogNotifier.getNew();
 
     private final DialogInvokerMsg mInvokerMsg = new DialogInvokerMsg();
     private final DialogCallbackMsg mCallbackMsg = new DialogCallbackMsg();
@@ -59,6 +57,7 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
 
     @Nullable
     private IRealDialog mRealDialog;
+    private boolean mIsDialogShowing;
 
     public static NotifyDialogDelegate getNew(FragmentActivity activity, String type) {
         NotifyDialogDelegate delegate = ViewModelProviders.of(activity).get(type, NotifyDialogDelegate.class);
@@ -67,7 +66,7 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
     }
 
     {
-        mNotifier.invoker().addDealer(this);
+        mNotifier.invoker().addListener(this);
     }
 
     // //////////////////////////////////重写区//////////////////////////////////
@@ -80,7 +79,7 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
     @Override
     protected void onCleared() {
         super.onCleared();
-        mNotifier.invoker().removeDealer(this);
+        mNotifier.invoker().removeListener(this);
     }
 
     @Override
@@ -103,15 +102,16 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
 
     // //////////////////////////////////调用区//////////////////////////////////
 
-    NotifyDialogDelegate init(@NonNull IRealDialog realDialog) {
+    public NotifyDialogDelegate init(@NonNull IRealDialog realDialog) {
         if (mRealDialog != realDialog) {
             mRealDialog = realDialog;
+            mRealDialog.onInit(mIsDialogShowing);
             mRealDialog.onObserveMsg(mHint, mCancelable);
         }
         return this;
     }
 
-    public Notifier<DialogInvokerMsg, DialogCallbackMsg> getNotifier() {
+    public DialogNotifier getNotifier() {
         return mNotifier;
     }
 
@@ -168,7 +168,8 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
         }
         mMsgSet.clear();
         mUnableCancelSet.clear();
-        if (DialogDismissReason.CANCEL.equals(reason) || mRealDialog.isDialogShowing()) {
+        if (DialogDismissReason.CANCEL.equals(reason) || mIsDialogShowing) {
+            mIsDialogShowing = false;
             mRealDialog.realDismiss();
             notifyCallback(TYPE_ON_DISMISS_DIALOG, reason);
         }
@@ -184,7 +185,8 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
         if (null == mRealDialog) {
             return;
         }
-        if (!mRealDialog.isDialogShowing()) {
+        if (!mIsDialogShowing) {
+            mIsDialogShowing = true;
             notifyCallback(TYPE_ON_SHOW_DIALOG, null);
             mRealDialog.realShow();
         }
@@ -207,6 +209,9 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
     // //////////////////////////////////内部类区//////////////////////////////////
 
     public interface IRealDialog {
+        default void onInit(boolean isDialogShowing) {
+        }
+
         void onObserveMsg(@NonNull LiveData<String> hint, @NonNull LiveData<Boolean> cancelable);
 
         void realShow();
@@ -216,7 +221,5 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallDealer, IO
         void realCancel();
 
         void realDismiss();
-
-        boolean isDialogShowing();
     }
 }

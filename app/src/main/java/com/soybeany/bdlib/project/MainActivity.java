@@ -48,7 +48,8 @@ public class MainActivity extends BaseActivity {
     }
 
     public void onClick(View view) {
-        startActivity(new Intent(this, SecondActivity.class));
+//        startActivity(new Intent(this, SecondActivity.class));
+        startActivity(new Intent(this, SwipeRefreshActivity.class));
 //        language = (language == Locale.CHINESE ? Locale.ENGLISH : Locale.CHINESE);
 //        view.postDelayed(() -> c.recreate(this, language), 200);
 

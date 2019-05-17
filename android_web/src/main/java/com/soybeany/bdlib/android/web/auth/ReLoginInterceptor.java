@@ -5,12 +5,12 @@ import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.web.R;
 import com.soybeany.bdlib.core.java8.Optional;
-import com.soybeany.bdlib.core.util.notify.IOnCallDealer;
-import com.soybeany.bdlib.core.util.notify.Notifier;
+import com.soybeany.bdlib.core.util.notify.IOnCallListener;
 import com.soybeany.bdlib.web.okhttp.core.HandledException;
 import com.soybeany.bdlib.web.okhttp.notify.NotifyCall;
 import com.soybeany.bdlib.web.okhttp.notify.RequestCallbackMsg;
 import com.soybeany.bdlib.web.okhttp.notify.RequestInvokerMsg;
+import com.soybeany.bdlib.web.okhttp.notify.RequestNotifier;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     public static final String TYPE_ON_RE_REQUEST_START = "onReRequestStart";
     public static final String TYPE_ON_RE_REQUEST_FINISH = "onReRequestFinish";
 
-    private RequestCallbackMsg mMsg = new RequestCallbackMsg();
+    private final RequestCallbackMsg mMsg = new RequestCallbackMsg();
 
     @Override
     protected Response onInvalid(int retryTimes, @NonNull Chain chain) throws IOException {
@@ -38,7 +38,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
             throw new HandledException(getOutOfRetryTimesHint());
         }
         // 提取通知键
-        Notifier<RequestInvokerMsg, RequestCallbackMsg> notifier = chain.call() instanceof NotifyCall ? ((NotifyCall) chain.call()).getNotifier() : null;
+        RequestNotifier notifier = chain.call() instanceof NotifyCall ? ((NotifyCall) chain.call()).getNotifier() : null;
         // 尝试重登录
         Response authResponse = execute(notifier, TYPE_ON_RE_AUTH_START, TYPE_ON_RE_AUTH_FINISH, this::onAuth, call -> {
             Response response = call.execute();
@@ -72,22 +72,22 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
 
     // //////////////////////////////////内部区//////////////////////////////////
 
-    private Response execute(@Nullable Notifier<RequestInvokerMsg, RequestCallbackMsg> notifier, String startType, String finishType, ICGetter cGetter, IRGetter rGetter, IEGetter eGetter) throws IOException {
-        IOnCallDealer cancelDealer = null;
+    private Response execute(@Nullable RequestNotifier notifier, String startType, String finishType, ICGetter cGetter, IRGetter rGetter, IEGetter eGetter) throws IOException {
+        IOnCallListener cancelListener = null;
         try {
             Call call = cGetter.getCall();
             Optional.ofNullable(notifier).ifPresent(n -> n.callback().notifyNow(mMsg.type(startType)));
             // 监听请求的取消
-            cancelDealer = data -> RequestInvokerMsg.invokeOnCancel(data, call::cancel);
+            cancelListener = data -> RequestInvokerMsg.invokeOnCancel(data, call::cancel);
             if (null != notifier) {
-                notifier.invoker().addDealer(cancelDealer);
+                notifier.invoker().addListener(cancelListener);
             }
             return rGetter.getResponse(call);
         } catch (IOException e) {
             throw eGetter.getException(e);
         } finally {
             if (null != notifier) {
-                Optional.ofNullable(cancelDealer).ifPresent(notifier.invoker()::removeDealer);
+                Optional.ofNullable(cancelListener).ifPresent(notifier.invoker()::removeListener);
                 notifier.callback().notifyNow(mMsg.type(finishType));
             }
         }

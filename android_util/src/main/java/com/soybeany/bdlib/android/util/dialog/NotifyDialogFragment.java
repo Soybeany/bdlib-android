@@ -6,11 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
-import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.java8.function.Supplier;
-import com.soybeany.bdlib.core.util.notify.Notifier;
 
 /**
  * DialogFragment实现，使用{@link #getFragment(FragmentActivity, String, Supplier)}获得实例
@@ -61,7 +58,7 @@ public abstract class NotifyDialogFragment extends DialogFragment implements Not
     // //////////////////////////////////外部调用区//////////////////////////////////
 
     @Nullable
-    public Notifier<DialogInvokerMsg, DialogCallbackMsg> getNotifier() {
+    public DialogNotifier getNotifier() {
         return null != mDelegate ? mDelegate.getNotifier() : null;
     }
 }

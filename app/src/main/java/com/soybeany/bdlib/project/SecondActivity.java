@@ -41,7 +41,7 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     public void onClick(View view) {
-//        mPt.testFile(mDialogPlugin.getDialogNotifier());
+//        mPt.testFile();
         mPt.testAsync();
 //        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
 //        new Thread(() -> {

@@ -3,15 +3,12 @@ package com.soybeany.bdlib.android.web.dialog;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
+import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.core.util.IterableUtils;
-import com.soybeany.bdlib.core.util.notify.Notifier;
 import com.soybeany.bdlib.web.okhttp.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpClientFactory;
 import com.soybeany.bdlib.web.okhttp.notify.NotifyCall;
-import com.soybeany.bdlib.web.okhttp.notify.RequestCallbackMsg;
-import com.soybeany.bdlib.web.okhttp.notify.RequestInvokerMsg;
+import com.soybeany.bdlib.web.okhttp.notify.RequestNotifier;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,7 +41,7 @@ public class DialogClientPart extends OkHttpUtils.ClientPart {
     public static class DialogRequestPart extends OkHttpUtils.RequestPart {
         private final Set<RequestDialogConnector> mConnectors = new HashSet<>();
         @Nullable
-        private Notifier<DialogInvokerMsg, DialogCallbackMsg> mDialogNotifier;
+        private DialogNotifier mDialogNotifier;
         @Nullable
         private IDialogMsgProvider mMsgProvider;
 
@@ -71,23 +68,23 @@ public class DialogClientPart extends OkHttpUtils.ClientPart {
             return this;
         }
 
-        public DialogRequestPart showDialog(@Nullable Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier, @Nullable IDialogMsgProvider provider) {
+        public DialogRequestPart showDialog(@Nullable DialogNotifier dialogNotifier, @Nullable IDialogMsgProvider provider) {
             mDialogNotifier = dialogNotifier;
             mMsgProvider = provider;
             return this;
         }
 
-        private void connect(@Nullable Notifier<RequestInvokerMsg, RequestCallbackMsg> requestNotifier) {
+        private void connect(@Nullable RequestNotifier requestNotifier) {
             // 信息不完整则不再继续
             if (mConnectors.isEmpty() || null == requestNotifier || null == mDialogNotifier || null == mMsgProvider) {
                 return;
             }
             // 绑定
-            IterableUtils.forEach(mConnectors, (dealer, flag) -> {
-                requestNotifier.callback().addDealer(dealer);
-                mDialogNotifier.callback().addDealer(dealer);
-                dealer.onBindNotifier(mDialogNotifier, requestNotifier);
-                dealer.onBindDialogMsgProvider(mMsgProvider);
+            IterableUtils.forEach(mConnectors, (listener, flag) -> {
+                requestNotifier.callback().addListener(listener);
+                mDialogNotifier.callback().addListener(listener);
+                listener.onBindNotifier(mDialogNotifier, requestNotifier);
+                listener.onBindDialogMsgProvider(mMsgProvider);
             });
         }
     }

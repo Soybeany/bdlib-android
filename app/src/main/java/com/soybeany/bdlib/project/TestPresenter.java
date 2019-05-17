@@ -2,12 +2,10 @@ package com.soybeany.bdlib.project;
 
 import com.soybeany.bdlib.android.mvp.BasePresenter;
 import com.soybeany.bdlib.android.util.LogUtils;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
+import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.msg.StdDialogMsg;
 import com.soybeany.bdlib.android.web.UICallback;
 import com.soybeany.bdlib.core.util.file.IProgressListener;
-import com.soybeany.bdlib.core.util.notify.Notifier;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestFactory;
 import com.soybeany.bdlib.web.okhttp.parser.StringParser;
@@ -19,8 +17,8 @@ import static com.soybeany.bdlib.project.RequestUtils.SERVER;
  */
 public class TestPresenter extends BasePresenter<ITestView> {
 
-    public void testFile(Notifier<DialogInvokerMsg, DialogCallbackMsg> dialogNotifier) {
-        RequestUtils.newClient(null).showDialog(dialogNotifier, when -> new StdDialogMsg().hint("测试").cancelable(true))
+    public void testFile() {
+        RequestUtils.newClient(null).showDialog(getTopDialogNotifier(), when -> new StdDialogMsg().hint("测试").cancelable(true))
                 .newCall(requestNotifier -> OkHttpRequestFactory.get(SERVER + "/mobile/auth//file").param("test", "测试").build(requestNotifier))
                 .enqueue(new OkHttpCallback<>(StringParser.get())
                         .addCallback(new TestCallback())
@@ -29,7 +27,7 @@ public class TestPresenter extends BasePresenter<ITestView> {
     }
 
     public void testAsync() {
-        Notifier<DialogInvokerMsg, DialogCallbackMsg> notifier = getTopDialogNotifier();
+        DialogNotifier notifier = getTopDialogNotifier();
         new Thread(() -> {
             LogUtils.test("任务开始");
             wrapDialog(notifier, new StdDialogMsg().hint("测试异步"), () -> {

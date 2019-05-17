@@ -12,11 +12,10 @@ import com.soybeany.bdlib.android.template.plugins.extend.DialogFragmentPlugin;
 import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.LogUtils;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
+import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
 import com.soybeany.bdlib.core.java8.function.Consumer;
-import com.soybeany.bdlib.core.util.notify.Notifier;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
 
 /**
@@ -72,7 +71,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     }
 
     @Nullable
-    protected Notifier<DialogInvokerMsg, DialogCallbackMsg> getTopDialogNotifier() {
+    protected DialogNotifier getTopDialogNotifier() {
         return getTopDialogNotifier(DialogFragmentPlugin.IInvoker.TYPE_DEFAULT);
     }
 
@@ -81,10 +80,10 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
      */
     @Nullable
     @SuppressWarnings("SameParameterValue")
-    protected Notifier<DialogInvokerMsg, DialogCallbackMsg> getTopDialogNotifier(String type) {
+    protected DialogNotifier getTopDialogNotifier(String type) {
         Activity activity = BDApplication.getTopActivity();
-        if (activity instanceof DialogFragmentPlugin.IInvoker) {
-            return ((DialogFragmentPlugin.IInvoker) activity).getDialogNotifier(type);
+        if (activity instanceof DialogNotifier.IProvider) {
+            return ((DialogNotifier.IProvider) activity).getDialogNotifier(type);
         }
         return null;
     }
@@ -92,7 +91,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     /**
      * 为工作线程的任务包装上弹窗(不可取消)
      */
-    protected void wrapDialog(@Nullable Notifier<DialogInvokerMsg, DialogCallbackMsg> notifier, @Nullable IDialogMsg msg, @WorkerThread Runnable runnable) {
+    protected void wrapDialog(@Nullable DialogNotifier notifier, @Nullable IDialogMsg msg, @WorkerThread Runnable runnable) {
         if (null == notifier || null == msg) {
             LogUtils.w("包装弹窗", "notifier或msg为null，无法正常弹窗");
             runnable.run();
