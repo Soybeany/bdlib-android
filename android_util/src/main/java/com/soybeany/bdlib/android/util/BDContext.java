@@ -92,8 +92,12 @@ public class BDContext {
      * 获得应用当前主题下的资源值(非引用)
      */
     public static TypedValue getAttributeValue(int resId) {
+        return getAttributeValue(getContext(), resId);
+    }
+
+    public static TypedValue getAttributeValue(Context context, int resId) {
         TypedValue typedValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(resId, typedValue, true);
+        context.getTheme().resolveAttribute(resId, typedValue, true);
         return typedValue;
     }
 }

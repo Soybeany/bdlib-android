@@ -42,7 +42,7 @@ public class DrawableStatusBarUtils {
             if (null == statusBarV) {
                 return;
             }
-            int defaultColor = BDContext.getAttributeValue(R.attr.colorPrimaryDark).data;
+            int defaultColor = BDContext.getAttributeValue(activity, R.attr.colorPrimaryDark).data;
             setBackground(statusBarV, res, defaultColor);
             if (needAddListener) {
                 decorView.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> setBackground(statusBarV, res, defaultColor));
