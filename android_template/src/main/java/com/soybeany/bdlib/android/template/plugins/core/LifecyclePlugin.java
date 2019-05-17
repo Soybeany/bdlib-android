@@ -15,6 +15,8 @@ import java.util.Set;
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class LifecyclePlugin implements IExtendPlugin {
+    public static final String GROUP_ID = "LifeCycle";
+
     private final Set<LifecycleObserver> mObservers = new HashSet<>();
 
     public LifecyclePlugin(@Nullable ICallback callback) {
@@ -40,7 +42,7 @@ public class LifecyclePlugin implements IExtendPlugin {
     @NonNull
     @Override
     public final String getGroupId() {
-        return "LifeCycle";
+        return GROUP_ID;
     }
 
     public interface ICallback {

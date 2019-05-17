@@ -16,6 +16,8 @@ import com.soybeany.bdlib.core.java8.Optional;
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class ViewModelPlugin implements IExtendPlugin {
+    public static final String GROUP_ID = "ViewModel";
+
     @Nullable
     private final ICallback mCallback;
     private final IVMProvider mProvider;
@@ -34,7 +36,7 @@ public class ViewModelPlugin implements IExtendPlugin {
     @NonNull
     @Override
     public final String getGroupId() {
-        return "ViewModel";
+        return GROUP_ID;
     }
 
     public interface IInvoker extends IVMProvider {

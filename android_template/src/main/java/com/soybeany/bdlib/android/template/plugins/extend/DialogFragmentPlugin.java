@@ -1,5 +1,6 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
+import android.app.Activity;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
@@ -15,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * todo 使用liveData记录所需的弹窗信息
+ * 只在{@link Activity}中使用
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class DialogFragmentPlugin implements IExtendPlugin, DialogNotifier.IProvider {

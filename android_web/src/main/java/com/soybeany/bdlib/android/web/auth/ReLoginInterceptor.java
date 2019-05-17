@@ -17,7 +17,7 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Response;
 
-import static com.soybeany.bdlib.android.util.BDContext.getResources;
+import static com.soybeany.bdlib.android.util.BDContext.getString;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
@@ -55,11 +55,11 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     // //////////////////////////////////重写区//////////////////////////////////
 
     protected String getOutOfRetryTimesHint() {
-        return getResources().getString(R.string.bd_out_of_retry_times);
+        return getString(R.string.bd_out_of_retry_times);
     }
 
     protected IOException onAuthException(IOException e) {
-        return e instanceof HandledException ? e : new IOException(getResources().getString(R.string.bd_re_login_exception) + ":" + e.getMessage());
+        return e instanceof HandledException ? e : new IOException(getString(R.string.bd_re_login_exception) + ":" + e.getMessage());
     }
 
     protected Response onReRequest(Call call) throws IOException {
@@ -67,7 +67,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     }
 
     protected IOException onReRequestException(IOException e) {
-        return e instanceof HandledException ? e : new IOException(getResources().getString(R.string.bd_re_request_exception) + ":" + e.getMessage());
+        return e instanceof HandledException ? e : new IOException(getString(R.string.bd_re_request_exception) + ":" + e.getMessage());
     }
 
     // //////////////////////////////////内部区//////////////////////////////////

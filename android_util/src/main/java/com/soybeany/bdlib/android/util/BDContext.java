@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Handler;
+import android.support.annotation.StringRes;
 import android.util.TypedValue;
 
 import com.soybeany.bdlib.core.java8.Optional;
@@ -55,6 +56,13 @@ public class BDContext {
      */
     public static Resources getResources() {
         return getContext().getResources();
+    }
+
+    /**
+     * 获得字符串
+     */
+    public static String getString(@StringRes int resId) {
+        return getResources().getString(resId);
     }
 
     /**

@@ -4,13 +4,13 @@ import com.soybeany.bdlib.android.util.R;
 import com.soybeany.bdlib.android.util.StdHintUtils;
 import com.soybeany.bdlib.core.java8.Optional;
 
-import static com.soybeany.bdlib.android.util.BDContext.getResources;
+import static com.soybeany.bdlib.android.util.BDContext.getString;
 
 /**
  * <br>Created by Soybeany on 2019/5/9.
  */
 public class StdDialogMsg extends IDialogMsg.Impl {
-    private static final String DEFAULT_HINT = getResources().getString(R.string.bd_dialog_default_hint);
+    private static final String DEFAULT_HINT = getString(R.string.bd_dialog_default_hint);
 
     private String mPrefix = StdHintUtils.loadingPrefix();
     private String mSuffix = StdHintUtils.loadingSuffix2();

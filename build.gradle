@@ -17,7 +17,7 @@ ext {
     minSdkVersion = 19
     targetSdkVersion = 28
     androidSupportVerion = '28.+'
-    bdlibCoreVersion = 'master-SNAPSHOT'
+    bdlibCoreVersion = '1.0.0'
 }
 
 allprojects {

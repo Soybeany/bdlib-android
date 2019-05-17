@@ -12,6 +12,8 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class BackInterceptorPlugin implements IExtendPlugin {
+    public static final String GROUP_ID = "BackInterceptor";
+
     private final Activity mActivity;
     @Nullable
     private final ICallback mCallback;
@@ -24,7 +26,7 @@ public class BackInterceptorPlugin implements IExtendPlugin {
     @NonNull
     @Override
     public final String getGroupId() {
-        return "BackInterceptor";
+        return GROUP_ID;
     }
 
     public void onBackPressed() {

@@ -142,9 +142,9 @@ public class BDApplication extends Application {
         @Override
         public void onActivityStopped(Activity activity) {
             if (mNeedHint && activity == getTopActivity() && mWatcher.getDeltaTime() > mKeyDetectValve) {
-                // 一定延迟后若页面还没恢复，则认为是被劫持
+                // 一定延迟后若页面栈不为空，且页面还没恢复，则认为是被劫持
                 mHandler.postDelayed(() -> {
-                    if (System.currentTimeMillis() - mLastStartTime > mOnStartDetectValve) {
+                    if (!activityStack.isEmpty() && System.currentTimeMillis() - mLastStartTime > mOnStartDetectValve) {
                         ToastUtils.showLong(mHint);
                     }
                 }, mOnStartDetectValve);
