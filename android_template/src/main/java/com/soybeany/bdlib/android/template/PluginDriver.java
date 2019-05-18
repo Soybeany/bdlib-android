@@ -13,6 +13,7 @@ import com.soybeany.bdlib.core.util.IterableUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -70,7 +71,7 @@ public class PluginDriver implements IExtendPlugin {
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
         mManager.invoke(plugin -> mLifecycle.removeObserver(plugin));
-        mManager.unlockAndClear();
+        mManager.unloadAndUnlock();
         mLifecycle.removeObserver(this);
     }
 
@@ -92,20 +93,24 @@ public class PluginDriver implements IExtendPlugin {
         private final List<IExtendPlugin> mPlugins = new LinkedList<>(); // 需加载的插件，不能用set，否则相同级别的会被覆盖
         private boolean mIsLock;
 
-        public void add(@Nullable IExtendPlugin plugin) {
-            if (checkAndLock(plugin)) {
+        public void load(@Nullable IExtendPlugin plugin) {
+            checkLock(plugin);
+            if (null != plugin) {
                 mPlugins.add(plugin);
+                plugin.onLoad(this);
             }
         }
 
-        public void remove(@Nullable IExtendPlugin plugin) {
-            if (checkAndLock(plugin)) {
+        public void unload(@Nullable IExtendPlugin plugin) {
+            checkLock(plugin);
+            if (null != plugin) {
+                plugin.onUnload();
                 mPlugins.remove(plugin);
             }
         }
 
-        public void removeByGroupId(@Nullable String groupId) {
-            remove(findByGroupId(groupId));
+        public void unloadByGroupId(@Nullable String groupId) {
+            unload(findByGroupId(groupId));
         }
 
         @Nullable
@@ -133,16 +138,20 @@ public class PluginDriver implements IExtendPlugin {
             Collections.sort(mPlugins, (o1, o2) -> o1.getLoadOrder() - o2.getLoadOrder()); // order值小的先被加载
         }
 
-        void unlockAndClear() {
-            mPlugins.clear();
+        void unloadAndUnlock() {
+            Iterator<IExtendPlugin> iterator = mPlugins.iterator();
+            while (iterator.hasNext()) {
+                IExtendPlugin plugin = iterator.next();
+                plugin.onUnload();
+                iterator.remove();
+            }
             mIsLock = false;
         }
 
-        private boolean checkAndLock(@Nullable IExtendPlugin plugin) {
+        private void checkLock(@Nullable IExtendPlugin plugin) {
             if (mIsLock) {
                 throw new RuntimeException("插件列表已锁定，不能修改");
             }
-            return null != plugin;
         }
     }
 }

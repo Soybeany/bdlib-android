@@ -5,13 +5,11 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import com.soybeany.bdlib.android.mvp.IPresenterProvider;
 import com.soybeany.bdlib.android.mvp.MvpPlugin;
 import com.soybeany.bdlib.android.template.BaseActivity;
-import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
+import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
 import com.soybeany.bdlib.android.template.plugins.extend.ButterKnifePlugin;
-import com.soybeany.bdlib.android.ui.layout.NotifySRLHelper;
+import com.soybeany.bdlib.android.ui.layout.NotifySRLDialog;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
-
-import java.util.List;
 
 import butterknife.BindView;
 
@@ -25,7 +23,7 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
     SwipeRefreshLayout srLayout;
 
     private TestPresenter mPt;
-    private NotifySRLHelper mNotifySRLHelper;
+    private NotifySRLDialog mNotifySRLDialog;
 
     @Override
     public int setupLayoutResId() {
@@ -39,7 +37,7 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
 
     @Override
     public void onInitViews() {
-        mNotifySRLHelper = new NotifySRLHelper(this, "swipe", srLayout);
+        mNotifySRLDialog = new NotifySRLDialog(this, "swipe", srLayout).notifyDismiss(true);
         srLayout.setColorSchemeResources(R.color.colorAccent);
         srLayout.setOnRefreshListener(() -> {
             mPt.testFile();
@@ -47,10 +45,10 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
     }
 
     @Override
-    public void onSetupPlugins(List<IExtendPlugin> plugins) {
+    public void onSetupPlugins(IPluginManager plugins) {
         super.onSetupPlugins(plugins);
-        plugins.add(new ButterKnifePlugin(this));
-        plugins.add(new MvpPlugin(this, this, this));
+        plugins.load(new ButterKnifePlugin(this));
+        plugins.load(new MvpPlugin(this, this, this));
     }
 
     @Override
@@ -65,6 +63,6 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
 
     @Override
     public DialogNotifier getDialogNotifier(String type) {
-        return mNotifySRLHelper.getDialogNotifier();
+        return mNotifySRLDialog.getDialogNotifier();
     }
 }

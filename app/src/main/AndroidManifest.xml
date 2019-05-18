@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".SecondActivity"/>
         <activity android:name=".SwipeRefreshActivity"/>
+        <activity android:name=".ThemeChangeActivity"/>
     </application>
 
 </manifest>

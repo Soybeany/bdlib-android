@@ -9,31 +9,33 @@ import android.support.v4.app.FragmentActivity;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.java8.function.Supplier;
 
+import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.CANCEL;
+
 /**
  * DialogFragment实现，使用{@link #getFragment(FragmentActivity, String, Supplier)}获得实例
  * <br>Created by Soybeany on 2019/5/10.
  */
-public abstract class NotifyDialogFragment extends DialogFragment implements NotifyDialogDelegate.IRealDialog {
+public abstract class NotifyDialogFragment extends DialogFragment implements DialogNotifierDelegate.IRealDialog {
     @Nullable
     private FragmentActivity mActivity;
     @Nullable
-    private NotifyDialogDelegate mDelegate;
+    private DialogNotifierDelegate mDelegate;
 
     @SuppressWarnings("unchecked")
     public static <T extends NotifyDialogFragment> T getFragment(@NonNull FragmentActivity activity, String type, @NonNull Supplier<? extends T> other) {
-        NotifyDialogDelegate delegate = NotifyDialogDelegate.getNew(activity, type);
-        T fragment = (T) activity.getSupportFragmentManager().findFragmentByTag(delegate.uid);
+        DialogNotifierDelegate.Unbind unbind = DialogNotifierDelegate.getNew(activity, type);
+        T fragment = (T) activity.getSupportFragmentManager().findFragmentByTag(unbind.uid());
         if (null == fragment) {
             fragment = other.get();
         }
-        fragment.onBind(activity, delegate);
+        fragment.onBindRealDialogToDelegate(activity, unbind);
         return fragment;
     }
 
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        Optional.ofNullable(mDelegate).ifPresent(NotifyDialogDelegate::onCancel);
+        Optional.ofNullable(mDelegate).ifPresent(delegate -> delegate.invokeDismissDialog(CANCEL));
     }
 
     @Override
@@ -48,17 +50,16 @@ public abstract class NotifyDialogFragment extends DialogFragment implements Not
         dismiss();
     }
 
-    // //////////////////////////////////内部方法//////////////////////////////////
-
-    protected void onBind(@NonNull FragmentActivity activity, @NonNull NotifyDialogDelegate delegate) {
-        mActivity = activity;
-        mDelegate = delegate.init(this);
+    @Nullable
+    @Override
+    public DialogNotifier getDialogNotifier(String type) {
+        return null != mDelegate ? mDelegate.getDialogNotifier(type) : null;
     }
 
-    // //////////////////////////////////外部调用区//////////////////////////////////
+    // //////////////////////////////////内部方法//////////////////////////////////
 
-    @Nullable
-    public DialogNotifier getNotifier() {
-        return null != mDelegate ? mDelegate.getNotifier() : null;
+    protected void onBindRealDialogToDelegate(@NonNull FragmentActivity activity, @NonNull DialogNotifierDelegate.Unbind unbind) {
+        mActivity = activity;
+        mDelegate = unbind.bind(this);
     }
 }

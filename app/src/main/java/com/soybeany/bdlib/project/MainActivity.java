@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.view.View;
 
 import com.soybeany.bdlib.android.template.BaseActivity;
-import com.soybeany.bdlib.android.template.annotation.BackType;
 import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
+import com.soybeany.bdlib.android.template.plugins.extend.DoubleClickCheckPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.style.ThemeChanger;
-import com.soybeany.bdlib.android.util.system.DoubleClickChecker;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
 import java.util.Locale;
@@ -28,7 +27,6 @@ public class MainActivity extends BaseActivity {
     public static MutableLiveData<ThemeChanger.Info> THEME_DATA = new MutableLiveData<>();
 
     private ThemePlugin mThemePlugin;
-    private DoubleClickChecker mChecker = new DoubleClickChecker();
 
     @Override
     public int setupLayoutResId() {
@@ -46,15 +44,6 @@ public class MainActivity extends BaseActivity {
         permissions.add(PermissionRequester.WRITE_EXTERNAL_STORAGE);
     }
 
-    @Override
-    public boolean shouldInterceptBack(int backType) {
-        if (BackType.BACK_KEY == backType) {
-            mChecker.check(this::finish);
-            return true;
-        }
-        return false;
-    }
-
     public void onClick(View view) {
 //        startActivity(new Intent(this, SecondActivity.class));
         startActivity(new Intent(this, SwipeRefreshActivity.class));
@@ -70,7 +59,8 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onSetupPlugins(IPluginManager manager) {
         super.onSetupPlugins(manager);
-        manager.add(mThemePlugin = new ThemePlugin(this, THEME_DATA));
+        manager.load(mThemePlugin = new ThemePlugin(this, THEME_DATA));
+        manager.load(new DoubleClickCheckPlugin.Finish(this));
     }
 
     public void onClickTheme(View view) {

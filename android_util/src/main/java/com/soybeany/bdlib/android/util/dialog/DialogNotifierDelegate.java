@@ -1,6 +1,5 @@
 package com.soybeany.bdlib.android.util.dialog;
 
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
@@ -22,8 +21,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.CANCEL;
 import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.NORM;
+import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.OTHER;
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_DISMISS_DIALOG;
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_POP;
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_SHOW;
@@ -34,12 +33,12 @@ import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_S
 import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_TO_PROGRESS;
 
 /**
- * 通知弹窗代理，使用者需注意:
+ * 弹窗通知者代理，使用者需注意:
  * 1.使用{@link #getNew(FragmentActivity, String)}获得实例，而不要直接new
- * 2.弹窗关闭监听中调用{@link #onCancel()}
+ * 2.弹窗关闭监听中调用{@link #invokeDismissDialog(DialogDismissReason)}
  * <br>Created by Soybeany on 2019/5/10.
  */
-public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, IObserver {
+public class DialogNotifierDelegate extends ViewModel implements IOnCallListener, IObserver, DialogNotifier.IProvider {
     /**
      * 标识此delegate的uid
      */
@@ -59,10 +58,10 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, 
     private IRealDialog mRealDialog;
     private boolean mIsDialogShowing;
 
-    public static NotifyDialogDelegate getNew(FragmentActivity activity, String type) {
-        NotifyDialogDelegate delegate = ViewModelProviders.of(activity).get(type, NotifyDialogDelegate.class);
+    public static Unbind getNew(FragmentActivity activity, String type) {
+        DialogNotifierDelegate delegate = ViewModelProviders.of(activity).get(type, DialogNotifierDelegate.class);
         activity.getLifecycle().addObserver(delegate); // 引入生命周期监听
-        return delegate;
+        return new Unbind(delegate);
     }
 
     {
@@ -72,13 +71,12 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, 
     // //////////////////////////////////重写区//////////////////////////////////
 
     @Override
-    public void onDestroy(@NonNull LifecycleOwner owner) {
-        mRealDialog = null;
-    }
-
-    @Override
     protected void onCleared() {
         super.onCleared();
+        if (null != mRealDialog && mRealDialog.shouldCancelOnClear()) {
+            dismiss(OTHER);
+            mRealDialog = null;
+        }
         mNotifier.invoker().removeListener(this);
     }
 
@@ -100,20 +98,13 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, 
         }
     }
 
-    // //////////////////////////////////调用区//////////////////////////////////
-
-    public NotifyDialogDelegate init(@NonNull IRealDialog realDialog) {
-        if (mRealDialog != realDialog) {
-            mRealDialog = realDialog;
-            mRealDialog.onInit(mIsDialogShowing);
-            mRealDialog.onObserveMsg(mHint, mCancelable);
-        }
-        return this;
-    }
-
-    public DialogNotifier getNotifier() {
+    @Nullable
+    @Override
+    public DialogNotifier getDialogNotifier(String type) {
         return mNotifier;
     }
+
+    // //////////////////////////////////调用区//////////////////////////////////
 
     public void showMsg(@Nullable IDialogMsg msg) {
         if (null == msg) {
@@ -168,27 +159,36 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, 
         }
         mMsgSet.clear();
         mUnableCancelSet.clear();
-        if (DialogDismissReason.CANCEL.equals(reason) || mIsDialogShowing) {
-            mIsDialogShowing = false;
+        if (mIsDialogShowing) {
             mRealDialog.realDismiss();
+            mIsDialogShowing = false;
             notifyCallback(TYPE_ON_DISMISS_DIALOG, reason);
         }
     }
 
-    public void onCancel() {
-        mNotifier.invoker().notifyNow(mInvokerMsg.type(TYPE_DISMISS_DIALOG).data(CANCEL));
+    public void invokeDismissDialog(DialogDismissReason reason) {
+        mNotifier.invoker().notifyNow(mInvokerMsg.type(TYPE_DISMISS_DIALOG).data(reason));
     }
 
     // //////////////////////////////////内部区//////////////////////////////////
+
+    private DialogNotifierDelegate bindRealDialog(@NonNull IRealDialog realDialog) {
+        if (mRealDialog != realDialog) {
+            mRealDialog = realDialog;
+            mRealDialog.onInit(mIsDialogShowing);
+            mRealDialog.onObserveMsg(mHint, mCancelable);
+        }
+        return this;
+    }
 
     private void showNewestMsg(boolean isReShow) {
         if (null == mRealDialog) {
             return;
         }
         if (!mIsDialogShowing) {
+            mRealDialog.realShow();
             mIsDialogShowing = true;
             notifyCallback(TYPE_ON_SHOW_DIALOG, null);
-            mRealDialog.realShow();
         }
         IDialogMsg msg = mMsgSet.last();
         if (!isReShow) {
@@ -208,7 +208,23 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, 
 
     // //////////////////////////////////内部类区//////////////////////////////////
 
-    public interface IRealDialog {
+    public static class Unbind {
+        private DialogNotifierDelegate mDelegate;
+
+        Unbind(DialogNotifierDelegate delegate) {
+            mDelegate = delegate;
+        }
+
+        public DialogNotifierDelegate bind(@NonNull IRealDialog realDialog) {
+            return mDelegate.bindRealDialog(realDialog);
+        }
+
+        public String uid() {
+            return mDelegate.uid;
+        }
+    }
+
+    public interface IRealDialog extends DialogNotifier.IProvider {
         default void onInit(boolean isDialogShowing) {
         }
 
@@ -221,5 +237,9 @@ public class NotifyDialogDelegate extends ViewModel implements IOnCallListener, 
         void realCancel();
 
         void realDismiss();
+
+        default boolean shouldCancelOnClear() {
+            return true;
+        }
     }
 }

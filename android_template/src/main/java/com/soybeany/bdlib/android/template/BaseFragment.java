@@ -71,9 +71,9 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
 
     @Override
     public void onSetupPlugins(IPluginManager manager) {
-        manager.add(mDevelopPlugin);
-        manager.add(new LifecyclePlugin(this));
-        manager.add(new ViewModelPlugin(this, null));
+        manager.load(mDevelopPlugin);
+        manager.load(new LifecyclePlugin(this));
+        manager.load(new ViewModelPlugin(this, null));
     }
 
     @Override

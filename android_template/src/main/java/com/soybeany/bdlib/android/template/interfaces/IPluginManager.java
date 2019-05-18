@@ -8,11 +8,11 @@ import android.support.annotation.Nullable;
  */
 public interface IPluginManager {
 
-    void add(@Nullable IExtendPlugin plugin);
+    void load(@Nullable IExtendPlugin plugin);
 
-    void remove(@Nullable IExtendPlugin plugin);
+    void unload(@Nullable IExtendPlugin plugin);
 
-    void removeByGroupId(@Nullable String groupId);
+    void unloadByGroupId(@Nullable String groupId);
 
     @Nullable
     IExtendPlugin findByGroupId(@Nullable String groupId);

@@ -62,8 +62,8 @@ public class ProgressNotifyDialogFragment extends NotifyDialogFragment {
     }
 
     @Override
-    protected void onBind(@NonNull FragmentActivity activity, @NonNull NotifyDialogDelegate delegate) {
-        super.onBind(activity, delegate);
+    protected void onBindRealDialogToDelegate(@NonNull FragmentActivity activity, @NonNull DialogNotifierDelegate.Unbind unbind) {
+        super.onBindRealDialogToDelegate(activity, unbind);
         Optional.ofNullable(mHint).ifPresent(hint -> hint.observe(activity, mHintObserver));
         Optional.ofNullable(mCancelable).ifPresent(cancelable -> cancelable.observe(activity, mCancelableObserver));
     }

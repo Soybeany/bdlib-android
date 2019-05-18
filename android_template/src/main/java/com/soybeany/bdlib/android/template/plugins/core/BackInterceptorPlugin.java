@@ -7,6 +7,9 @@ import android.support.annotation.Nullable;
 import com.soybeany.bdlib.android.template.annotation.BackType;
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * 只在{@link Activity}中使用，需自行调用{@link #onBackPressed()}
  * <br>Created by Soybeany on 2019/5/5.
@@ -18,6 +21,8 @@ public class BackInterceptorPlugin implements IExtendPlugin {
     @Nullable
     private final ICallback mCallback;
 
+    private final Set<IOnPermitInterceptor> mInterceptors = new HashSet<>();
+
     public BackInterceptorPlugin(@NonNull Activity activity, @Nullable ICallback callback) {
         mActivity = activity;
         mCallback = callback;
@@ -27,6 +32,18 @@ public class BackInterceptorPlugin implements IExtendPlugin {
     @Override
     public final String getGroupId() {
         return GROUP_ID;
+    }
+
+    public void addInterceptor(@Nullable IOnPermitInterceptor interceptor) {
+        if (null != interceptor) {
+            mInterceptors.add(interceptor);
+        }
+    }
+
+    public void removeInterceptor(@Nullable IOnPermitInterceptor interceptor) {
+        if (null != interceptor) {
+            mInterceptors.remove(interceptor);
+        }
     }
 
     public void onBackPressed() {
@@ -44,6 +61,13 @@ public class BackInterceptorPlugin implements IExtendPlugin {
     }
 
     public void onPermitBack(@BackType int backType, @NonNull ISuperOnBackPressed callback) {
+        // 拦截操作
+        for (IOnPermitInterceptor interceptor : mInterceptors) {
+            if (interceptor.onPermitBack(backType)) {
+                return;
+            }
+        }
+        // 默认操作
         switch (backType) {
             case BackType.BACK_KEY:
                 callback.onInvoke();
@@ -69,5 +93,12 @@ public class BackInterceptorPlugin implements IExtendPlugin {
         }
 
         void onPermitBack(@BackType int backType);
+    }
+
+    public interface IOnPermitInterceptor {
+        /**
+         * @return 是否拦截后续操作
+         */
+        boolean onPermitBack(@BackType int backType);
     }
 }

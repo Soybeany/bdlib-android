@@ -54,7 +54,7 @@ public class DialogFragmentPlugin implements IExtendPlugin, DialogNotifier.IProv
             return null;
         }
         mUsedTypes.add(type);
-        return NotifyDialogFragment.getFragment(mActivity, type, () -> mCallback.onGetNewDialogFragment(type)).getNotifier();
+        return NotifyDialogFragment.getFragment(mActivity, type, () -> mCallback.onGetNewDialogFragment(type)).getDialogNotifier();
     }
 
     public interface IInvoker extends DialogNotifier.IProvider {

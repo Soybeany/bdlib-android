@@ -71,9 +71,9 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     @Override
     public void onSetupPlugins(IPluginManager manager) {
         super.onSetupPlugins(manager);
-        manager.add(new MvpPlugin(this, this, this));
-        manager.add(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
-        manager.add(mDialogPlugin = new DialogFragmentPlugin(this, this));
+        manager.load(new MvpPlugin(this, this, this));
+        manager.load(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
+        manager.load(mDialogPlugin = new DialogFragmentPlugin(this, this));
     }
 
     @Override
