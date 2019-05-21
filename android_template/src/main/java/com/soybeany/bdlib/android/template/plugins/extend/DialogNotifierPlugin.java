@@ -11,10 +11,19 @@ import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class DialogNotifierPlugin implements IExtendPlugin, DialogNotifier.MultiTypeProvider {
-    private final DialogNotifier.VM mVM;
+    private final FragmentActivity mActivity;
+    private final DialogNotifier.IDialogProvider mProvider;
+
+    private DialogNotifier.VM mVM;
 
     public DialogNotifierPlugin(@NonNull FragmentActivity activity, @Nullable DialogNotifier.IDialogProvider provider) {
-        mVM = DialogNotifier.VM.initAndGet(activity, provider);
+        mActivity = activity;
+        mProvider = provider;
+    }
+
+    @Override
+    public void initAfterSetContentView() {
+        mVM = DialogNotifier.VM.initAndGet(mActivity, mProvider);
     }
 
     @NonNull

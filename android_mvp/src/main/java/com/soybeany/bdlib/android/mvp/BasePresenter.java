@@ -99,7 +99,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
             return;
         }
         // 正常执行
-        DialogInvokerMsg data = new DialogInvokerMsg().type(DialogInvokerMsg.TYPE_SHOW_MSG).data(msg.cancelable(true));
+        DialogInvokerMsg data = new DialogInvokerMsg().type(DialogInvokerMsg.TYPE_SHOW_MSG).data(msg.cancelable(false));
         notifier.invoker().notifyNow(data);
         runnable.run();
         notifier.invoker().notifyNow(data.type(DialogInvokerMsg.TYPE_POP_MSG));

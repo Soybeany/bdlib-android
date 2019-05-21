@@ -19,6 +19,7 @@ public class NotifySRLDialog implements DialogNotifier.IDialog, DialogNotifierDe
 
     @Nullable
     private DialogNotifier mNotifier;
+    private boolean mNeedOnClearNotify;
 
     public NotifySRLDialog(SwipeRefreshLayout layout) {
         mLayout = layout;
@@ -53,9 +54,7 @@ public class NotifySRLDialog implements DialogNotifier.IDialog, DialogNotifierDe
      * 是否在{@link ViewModel#onCleared()}时发送dismiss通知
      */
     public NotifySRLDialog notifyDismiss(boolean enable) {
-        if (null != mNotifier) {
-            mNotifier.needOnClearNotify = enable;
-        }
+        mNeedOnClearNotify = enable;
         return this;
     }
 
@@ -63,9 +62,9 @@ public class NotifySRLDialog implements DialogNotifier.IDialog, DialogNotifierDe
     public void onBindNotifier(String type, DialogNotifier notifier) {
         mDelegate.onBindNotifier(type, notifier);
         mNotifier = notifier;
-        // 设置默认状态
-        if (mLayout.isRefreshing() != notifier.isDialogShowing) {
-            mLayout.setRefreshing(notifier.isDialogShowing);
+        mNotifier.needOnClearNotify = mNeedOnClearNotify;
+        if (notifier.isDialogShowing) {
+            realShow();
         }
     }
 

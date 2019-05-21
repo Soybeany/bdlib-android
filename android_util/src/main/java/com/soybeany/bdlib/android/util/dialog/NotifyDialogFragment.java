@@ -44,10 +44,7 @@ public abstract class NotifyDialogFragment extends DialogFragment implements Dia
 
     @Override
     public void realShow() {
-        DialogNotifier notifier = mDelegate.getDialogNotifier();
-        if (null != notifier) {
-            show(mActivity.getSupportFragmentManager(), notifier.uid);
-        }
+        show(mActivity.getSupportFragmentManager(), mDelegate.getDialogNotifier().uid);
     }
 
     @Override

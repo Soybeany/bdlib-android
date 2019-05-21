@@ -147,7 +147,7 @@ public class DialogNotifier extends Notifier<DialogInvokerMsg, DialogCallbackMsg
         @Override
         protected void onCleared() {
             super.onCleared();
-            DialogCallbackMsg msg = new DialogCallbackMsg().data(TYPE_ON_DISMISS_DIALOG).data(OTHER);
+            DialogCallbackMsg msg = new DialogCallbackMsg().type(TYPE_ON_DISMISS_DIALOG).data(OTHER);
             mNotifierStorage.invokeAll(notifier -> {
                 if (notifier.needOnClearNotify) {
                     notifier.callback().notifyNow(msg);
