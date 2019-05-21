@@ -14,7 +14,7 @@ import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.java8.function.Supplier;
 
 /**
- * 双击检测，需先加载{@link BackInterceptorPlugin}
+ * 只在{@link Activity}中使用，双击检测，需先加载{@link BackInterceptorPlugin}
  * <br>Created by Soybeany on 2019/5/18.
  */
 public class DoubleClickCheckPlugin implements IExtendPlugin {
@@ -56,7 +56,7 @@ public class DoubleClickCheckPlugin implements IExtendPlugin {
     @NonNull
     @Override
     public String getGroupId() {
-        return "DoubleClickExit";
+        return "DoubleClickCheck";
     }
 
     public DoubleClickChecker getChecker() {

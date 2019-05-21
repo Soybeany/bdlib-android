@@ -32,7 +32,7 @@ public class TestPresenter extends BasePresenter<ITestView> {
             LogUtils.test("任务开始");
             wrapDialog(notifier, new StdDialogMsg().hint("测试异步"), () -> {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

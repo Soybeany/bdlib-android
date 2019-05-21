@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.soybeany.bdlib.android.template.plugins.extend.DialogFragmentPlugin;
 import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.LogUtils;
@@ -72,7 +71,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
 
     @Nullable
     protected DialogNotifier getTopDialogNotifier() {
-        return getTopDialogNotifier(DialogFragmentPlugin.IInvoker.TYPE_DEFAULT);
+        return getTopDialogNotifier(DialogNotifier.MultiTypeProvider.TYPE_DEFAULT);
     }
 
     /**
@@ -82,8 +81,10 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     @SuppressWarnings("SameParameterValue")
     protected DialogNotifier getTopDialogNotifier(String type) {
         Activity activity = BDApplication.getTopActivity();
-        if (activity instanceof DialogNotifier.IProvider) {
-            return ((DialogNotifier.IProvider) activity).getDialogNotifier(type);
+        if (activity instanceof DialogNotifier.MultiTypeProvider) {
+            return ((DialogNotifier.MultiTypeProvider) activity).getDialogNotifier(type);
+        } else if (activity instanceof DialogNotifier.IProvider) {
+            return ((DialogNotifier.IProvider) activity).getDialogNotifier();
         }
         return null;
     }
@@ -98,7 +99,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
             return;
         }
         // 正常执行
-        DialogInvokerMsg data = new DialogInvokerMsg().type(DialogInvokerMsg.TYPE_SHOW_MSG).data(msg.cancelable(false));
+        DialogInvokerMsg data = new DialogInvokerMsg().type(DialogInvokerMsg.TYPE_SHOW_MSG).data(msg.cancelable(true));
         notifier.invoker().notifyNow(data);
         runnable.run();
         notifier.invoker().notifyNow(data.type(DialogInvokerMsg.TYPE_POP_MSG));

@@ -22,9 +22,7 @@ public class ProgressNotifyDialogFragment extends NotifyDialogFragment {
     private final Observer<String> mHintObserver = hint -> Optional.ofNullable(mDialog).ifPresent(dialog -> dialog.setMessage(hint));
     private final Observer<Boolean> mCancelableObserver = cancelable -> setCancelable(null != cancelable && cancelable);
 
-    @Nullable
     private LiveData<String> mHint;
-    @Nullable
     private LiveData<Boolean> mCancelable;
 
     @NonNull
@@ -62,8 +60,8 @@ public class ProgressNotifyDialogFragment extends NotifyDialogFragment {
     }
 
     @Override
-    protected void onBindRealDialogToDelegate(@NonNull FragmentActivity activity, @NonNull DialogNotifierDelegate.Unbind unbind) {
-        super.onBindRealDialogToDelegate(activity, unbind);
+    protected void onBindFragmentActivity(FragmentActivity activity) {
+        super.onBindFragmentActivity(activity);
         Optional.ofNullable(mHint).ifPresent(hint -> hint.observe(activity, mHintObserver));
         Optional.ofNullable(mCancelable).ifPresent(cancelable -> cancelable.observe(activity, mCancelableObserver));
     }

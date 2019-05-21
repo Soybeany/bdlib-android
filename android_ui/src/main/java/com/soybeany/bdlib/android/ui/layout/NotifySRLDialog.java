@@ -4,30 +4,24 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.DialogNotifierDelegate;
+import com.soybeany.bdlib.core.util.notify.INotifyMsg;
 
 /**
  * <br>Created by Soybeany on 2019/5/17.
  */
-public class NotifySRLDialog implements DialogNotifierDelegate.IRealDialog {
+public class NotifySRLDialog implements DialogNotifier.IDialog, DialogNotifierDelegate.IRealDialog {
+    private final DialogNotifierDelegate mDelegate = new DialogNotifierDelegate(this);
     private final SwipeRefreshLayout mLayout;
-    private final DialogNotifierDelegate mDelegate;
 
-    private boolean mIsNotifyDismiss;
+    @Nullable
+    private DialogNotifier mNotifier;
 
-    public NotifySRLDialog(FragmentActivity activity, String type, SwipeRefreshLayout layout) {
+    public NotifySRLDialog(SwipeRefreshLayout layout) {
         mLayout = layout;
-        DialogNotifierDelegate.Unbind unbind = DialogNotifierDelegate.getNew(activity, type);
-        mDelegate = unbind.bind(this);
-    }
-
-    @Override
-    public void onInit(boolean isDialogShowing) {
-        mLayout.setRefreshing(isDialogShowing);
     }
 
     @Override
@@ -55,22 +49,28 @@ public class NotifySRLDialog implements DialogNotifierDelegate.IRealDialog {
         mLayout.setRefreshing(false);
     }
 
-    @Override
-    public boolean shouldCancelOnClear() {
-        return mIsNotifyDismiss;
-    }
-
-    @Nullable
-    @Override
-    public DialogNotifier getDialogNotifier(String type) {
-        return mDelegate.getDialogNotifier(type);
-    }
-
     /**
      * 是否在{@link ViewModel#onCleared()}时发送dismiss通知
      */
     public NotifySRLDialog notifyDismiss(boolean enable) {
-        mIsNotifyDismiss = enable;
+        if (null != mNotifier) {
+            mNotifier.needOnClearNotify = enable;
+        }
         return this;
+    }
+
+    @Override
+    public void onBindNotifier(String type, DialogNotifier notifier) {
+        mDelegate.onBindNotifier(type, notifier);
+        mNotifier = notifier;
+        // 设置默认状态
+        if (mLayout.isRefreshing() != notifier.isDialogShowing) {
+            mLayout.setRefreshing(notifier.isDialogShowing);
+        }
+    }
+
+    @Override
+    public void onCall(INotifyMsg msg) {
+        mDelegate.onCall(msg);
     }
 }

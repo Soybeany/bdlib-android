@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.project;
 
 import com.soybeany.bdlib.android.util.BDApplication;
+import com.soybeany.bdlib.android.util.system.EmergencyHandler;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -15,5 +16,7 @@ public class AppApplication extends BDApplication {
         }
         LeakCanary.install(this);
         super.onCreate();
+
+        EmergencyHandler.init("/BDLibAndroid", true, new EmergencyHandler.ICallback.Std());
     }
 }

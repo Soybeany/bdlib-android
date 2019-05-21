@@ -1,24 +1,27 @@
 package com.soybeany.bdlib.project;
 
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.soybeany.bdlib.android.mvp.IPresenterProvider;
 import com.soybeany.bdlib.android.mvp.MvpPlugin;
 import com.soybeany.bdlib.android.template.BaseActivity;
 import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
-import com.soybeany.bdlib.android.template.plugins.extend.DialogFragmentPlugin;
+import com.soybeany.bdlib.android.template.plugins.extend.DialogNotifierPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
+import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.NotifyDialogFragment;
 import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
-public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ITemplate, DialogFragmentPlugin.ICallback {
+public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ITemplate,
+        DialogNotifier.IDialogProvider, DialogNotifier.MultiTypeProvider {
     private ThemePlugin mThemePlugin;
-    private DialogFragmentPlugin mDialogPlugin;
+    private DialogNotifierPlugin mDialogNotifierPlugin;
 
     private TestPresenter mPt;
 
@@ -73,11 +76,18 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
         super.onSetupPlugins(manager);
         manager.load(new MvpPlugin(this, this, this));
         manager.load(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
-        manager.load(mDialogPlugin = new DialogFragmentPlugin(this, this));
+        manager.load(mDialogNotifierPlugin = new DialogNotifierPlugin(this, this));
     }
 
+    @Nullable
     @Override
-    public NotifyDialogFragment onGetNewDialogFragment(String type) {
-        return new ProgressNotifyDialogFragment();
+    public DialogNotifier getDialogNotifier(String type) {
+        return mDialogNotifierPlugin.getDialogNotifier(type);
+    }
+
+    @Nullable
+    @Override
+    public DialogNotifier.IDialog getNewDialog(String type, String notifierUid) {
+        return NotifyDialogFragment.get(this, notifierUid, ProgressNotifyDialogFragment::new);
     }
 }

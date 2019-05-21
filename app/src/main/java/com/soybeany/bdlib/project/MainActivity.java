@@ -45,8 +45,8 @@ public class MainActivity extends BaseActivity {
     }
 
     public void onClick(View view) {
-//        startActivity(new Intent(this, SecondActivity.class));
-        startActivity(new Intent(this, SwipeRefreshActivity.class));
+        startActivity(new Intent(this, SecondActivity.class));
+//        startActivity(new Intent(this, SwipeRefreshActivity.class));
 //        language = (language == Locale.CHINESE ? Locale.ENGLISH : Locale.CHINESE);
 //        view.postDelayed(() -> c.recreate(this, language), 200);
 
@@ -54,6 +54,10 @@ public class MainActivity extends BaseActivity {
 //            ToastUtils.show("授权成功");
 //        }, PermissionRequester.READ_PHONE_STATE);
 //        fragment.show(getSupportFragmentManager(), null);
+    }
+
+    public void onClick2(View view) {
+        startActivity(new Intent(this, SwipeRefreshActivity.class));
     }
 
     @Override
