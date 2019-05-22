@@ -2,6 +2,7 @@ package com.soybeany.bdlib.project;
 
 import com.soybeany.bdlib.android.mvp.BasePresenter;
 import com.soybeany.bdlib.android.util.LogUtils;
+import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.msg.StdDialogMsg;
 import com.soybeany.bdlib.android.web.UICallback;
@@ -23,13 +24,13 @@ public class TestPresenter extends BasePresenter<ITestView> {
                 .enqueue(new OkHttpCallback<>(StringParser.get())
                         .addCallback(new TestCallback())
                         .addDownloadListener(getLogListener("测试")));
-//        invoke(v -> v.showToast("有反应"));
+        invoke(v -> v.showToast("请求开始"));
     }
 
     public void testAsync() {
         DialogNotifier notifier = getTopDialogNotifier();
         new Thread(() -> {
-            LogUtils.test("任务开始");
+            uiInvoke(v -> v.showMsg("任务", "开始"));
             wrapDialog(notifier, new StdDialogMsg().hint("测试异步"), () -> {
                 try {
                     Thread.sleep(5000);
@@ -37,21 +38,25 @@ public class TestPresenter extends BasePresenter<ITestView> {
                     e.printStackTrace();
                 }
             });
-            LogUtils.test("任务结束");
+            uiInvoke(v -> v.showMsg("任务", "结束"));
         }).start();
     }
 
     private class TestCallback implements UICallback<String> {
         @Override
         public void onUISuccess(String s) {
-            invoke(v -> v.showMsg("成功:", s));
-            LogUtils.test("成功:" + s);
+            showMsg("成功:", s);
         }
 
         @Override
         public void onUIFailure(boolean isCanceled, String msg) {
-            invoke(v -> v.showMsg("失败:", msg));
-            LogUtils.test("失败:" + msg);
+            showMsg("失败:", msg);
+        }
+
+        private void showMsg(String desc, String msg) {
+            if (!invoke(v -> v.showMsg(desc, msg))) {
+                ToastUtils.show("View视图为空，未消费信息为:" + desc + msg);
+            }
         }
     }
 

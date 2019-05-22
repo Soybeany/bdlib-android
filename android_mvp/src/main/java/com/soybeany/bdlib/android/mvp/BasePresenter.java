@@ -17,6 +17,8 @@ import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
 import com.soybeany.bdlib.core.java8.function.Consumer;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
 
+import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
+
 /**
  * <br>Created by Soybeany on 2019/4/16.
  */
@@ -64,9 +66,22 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
 
     /**
      * 执行全部View的方法
+     *
+     * @return 是否有调用执行
      */
-    protected void invoke(@NonNull Consumer<V> consumer) {
+    protected boolean invoke(@NonNull Consumer<V> consumer) {
+        if (mStorage.isEmpty()) {
+            return false;
+        }
         mStorage.invokeAllVal(consumer);
+        return true;
+    }
+
+    /**
+     * 执行全部View的方法(允许在工作线程中调用)
+     */
+    protected void uiInvoke(@NonNull Consumer<V> consumer) {
+        MAIN_HANDLER.post(() -> invoke(consumer));
     }
 
     @Nullable
