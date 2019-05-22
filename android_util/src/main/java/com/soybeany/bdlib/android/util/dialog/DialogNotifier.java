@@ -56,7 +56,7 @@ public class DialogNotifier extends Notifier<DialogInvokerMsg, DialogCallbackMsg
         DialogNotifier getDialogNotifier();
     }
 
-    public interface MultiTypeProvider extends IProvider {
+    public interface IMultiTypeProvider extends IProvider {
         String TYPE_DEFAULT = "default";
 
         @Nullable

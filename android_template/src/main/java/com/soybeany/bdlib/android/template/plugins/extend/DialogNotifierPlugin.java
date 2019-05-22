@@ -10,7 +10,7 @@ import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 /**
  * <br>Created by Soybeany on 2019/4/30.
  */
-public class DialogNotifierPlugin implements IExtendPlugin, DialogNotifier.MultiTypeProvider {
+public class DialogNotifierPlugin implements IExtendPlugin, DialogNotifier.IMultiTypeProvider {
     private final FragmentActivity mActivity;
     private final DialogNotifier.IDialogProvider mProvider;
 

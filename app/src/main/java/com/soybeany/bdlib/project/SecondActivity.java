@@ -19,7 +19,7 @@ import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
  * <br>Created by Soybeany on 2019/4/15.
  */
 public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ITemplate,
-        DialogNotifier.IDialogProvider, DialogNotifier.MultiTypeProvider {
+        DialogNotifier.IDialogProvider, DialogNotifier.IMultiTypeProvider {
     private ThemePlugin mThemePlugin;
     private DialogNotifierPlugin mDialogNotifierPlugin;
 

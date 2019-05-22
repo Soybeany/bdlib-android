@@ -86,7 +86,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
 
     @Nullable
     protected DialogNotifier getTopDialogNotifier() {
-        return getTopDialogNotifier(DialogNotifier.MultiTypeProvider.TYPE_DEFAULT);
+        return getTopDialogNotifier(DialogNotifier.IMultiTypeProvider.TYPE_DEFAULT);
     }
 
     /**
@@ -96,8 +96,8 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     @SuppressWarnings("SameParameterValue")
     protected DialogNotifier getTopDialogNotifier(String type) {
         Activity activity = BDApplication.getTopActivity();
-        if (activity instanceof DialogNotifier.MultiTypeProvider) {
-            return ((DialogNotifier.MultiTypeProvider) activity).getDialogNotifier(type);
+        if (activity instanceof DialogNotifier.IMultiTypeProvider) {
+            return ((DialogNotifier.IMultiTypeProvider) activity).getDialogNotifier(type);
         } else if (activity instanceof DialogNotifier.IProvider) {
             return ((DialogNotifier.IProvider) activity).getDialogNotifier();
         }
