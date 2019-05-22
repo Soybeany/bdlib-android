@@ -11,13 +11,11 @@ import android.support.v4.app.FragmentActivity;
 import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.IObserver;
-import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
 import com.soybeany.bdlib.core.util.notify.IOnCallListener;
 import com.soybeany.bdlib.core.util.notify.Notifier;
-import com.soybeany.bdlib.core.util.storage.IExecutable;
 import com.soybeany.bdlib.core.util.storage.KeyValueStorage;
 
 import java.util.HashSet;
@@ -49,33 +47,8 @@ public class DialogNotifier extends Notifier<DialogInvokerMsg, DialogCallbackMsg
      */
     public boolean isDialogShowing;
 
-    /**
-     * 是否需要在onClear时进行通知
-     */
-    public boolean needOnClearNotify;
-
     public DialogNotifier() {
         super(HandlerThreadImpl.UI_THREAD);
-    }
-
-    @Override
-    protected Invoker<DialogInvokerMsg> getNewInvoker(IExecutable executable, String key) {
-        return new SingleListenerInvoker(executable, key);
-    }
-
-    private static class SingleListenerInvoker extends Notifier.Invoker<DialogInvokerMsg> {
-        protected SingleListenerInvoker(IExecutable executable, String key) {
-            super(executable, key);
-        }
-
-        @Override
-        public synchronized void addListener(IOnCallListener listener) {
-            if (hasListener()) {
-                clearListeners();
-                LogUtils.w("添加监听器", "重复添加监听器，已进行替换");
-            }
-            super.addListener(listener);
-        }
     }
 
     public interface IProvider {
@@ -148,11 +121,7 @@ public class DialogNotifier extends Notifier<DialogInvokerMsg, DialogCallbackMsg
         protected void onCleared() {
             super.onCleared();
             DialogCallbackMsg msg = new DialogCallbackMsg().type(TYPE_ON_DISMISS_DIALOG).data(OTHER);
-            mNotifierStorage.invokeAll(notifier -> {
-                if (notifier.needOnClearNotify) {
-                    notifier.callback().notifyNow(msg);
-                }
-            });
+            mNotifierStorage.invokeAll(notifier -> notifier.callback().notifyNow(msg));
         }
 
         @NonNull

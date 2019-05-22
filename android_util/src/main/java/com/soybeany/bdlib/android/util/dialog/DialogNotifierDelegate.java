@@ -50,7 +50,7 @@ public class DialogNotifierDelegate implements DialogNotifier.IDialog, DialogNot
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
     public DialogNotifier getDialogNotifier() {
         return mNotifier;

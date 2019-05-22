@@ -66,7 +66,7 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
     @Nullable
     @Override
     public DialogNotifier.IDialog getNewDialog(String type, String notifierUid) {
-        return new NotifySRLDialog(srLayout).notifyDismiss(true);
+        return new NotifySRLDialog(srLayout);
     }
 
     @Nullable
