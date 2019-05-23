@@ -3,6 +3,7 @@ package com.soybeany.bdlib.android.template.plugins.extend;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,15 +21,19 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 
 /**
  * 只在{@link Activity}中使用，需自行调用{@link #onOptionsItemSelected(MenuItem, ISuperOnOptionsItemSelected)}
- * <br>重写{@link Activity#onCreateOptionsMenu(Menu)}方法，然后调用{@link Menu#add(int, int, int, int)}进行item项的添加
+ * <br><br>官方添加Item的方法：
+ * <br>重写{@link Activity#onCreateOptionsMenu(Menu)}方法，然后调用{@link Menu#add(int, int, int, int)}进行item项的添加，
+ * 最后在{@link Activity#onOptionsItemSelected(MenuItem)}中进行监听
+ * <br><br>自定义添加Item的方法:
+ * <br>在{@link ICallback#onInflateNewToolbar(LayoutInflater, ViewGroup)}中返回一个已设置好Item的Toolbar
  * <br>Created by Soybeany on 2019/4/29.
  */
 public class ToolbarPlugin implements IExtendPlugin {
-    private final Activity mActivity;
+    private final AppCompatActivity mActivity;
     @Nullable
     private final ICallback mCallback;
 
-    public ToolbarPlugin(@NonNull Activity activity, @Nullable ICallback callback) {
+    public ToolbarPlugin(@NonNull AppCompatActivity activity, @Nullable ICallback callback) {
         mActivity = activity;
         mCallback = callback;
     }
@@ -55,7 +60,7 @@ public class ToolbarPlugin implements IExtendPlugin {
         return callback.onInvoke(item);
     }
 
-    public void onSetupToolbar(View rootV) {
+    protected void onSetupToolbar(View rootV) {
         if (null == mCallback) {
             return;
         }
@@ -69,6 +74,7 @@ public class ToolbarPlugin implements IExtendPlugin {
         }
 
         newRootV.addView(toolbar);
+        mActivity.setSupportActionBar(toolbar);
         ViewTransferUtils.transfer(rootV, newRootV, 1);
 
         mCallback.onInitToolbar(toolbar);
