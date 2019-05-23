@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 
 /**
  * 只在{@link Activity}中使用，需自行调用{@link #onOptionsItemSelected(MenuItem, ISuperOnOptionsItemSelected)}
+ * <br>重写{@link Activity#onCreateOptionsMenu(Menu)}方法，然后调用{@link Menu#add(int, int, int, int)}进行item项的添加
  * <br>Created by Soybeany on 2019/4/29.
  */
 public class ToolbarPlugin implements IExtendPlugin {
