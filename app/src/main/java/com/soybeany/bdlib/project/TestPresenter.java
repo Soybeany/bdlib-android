@@ -19,8 +19,8 @@ import static com.soybeany.bdlib.project.RequestUtils.SERVER;
 public class TestPresenter extends BasePresenter<ITestView> {
 
     public void testFile() {
-        RequestUtils.newClient(null).showDialog(getTopDialogNotifier(), when -> new StdDialogMsg().hint("测试").cancelable(true))
-                .newCall(requestNotifier -> OkHttpRequestFactory.get(SERVER + "/mobile/auth//file").param("test", "测试").build(requestNotifier))
+        RequestUtils.newRequest(null).showDialog(getTopDialogNotifier(), when -> new StdDialogMsg().hint("测试").cancelable(true))
+                .newCall(requestNotifier -> OkHttpRequestFactory.get(SERVER + "/mobile/auth//file").param("test", "测试").build())
                 .enqueue(new OkHttpCallback<>(StringParser.get())
                         .addCallback(new TestCallback())
                         .addDownloadListener(getLogListener("测试")));

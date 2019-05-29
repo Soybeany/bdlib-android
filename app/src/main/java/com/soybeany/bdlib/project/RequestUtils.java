@@ -2,13 +2,12 @@ package com.soybeany.bdlib.project;
 
 import android.support.annotation.Nullable;
 
-import com.soybeany.bdlib.android.web.auth.ReLoginConnector;
 import com.soybeany.bdlib.android.web.auth.ReLoginInterceptor;
+import com.soybeany.bdlib.android.web.auth.ReLoginLogicSetter;
 import com.soybeany.bdlib.android.web.dialog.DialogClientPart;
 import com.soybeany.bdlib.web.okhttp.core.HandledException;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpClientFactory;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestFactory;
-import com.soybeany.bdlib.web.okhttp.notify.NotifyCall;
 
 import java.io.IOException;
 
@@ -60,23 +59,27 @@ public class RequestUtils {
     /**
      * 获得登录Call
      */
-    public static NotifyCall getLoginCall(String uid, String pwd) {
+    public static Call getLoginCall(String uid, String pwd) {
         return newClientPart(null).addSetter(builder -> builder.addInterceptor(COOKIE_CACHE_INTERCEPTOR))
-                .newRequest().newCall(requestNotifier -> OkHttpRequestFactory.postForm(SERVER + "/mobile/auth/login").param("uid", uid).param("pwd", pwd).build(requestNotifier));
+                .newRequest().newCall(OkHttpRequestFactory.postForm(SERVER + "/mobile/auth/login").param("uid", uid).param("pwd", pwd).build());
     }
+
+//    public static Call newCall(@Nullable OkHttpClientFactory.IClientSetter setter, OkHttpNotifierUtils.IRequestGetter requestGetter) {
+//        newRequest(setter).newCall(requestGetter, new ReLoginConnectWrapper(new DialogConnectSetter(null, null), null));
+//    }
 
     /**
      * 常规客户端(自动附带COOKIE信息)
      */
-    public static DialogClientPart.DialogRequestPart newClient(@Nullable OkHttpClientFactory.IClientSetter setter) {
-        return newClientPart(setter).addSetter(DEFAULT_SETTER).newRequest().configBinder(s -> s.add(new ReLoginConnector()));
+    public static DialogClientPart.DialogRequestPart newRequest(@Nullable OkHttpClientFactory.IClientSetter setter) {
+        return newClientPart(setter).addSetter(DEFAULT_SETTER).addLogic(new ReLoginLogicSetter()).newNotifierRequest();
     }
 
     /**
      * 空白客户端(不带额外设置)
      */
     public static DialogClientPart.DialogRequestPart newEmptyClient(@Nullable OkHttpClientFactory.IClientSetter setter) {
-        return newClientPart(setter).newRequest();
+        return newClientPart(setter).newNotifierRequest();
     }
 
     private static DialogClientPart newClientPart(@Nullable OkHttpClientFactory.IClientSetter setter) {

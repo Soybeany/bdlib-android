@@ -12,7 +12,8 @@ import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
+import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg.PopMsg;
+import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg.ShowMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
 import com.soybeany.bdlib.core.java8.function.Consumer;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
@@ -114,9 +115,9 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
             return;
         }
         // 正常执行
-        DialogInvokerMsg data = new DialogInvokerMsg().type(DialogInvokerMsg.TYPE_SHOW_MSG).data(msg.cancelable(false));
-        notifier.invoker().notifyNow(data);
+        msg.cancelable(false);
+        notifier.invoker().notifyNow(new ShowMsg(msg));
         runnable.run();
-        notifier.invoker().notifyNow(data.type(DialogInvokerMsg.TYPE_POP_MSG));
+        notifier.invoker().notifyNow(new PopMsg(msg));
     }
 }

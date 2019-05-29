@@ -4,18 +4,16 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
+import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.util.notify.INotifyMsg;
+import com.soybeany.bdlib.core.util.notify.IOnCallListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.NORM;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_DISMISS_DIALOG;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_POP;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_SHOW;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_SHOW_DIALOG;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_DISMISS_DIALOG;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_POP_MSG;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_SHOW_MSG;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg.TYPE_TO_PROGRESS;
 
 /**
  * 弹窗通知者代理，使用者需注意:
@@ -30,24 +28,18 @@ public class DialogNotifierDelegate implements DialogNotifier.IDialog, DialogNot
         mRealDialog = dialog;
     }
 
+    private Map<Class<? extends INotifyMsg>, IOnCallListener> mListeners = new HashMap<Class<? extends INotifyMsg>, IOnCallListener>() {{
+        put(DialogNotifierMsg.ShowMsg.class, msg -> showMsg((IDialogMsg) msg.getData()));
+        put(DialogNotifierMsg.PopMsg.class, msg -> popMsg((IDialogMsg) msg.getData()));
+        put(DialogNotifierMsg.ToProgress.class, msg -> toProgress((Float) msg.getData()));
+        put(DialogNotifierMsg.DismissDialog.class, msg -> dismiss((DialogDismissReason) msg.getData()));
+    }};
+
     // //////////////////////////////////重写区//////////////////////////////////
 
     @Override
     public void onCall(INotifyMsg msg) {
-        switch (msg.getType()) {
-            case TYPE_SHOW_MSG:
-                showMsg((IDialogMsg) msg.getData());
-                break;
-            case TYPE_POP_MSG:
-                popMsg((IDialogMsg) msg.getData());
-                break;
-            case TYPE_TO_PROGRESS:
-                toProgress((Float) msg.getData());
-                break;
-            case TYPE_DISMISS_DIALOG:
-                dismiss((DialogDismissReason) msg.getData());
-                break;
-        }
+        Optional.ofNullable(mListeners.get(msg.getClass())).ifPresent(listener -> listener.onCall(msg));
     }
 
     @Nullable
@@ -87,7 +79,7 @@ public class DialogNotifierDelegate implements DialogNotifier.IDialog, DialogNot
             return;
         }
         mNotifier.unableCancelSet.remove(msg);
-        notifyCallback(TYPE_ON_POP, msg);
+        notifyCallback(new DialogNotifierMsg.OnPop(msg));
         // 更改或关闭弹窗
         if (!mNotifier.msgSet.isEmpty()) {
             showNewestMsg(true);
@@ -108,19 +100,19 @@ public class DialogNotifierDelegate implements DialogNotifier.IDialog, DialogNot
 
     public void dismiss(DialogDismissReason reason) {
         for (IDialogMsg msg : mNotifier.msgSet) {
-            notifyCallback(TYPE_ON_POP, msg);
+            notifyCallback(new DialogNotifierMsg.OnPop(msg));
         }
         mNotifier.msgSet.clear();
         mNotifier.unableCancelSet.clear();
         if (mNotifier.isDialogShowing) {
             mRealDialog.realDismiss();
             mNotifier.isDialogShowing = false;
-            notifyCallback(TYPE_ON_DISMISS_DIALOG, reason);
+            notifyCallback(new DialogNotifierMsg.OnDismissDialog(reason));
         }
     }
 
     public void invokeDismissDialog(DialogDismissReason reason) {
-        mNotifier.invoker().notifyNow(mNotifier.invokerMsg.type(TYPE_DISMISS_DIALOG).data(reason));
+        mNotifier.invoker().notifyNow(new DialogNotifierMsg.DismissDialog(reason));
     }
 
     // //////////////////////////////////内部区//////////////////////////////////
@@ -129,11 +121,11 @@ public class DialogNotifierDelegate implements DialogNotifier.IDialog, DialogNot
         if (!mNotifier.isDialogShowing) {
             mRealDialog.realShow();
             mNotifier.isDialogShowing = true;
-            notifyCallback(TYPE_ON_SHOW_DIALOG, null);
+            notifyCallback(new DialogNotifierMsg.OnShowDialog());
         }
         IDialogMsg msg = mNotifier.msgSet.last();
         if (!isReShow) {
-            notifyCallback(TYPE_ON_SHOW, msg);
+            notifyCallback(new DialogNotifierMsg.OnShow(msg));
         }
         mNotifier.hint.setValue(msg.hint());
         mNotifier.cancelable.setValue(dialogCancelable());
@@ -143,8 +135,8 @@ public class DialogNotifierDelegate implements DialogNotifier.IDialog, DialogNot
         return mNotifier.unableCancelSet.isEmpty();
     }
 
-    private void notifyCallback(@NonNull String type, @Nullable Object data) {
-        mNotifier.callback().notifyNow(mNotifier.callbackMsg.type(type).data(data));
+    private void notifyCallback(@NonNull DialogNotifierMsg.Callback msg) {
+        mNotifier.callback().notifyNow(msg);
     }
 
     // //////////////////////////////////内部类区//////////////////////////////////

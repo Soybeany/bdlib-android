@@ -11,8 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.HandlerThreadImpl;
 import com.soybeany.bdlib.android.util.IObserver;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogInvokerMsg;
+import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
 import com.soybeany.bdlib.core.util.notify.IOnCallListener;
 import com.soybeany.bdlib.core.util.notify.Notifier;
@@ -25,19 +24,15 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.OTHER;
-import static com.soybeany.bdlib.android.util.dialog.msg.DialogCallbackMsg.TYPE_ON_DISMISS_DIALOG;
 
 /**
  * <br>Created by Soybeany on 2019/5/17.
  */
-public class DialogNotifier extends Notifier<DialogInvokerMsg, DialogCallbackMsg> {
+public class DialogNotifier extends Notifier<DialogNotifierMsg.Invoker, DialogNotifierMsg.Callback> {
     public final String uid = BDContext.getUID();
 
     public final SortedSet<IDialogMsg> msgSet = new TreeSet<>(); // 收录的弹窗信息
     public final Set<IDialogMsg> unableCancelSet = new HashSet<>(); // 收录的弹窗信息(不可取消)
-
-    public final DialogInvokerMsg invokerMsg = new DialogInvokerMsg();
-    public final DialogCallbackMsg callbackMsg = new DialogCallbackMsg();
 
     public final MutableLiveData<String> hint = new MutableLiveData<>();
     public final MutableLiveData<Boolean> cancelable = new MutableLiveData<>();
@@ -120,14 +115,13 @@ public class DialogNotifier extends Notifier<DialogInvokerMsg, DialogCallbackMsg
         @Override
         protected void onCleared() {
             super.onCleared();
-            DialogCallbackMsg msg = new DialogCallbackMsg().type(TYPE_ON_DISMISS_DIALOG).data(OTHER);
-            mNotifierStorage.invokeAll(notifier -> notifier.callback().notifyNow(msg));
+            mNotifierStorage.invokeAll(notifier -> notifier.callback().notifyNow(new DialogNotifierMsg.OnDismissDialog(OTHER)));
         }
 
         @NonNull
         public DialogNotifier getNotifier(String type) {
             DialogNotifier notifier = mNotifierStorage.get(type, DialogNotifier::new);
-            Invoker<DialogInvokerMsg> invoker = notifier.invoker();
+            Invoker<DialogNotifierMsg.Invoker> invoker = notifier.invoker();
             // 若已绑定或不能新绑定，则直接返回
             if (invoker.hasListener() || null == mInvokerProvider) {
                 return notifier;

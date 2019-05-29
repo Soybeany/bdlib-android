@@ -7,10 +7,9 @@ import com.soybeany.bdlib.android.web.R;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.util.notify.IOnCallListener;
 import com.soybeany.bdlib.web.okhttp.core.HandledException;
-import com.soybeany.bdlib.web.okhttp.notify.NotifyCall;
-import com.soybeany.bdlib.web.okhttp.notify.RequestCallbackMsg;
-import com.soybeany.bdlib.web.okhttp.notify.RequestInvokerMsg;
+import com.soybeany.bdlib.web.okhttp.notify.NotifierCall;
 import com.soybeany.bdlib.web.okhttp.notify.RequestNotifier;
+import com.soybeany.bdlib.web.okhttp.notify.RequestNotifierMsg;
 
 import java.io.IOException;
 
@@ -24,13 +23,6 @@ import static com.soybeany.bdlib.android.util.BDContext.getString;
  */
 public abstract class ReLoginInterceptor extends AuthInterceptor {
 
-    public static final String TYPE_ON_RE_AUTH_START = "onReAuthStart";
-    public static final String TYPE_ON_RE_AUTH_FINISH = "onReAuthFinish";
-    public static final String TYPE_ON_RE_REQUEST_START = "onReRequestStart";
-    public static final String TYPE_ON_RE_REQUEST_FINISH = "onReRequestFinish";
-
-    private final RequestCallbackMsg mMsg = new RequestCallbackMsg();
-
     @Override
     protected Response onInvalid(int retryTimes, @NonNull Chain chain) throws IOException {
         // 判断已重试次数
@@ -38,9 +30,9 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
             throw new HandledException(getOutOfRetryTimesHint());
         }
         // 提取通知键
-        RequestNotifier notifier = chain.call() instanceof NotifyCall ? ((NotifyCall) chain.call()).getNotifier() : null;
+        RequestNotifier notifier = chain.call() instanceof NotifierCall ? ((NotifierCall) chain.call()).getNotifier() : null;
         // 尝试重登录
-        Response authResponse = execute(notifier, TYPE_ON_RE_AUTH_START, TYPE_ON_RE_AUTH_FINISH, this::onAuth, call -> {
+        Response authResponse = execute(notifier, new OnReAuthStart(), new OnReAuthFinish(), this::onAuth, call -> {
             Response response = call.execute();
             return !response.isSuccessful() ? response : null;
         }, this::onAuthException);
@@ -49,7 +41,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
             return authResponse;
         }
         // 再次请求并返回新响应
-        return execute(notifier, TYPE_ON_RE_REQUEST_START, TYPE_ON_RE_REQUEST_FINISH, () -> chain.call().clone(), this::onReRequest, this::onReRequestException);
+        return execute(notifier, new OnReRequestStart(), new OnReRequestFinish(), () -> chain.call().clone(), this::onReRequest, this::onReRequestException);
     }
 
     // //////////////////////////////////重写区//////////////////////////////////
@@ -72,13 +64,13 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
 
     // //////////////////////////////////内部区//////////////////////////////////
 
-    private Response execute(@Nullable RequestNotifier notifier, String startType, String finishType, ICGetter cGetter, IRGetter rGetter, IEGetter eGetter) throws IOException {
+    private Response execute(@Nullable RequestNotifier notifier, RequestNotifierMsg.Callback startMsg, RequestNotifierMsg.Callback finishMsg, ICGetter cGetter, IRGetter rGetter, IEGetter eGetter) throws IOException {
         IOnCallListener cancelListener = null;
         try {
             Call call = cGetter.getCall();
-            Optional.ofNullable(notifier).ifPresent(n -> n.callback().notifyNow(mMsg.type(startType)));
+            Optional.ofNullable(notifier).ifPresent(n -> n.callback().notifyNow(startMsg));
             // 监听请求的取消
-            cancelListener = data -> RequestInvokerMsg.invokeOnCancel(data, call::cancel);
+            cancelListener = data -> RequestNotifierMsg.invokeWhenCancel(data, call::cancel);
             if (null != notifier) {
                 notifier.invoker().addListener(cancelListener);
             }
@@ -88,7 +80,7 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
         } finally {
             if (null != notifier) {
                 Optional.ofNullable(cancelListener).ifPresent(notifier.invoker()::removeListener);
-                notifier.callback().notifyNow(mMsg.type(finishType));
+                notifier.callback().notifyNow(finishMsg);
             }
         }
     }
@@ -96,6 +88,32 @@ public abstract class ReLoginInterceptor extends AuthInterceptor {
     // //////////////////////////////////实现区//////////////////////////////////
 
     protected abstract Call onAuth() throws IOException;
+
+    // //////////////////////////////////内部类//////////////////////////////////
+
+    public static class OnReAuthStart extends RequestNotifierMsg.Callback<Object> {
+        OnReAuthStart() {
+            super(null);
+        }
+    }
+
+    public static class OnReAuthFinish extends RequestNotifierMsg.Callback<Object> {
+        OnReAuthFinish() {
+            super(null);
+        }
+    }
+
+    public static class OnReRequestStart extends RequestNotifierMsg.Callback<Object> {
+        OnReRequestStart() {
+            super(null);
+        }
+    }
+
+    public static class OnReRequestFinish extends RequestNotifierMsg.Callback<Object> {
+        OnReRequestFinish() {
+            super(null);
+        }
+    }
 
     // //////////////////////////////////接口区//////////////////////////////////
 
