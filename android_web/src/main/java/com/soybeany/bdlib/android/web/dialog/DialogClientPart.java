@@ -6,7 +6,7 @@ import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg.OnDismissDialog;
 import com.soybeany.bdlib.core.util.notify.IConnectLogic;
 import com.soybeany.bdlib.core.util.notify.INotifyMsg;
-import com.soybeany.bdlib.web.okhttp.core.OkHttpClientFactory;
+import com.soybeany.bdlib.web.okhttp.core.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.notify.OkHttpNotifierUtils;
 import com.soybeany.bdlib.web.okhttp.notify.OkHttpNotifierUtils.IConnectorSetter;
 import com.soybeany.bdlib.web.okhttp.notify.RequestNotifier;
@@ -24,13 +24,13 @@ public class DialogClientPart extends OkHttpNotifierUtils.ClientPart<DialogNotif
     private boolean mNeedDefaultLogic = true;
 
     @Override
-    public DialogClientPart addSetter(OkHttpClientFactory.IClientSetter setter) {
+    public DialogClientPart addSetter(OkHttpUtils.IClientSetter setter) {
         super.addSetter(setter);
         return this;
     }
 
     @Override
-    public DialogClientPart removeSetter(OkHttpClientFactory.IClientSetter setter) {
+    public DialogClientPart removeSetter(OkHttpUtils.IClientSetter setter) {
         super.removeSetter(setter);
         return this;
     }
