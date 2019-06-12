@@ -26,8 +26,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
         ViewModelPlugin.ICallback, ViewModelPlugin.IInvoker,
         LifecyclePlugin.ICallback {
 
-    private FragmentDevelopPlugin mDevelopPlugin = new FragmentDevelopPlugin(getActivity(), (activity, permissions, requestCode)
-            -> requestPermissions(permissions, requestCode), this);
+    private FragmentDevelopPlugin mDevelopPlugin = new FragmentDevelopPlugin();
     private boolean mIsLazyLoad;
 
     {
@@ -39,7 +38,8 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mDevelopPlugin.startObserve();
+        mDevelopPlugin.init(getActivity(), (activity, permissions, requestCode)
+                -> requestPermissions(permissions, requestCode), this);
     }
 
     @Override

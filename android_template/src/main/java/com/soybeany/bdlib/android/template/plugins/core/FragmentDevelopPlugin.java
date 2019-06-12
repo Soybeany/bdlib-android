@@ -27,15 +27,15 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     private int mPreparedCount; // 已准备好的位置的计数
     private int mTargetCount; // 目标计数，默认为0
 
-    public FragmentDevelopPlugin(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer,
-                                 @Nullable ICallback callback) {
-        super(activity, dealer, callback);
-        invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
-    }
-
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return mContentV;
+    }
+
+    @Override
+    public void init(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable StdDevelopPlugin.ICallback callback) {
+        super.init(activity, dealer, callback);
+        invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
     }
 
     public View getContentView() {
