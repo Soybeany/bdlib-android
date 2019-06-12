@@ -74,6 +74,7 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
         invokeOnNotNull(mCallback = callback, c -> c.onSetupEssentialPermissions(permissionSet));
         if (null != activity && null != dealer) {
             mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
+            mPR.startObserve();
         }
     }
 
