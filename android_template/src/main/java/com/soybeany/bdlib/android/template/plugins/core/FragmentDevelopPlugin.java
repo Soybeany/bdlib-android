@@ -20,11 +20,12 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class FragmentDevelopPlugin extends StdDevelopPlugin {
-    private int mPreparedCount; // 已准备好的位置的计数
-
     @Nullable
     private LayoutInflater mInflater;
     private View mContentV;
+
+    private int mPreparedCount; // 已准备好的位置的计数
+    private int mTargetCount; // 目标计数，默认为0
 
     public FragmentDevelopPlugin(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer,
                                  @Nullable ICallback callback) {
@@ -51,14 +52,22 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
         Optional.ofNullable(mInflater).ifPresent(inflater -> mContentV = inflater.inflate(resId, null, false));
     }
 
+    /**
+     * 设置目标计数
+     */
+    public FragmentDevelopPlugin lazyLoadInViewPager(boolean flag) {
+        mTargetCount = flag ? 1 : 0;
+        return this;
+    }
+
     public void onEssentialPermissionsPass(boolean isNew) {
         tryToSignalDoBusiness();
     }
 
     private void tryToSignalDoBusiness() {
-        if (mPreparedCount > 1) {
+        if (mPreparedCount > mTargetCount) {
             return;
-        } else if (mPreparedCount == 1) {
+        } else if (mPreparedCount == mTargetCount) {
             invokeOnNotNull(mCallback, callback -> invokeInUiThread(() -> callback.doBusiness(mIsNew)));
         }
         mPreparedCount++;

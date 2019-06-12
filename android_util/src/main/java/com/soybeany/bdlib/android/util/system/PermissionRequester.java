@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 权限请求者
+ * 权限请求者，设置后调用{@link #startObserve()}启动生命周期检测
  * <br>Created by Soybeany on 2017/3/23.
  */
 public class PermissionRequester implements IObserver {
@@ -83,16 +83,6 @@ public class PermissionRequester implements IObserver {
     public PermissionRequester(@NonNull FragmentActivity activity, @NonNull IPermissionDealer dealer) {
         mActivity = activity;
         mDealer = dealer;
-        mActivity.getLifecycle().addObserver(this);
-    }
-
-    /**
-     * 请求指定的必要权限(重复调用将覆盖callback)
-     */
-    public PermissionRequester withEPermission(@NonNull IPermissionCallback callback, @Nullable String... permissions) {
-        mECallback = callback;
-        mEPermissions = permissions;
-        return this;
     }
 
     @Override
@@ -106,6 +96,22 @@ public class PermissionRequester implements IObserver {
     public void onDestroy(@NonNull LifecycleOwner owner) {
         Optional.ofNullable(DIALOG_MAP.remove(mActivity)).ifPresent(Dialog::dismiss);
         mActivity.getLifecycle().removeObserver(this);
+    }
+
+    /**
+     * 开始观察Activity的生命周期
+     */
+    public void startObserve() {
+        mActivity.getLifecycle().addObserver(this);
+    }
+
+    /**
+     * 请求指定的必要权限(重复调用将覆盖callback)
+     */
+    public PermissionRequester withEPermission(@NonNull IPermissionCallback callback, @Nullable String... permissions) {
+        mECallback = callback;
+        mEPermissions = permissions;
+        return this;
     }
 
     /**

@@ -27,6 +27,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
         LifecyclePlugin.ICallback {
 
     private FragmentDevelopPlugin mDevelopPlugin;
+    private boolean mIsLazyLoad;
 
     {
         PluginDriver.install(this, this);
@@ -62,6 +63,12 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         mDevelopPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -71,7 +78,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
 
     @Override
     public void onSetupPlugins(IPluginManager manager) {
-        manager.load(mDevelopPlugin);
+        manager.load(mDevelopPlugin.lazyLoadInViewPager(mIsLazyLoad));
         manager.load(new LifecyclePlugin(this));
         manager.load(new ViewModelPlugin(this, null));
     }
@@ -97,6 +104,14 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     }
 
     // //////////////////////////////////拓展方法//////////////////////////////////
+
+    /**
+     * 标识在ViewPager中使用懒加载
+     */
+    public BaseFragment lazyLoadInViewPager() {
+        mIsLazyLoad = true;
+        return this;
+    }
 
     @Nullable
     public <T extends ViewModel> T getActivityViewModel(Class<T> modelClass) {
