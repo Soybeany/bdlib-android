@@ -104,14 +104,6 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
 
     // //////////////////////////////////拓展方法//////////////////////////////////
 
-    /**
-     * 标识在ViewPager中使用懒加载
-     */
-    public BaseFragment lazyLoadInViewPager() {
-        mDevelopPlugin.lazyLoadInViewPager(true);
-        return this;
-    }
-
     @Nullable
     public <T extends ViewModel> T getActivityViewModel(Class<T> modelClass) {
         FragmentActivity activity = getActivity();

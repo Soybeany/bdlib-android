@@ -44,20 +44,13 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
 
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisibleToUser) {
+            mTargetCount = 1; // 有ViewPager等时则计算上限变为1
             tryToSignalDoBusiness();
         }
     }
 
     public void onSetContentView(int resId) {
         Optional.ofNullable(mInflater).ifPresent(inflater -> mContentV = inflater.inflate(resId, null, false));
-    }
-
-    /**
-     * 设置目标计数
-     */
-    public FragmentDevelopPlugin lazyLoadInViewPager(boolean flag) {
-        mTargetCount = flag ? 1 : 0;
-        return this;
     }
 
     public void onEssentialPermissionsPass(boolean isNew) {
