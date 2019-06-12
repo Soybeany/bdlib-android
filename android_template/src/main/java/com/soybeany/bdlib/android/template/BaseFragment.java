@@ -47,6 +47,12 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
         mDevelopPlugin.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mDevelopPlugin.onSaveInstanceState(outState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -16,10 +16,12 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 
 /**
  * 在Attach时创建，需额外自行调用{}{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
- * {@link #setUserVisibleHint(boolean)}
+ * {@link #setUserVisibleHint(boolean)}、{@link #onSaveInstanceState(Bundle)}
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class FragmentDevelopPlugin extends StdDevelopPlugin {
+    private static final String KEY_TARGET_COUNT = "bd_target_count";
+
     @Nullable
     private LayoutInflater mInflater;
     private View mContentV;
@@ -27,15 +29,27 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     private int mPreparedCount; // 已准备好的位置的计数
     private int mTargetCount; // 目标计数，默认为0
 
-    @Nullable
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return mContentV;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // 还原计数
+        Optional.ofNullable(savedInstanceState).ifPresent(state -> mTargetCount = state.getInt(KEY_TARGET_COUNT));
     }
 
     @Override
     public void init(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable StdDevelopPlugin.ICallback callback) {
         super.init(activity, dealer, callback);
         invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
+    }
+
+    @Nullable
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return mContentV;
+    }
+
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        // // 保存计数
+        outState.putInt(KEY_TARGET_COUNT, mTargetCount);
     }
 
     public View getContentView() {
