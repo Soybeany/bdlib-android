@@ -43,8 +43,10 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     }
 
     public void setUserVisibleHint(boolean isVisibleToUser) {
+        // 有ViewPager等时则计算上限变为1
+        mTargetCount = 1;
+        // 执行回调
         if (isVisibleToUser) {
-            mTargetCount = 1; // 有ViewPager等时则计算上限变为1
             tryToSignalDoBusiness();
         }
     }
