@@ -19,7 +19,8 @@ import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
 /**
  * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，
  * 需自行调用{@link #onCreate(Bundle)}、
- * {@link #onRequestPermissionsResult(int, String[], int[])}
+ * {@link #onRequestPermissionsResult(int, String[], int[])}、
+ * {@link #startObserve}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
@@ -33,13 +34,10 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
 
     public StdDevelopPlugin(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer,
                             @Nullable ICallback callback) {
-        mCallback = callback;
-
         Set<String> permissionSet = new HashSet<>();
-        invokeOnNotNull(mCallback, c -> c.onSetupEssentialPermissions(permissionSet));
+        invokeOnNotNull(mCallback = callback, c -> c.onSetupEssentialPermissions(permissionSet));
         if (null != activity && null != dealer) {
             mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
-            mPR.startObserve();
         }
     }
 
@@ -74,6 +72,13 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
 
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
         return null != mPR && mPR.requestPermissions(callback, permissions);
+    }
+
+    /**
+     * 开始观察
+     */
+    public void startObserve() {
+        invokeOnNotNull(mPR, PermissionRequester::startObserve);
     }
 
     /**
