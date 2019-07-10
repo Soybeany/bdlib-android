@@ -17,6 +17,6 @@ public class AppApplication extends BDApplication {
         LeakCanary.install(this);
         super.onCreate();
 
-        EmergencyHandler.init("/BDLibAndroid", true, new EmergencyHandler.ICallback.Std());
+        EmergencyHandler.init(null);
     }
 }

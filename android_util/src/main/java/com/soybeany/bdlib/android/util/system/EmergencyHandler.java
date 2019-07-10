@@ -1,17 +1,20 @@
 package com.soybeany.bdlib.android.util.system;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.util.AFileUtils;
 import com.soybeany.bdlib.android.util.LogUtils;
+import com.soybeany.bdlib.core.util.IterableUtils;
 import com.soybeany.bdlib.core.util.TimeUtils;
 import com.soybeany.bdlib.core.util.file.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 在程序崩溃时记录崩溃情况
@@ -19,11 +22,17 @@ import java.io.Writer;
  */
 public class EmergencyHandler implements Thread.UncaughtExceptionHandler {
 
-    private static final EmergencyHandler mInstance = new EmergencyHandler();
-    private static Thread.UncaughtExceptionHandler mHandler;
+    private static final EmergencyHandler INSTANCE = new EmergencyHandler();
+    private static final Thread.UncaughtExceptionHandler TARGET;
+    private static final Set<ICallback> CALLBACKS = new HashSet<>();
+    private static final DeviceInfoUtils.SoftwareInfo SOFTWARE_INFO = DeviceInfoUtils.getSoftwareInfo();
+    private static final DeviceInfoUtils.HardwareInfo HARDWARE_INFO = DeviceInfoUtils.getHardwareInfo();
+    private static final ICallback DEFAULT_CALLBACK = new StdCallback("/" + SOFTWARE_INFO.appLabel + "/crash", true);
 
-    private static String PATH; // 日志记录的路径
-    private static ICallback CALLBACK; // 回调
+    static {
+        TARGET = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(INSTANCE);
+    }
 
     private EmergencyHandler() {
     }
@@ -31,68 +40,71 @@ public class EmergencyHandler implements Thread.UncaughtExceptionHandler {
     /**
      * 初始化
      *
-     * @param addSdPrefix 是否添加sd卡路径前缀
+     * @param callback 可为null，将使用{@link StdCallback}
      */
-    public static void init(String path, boolean addSdPrefix, @Nullable ICallback callback) {
-        PATH = addSdPrefix ? (AFileUtils.SD_PATH + path) : path;
-        CALLBACK = (null == callback ? new ICallback.Std() : callback);
-        if (mHandler == null) {
-            mHandler = Thread.getDefaultUncaughtExceptionHandler();
-            Thread.setDefaultUncaughtExceptionHandler(mInstance);
-        }
+    public static void init(@Nullable ICallback callback) {
+        CALLBACKS.add(null == callback ? DEFAULT_CALLBACK : callback);
     }
 
     @Override
-    public void uncaughtException(final Thread thread, final Throwable ex) {
-        processException(ex);
-        mHandler.uncaughtException(thread, ex);
-    }
-
-    /**
-     * 捕捉崩溃信息
-     */
-    private void processException(final Throwable th) {
-        try {
-            // 获得崩溃信息
-            Writer result = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(result);
-            th.printStackTrace(printWriter);
-            String stacktrace = result.toString();
-            printWriter.close();
-            // 拼接崩溃信息
-            DeviceInfoUtils.SoftwareInfo sInfo = DeviceInfoUtils.getSoftwareInfo();
-            DeviceInfoUtils.HardwareInfo hInfo = DeviceInfoUtils.getHardwareInfo();
-            String sb = "手机型号: " + hInfo.devModel +
-                    "  CPU型号: " + hInfo.devCPU +
-                    "  系统版本: " + hInfo.sysVerName +
-                    "  应用版本号: " + sInfo.versionName +
-                    "\n\n" + stacktrace;
-            // 输出崩溃信息
-            String fileName = CALLBACK.getFileName();
-            FileUtils.writeToFile(sb, new File(PATH, fileName), false, null);
-            CALLBACK.onFinish(fileName);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+    public void uncaughtException(Thread t, Throwable e) {
+        IterableUtils.forEach(CALLBACKS, (callback, flag) -> callback.onProcessException(t, e));
+        TARGET.uncaughtException(t, e);
     }
 
     public interface ICallback {
-        @NonNull
-        String getFileName();
+        void onProcessException(Thread t, Throwable e);
+    }
 
-        void onFinish(String fileName);
+    public static class StdCallback implements ICallback {
+        private String mPath; // 路径
 
-        class Std implements ICallback {
-            @NonNull
-            @Override
-            public String getFileName() {
-                return "/android_crash_" + TimeUtils.getCurrentTime(TimeUtils.FORMAT_yyyy_MM_dd_HH_mm_ss2) + ".txt";
+        public StdCallback(String path, boolean addSdPrefix) {
+            mPath = addSdPrefix ? (AFileUtils.SD_PATH + path) : path;
+        }
+
+        @Override
+        public void onProcessException(Thread t, Throwable e) {
+            try {
+                File file = new File(mPath, getFileName());
+                onWrite(file, getContent(e, SOFTWARE_INFO, HARDWARE_INFO));
+                onFinish(file);
+            } catch (final Exception ex) {
+                ex.printStackTrace();
             }
+        }
 
-            @Override
-            public void onFinish(String fileName) {
-                LogUtils.i("System", "崩溃日志已生成: " + fileName);
+        // //////////////////////////////////配置区//////////////////////////////////
+
+        protected String getFileName() {
+            return "/android_crash_" + TimeUtils.getCurrentTime(TimeUtils.FORMAT_yyyy_MM_dd_HH_mm_ss2) + ".txt";
+        }
+
+        protected String getStackTraceInfo(Throwable th) {
+            Writer result = new StringWriter();
+            try (PrintWriter printWriter = new PrintWriter(result)) {
+                th.printStackTrace(printWriter);
+                return result.toString();
             }
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        protected String getContent(Throwable th, DeviceInfoUtils.SoftwareInfo sInfo, DeviceInfoUtils.HardwareInfo hInfo) {
+            return "手机型号: " + hInfo.devModel +
+                    "  CPU型号: " + hInfo.devCPU +
+                    "  系统版本: " + hInfo.sysVerName +
+                    "  应用版本号: " + sInfo.versionName +
+                    "\n\n" + getStackTraceInfo(th);
+        }
+
+        // //////////////////////////////////回调区//////////////////////////////////
+
+        protected void onWrite(File file, String content) throws IOException {
+            FileUtils.writeToFile(content, file, false, null);
+        }
+
+        protected void onFinish(File file) {
+            LogUtils.i("System", "崩溃日志已生成: " + file.getName());
         }
     }
 }
