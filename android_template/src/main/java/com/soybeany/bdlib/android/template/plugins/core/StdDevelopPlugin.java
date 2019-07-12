@@ -1,6 +1,7 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
 import android.app.Activity;
+import android.arch.lifecycle.LifecycleOwner;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +21,7 @@ import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
  * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，
  * 需自行调用{@link #onCreate(Bundle)}、
  * {@link #onRequestPermissionsResult(int, String[], int[])}、
- * {@link #init}
+ * {@link #init(FragmentActivity, LifecycleOwner, PermissionRequester.IPermissionDealer, ICallback)}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
@@ -68,13 +69,12 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
     /**
      * 初始化
      */
-    public void init(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer,
-                     @Nullable ICallback callback) {
+    public void init(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable ICallback callback) {
         Set<String> permissionSet = new HashSet<>();
         invokeOnNotNull(mCallback = callback, c -> c.onSetupEssentialPermissions(permissionSet));
-        if (null != activity && null != dealer) {
+        if (null != activity && null != owner && null != dealer) {
             mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
-            mPR.startObserve();
+            mPR.startObserve(owner);
         }
     }
 

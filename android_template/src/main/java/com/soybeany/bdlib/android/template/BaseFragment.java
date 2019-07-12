@@ -34,7 +34,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
         super.onActivityCreated(savedInstanceState);
         PluginDriver.install(this, this);
         mDevelopPlugin.onCreate(savedInstanceState);
-        mDevelopPlugin.init(getActivity(), (activity, permissions, requestCode)
+        mDevelopPlugin.init(getActivity(), this, (activity, permissions, requestCode)
                 -> requestPermissions(permissions, requestCode), this);
     }
 

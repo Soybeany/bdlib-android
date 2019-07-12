@@ -36,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDevelopPlugin.onCreate(savedInstanceState);
-        mDevelopPlugin.init(this, ActivityCompat::requestPermissions, this);
+        mDevelopPlugin.init(this, this, ActivityCompat::requestPermissions, this);
     }
 
     @Override

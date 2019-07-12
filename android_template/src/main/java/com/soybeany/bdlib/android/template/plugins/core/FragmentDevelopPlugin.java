@@ -1,5 +1,6 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,8 +38,8 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     }
 
     @Override
-    public void init(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable StdDevelopPlugin.ICallback callback) {
-        super.init(activity, dealer, callback);
+    public void init(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable StdDevelopPlugin.ICallback callback) {
+        super.init(activity, owner, dealer, callback);
         invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
     }
 
