@@ -19,7 +19,6 @@ import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
-import com.soybeany.bdlib.core.java8.Optional;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
@@ -40,13 +39,15 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
         FragmentActivity fActivity = getActivity();
         mDevelopPlugin = new FragmentDevelopPlugin(fActivity, this, (activity, permissions, requestCode)
                 -> requestPermissions(permissions, requestCode), this);
-
-        Optional.ofNullable(fActivity).ifPresent(activity -> activity.getLifecycle().addObserver(new IObserver() {
+        if (null == fActivity) {
+            return;
+        }
+        fActivity.getLifecycle().addObserver(new IObserver() {
             @Override
             public void onCreate(@NonNull LifecycleOwner owner) {
                 PluginDriver.install(BaseFragment.this, BaseFragment.this);
             }
-        }));
+        });
     }
 
     @Override
