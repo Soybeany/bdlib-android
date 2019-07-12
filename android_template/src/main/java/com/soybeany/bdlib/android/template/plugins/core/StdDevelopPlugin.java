@@ -20,8 +20,7 @@ import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
 /**
  * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，
  * 需自行调用{@link #onCreate(Bundle)}、
- * {@link #onRequestPermissionsResult(int, String[], int[])}、
- * {@link #init(FragmentActivity, LifecycleOwner, PermissionRequester.IPermissionDealer, ICallback)}
+ * {@link #onRequestPermissionsResult(int, String[], int[])}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
@@ -32,10 +31,26 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
     protected ICallback mCallback;
     @Nullable
     private PermissionRequester mPR;
+    @Nullable
+    private LifecycleOwner mOwner;
+
+    public StdDevelopPlugin(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable ICallback callback) {
+        mOwner = owner;
+
+        Set<String> permissionSet = new HashSet<>();
+        invokeOnNotNull(mCallback = callback, c -> c.onSetupEssentialPermissions(permissionSet));
+        if (null != activity && null != dealer) {
+            mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
+        }
+    }
 
     @Override
     public void initAfterSetContentView() {
         invokeOnNotNull(mCallback, ICallback::onInitViews);
+
+        if (null != mPR && null != mOwner) {
+            mPR.startObserve(mOwner);
+        }
     }
 
     @Override
@@ -64,18 +79,6 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
 
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
         return null != mPR && mPR.requestPermissions(callback, permissions);
-    }
-
-    /**
-     * 初始化
-     */
-    public void init(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable ICallback callback) {
-        Set<String> permissionSet = new HashSet<>();
-        invokeOnNotNull(mCallback = callback, c -> c.onSetupEssentialPermissions(permissionSet));
-        if (null != activity && null != owner && null != dealer) {
-            mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
-            mPR.startObserve(owner);
-        }
     }
 
     /**

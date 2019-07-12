@@ -30,17 +30,16 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     private int mPreparedCount; // 已准备好的位置的计数
     private int mTargetCount; // 目标计数，默认为0
 
+    public FragmentDevelopPlugin(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable StdDevelopPlugin.ICallback callback) {
+        super(activity, owner, dealer, callback);
+        invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 还原计数
         Optional.ofNullable(savedInstanceState).ifPresent(state -> mTargetCount = state.getInt(KEY_TARGET_COUNT));
-    }
-
-    @Override
-    public void init(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable StdDevelopPlugin.ICallback callback) {
-        super.init(activity, owner, dealer, callback);
-        invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
     }
 
     @Nullable
