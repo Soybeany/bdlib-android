@@ -32,6 +32,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PluginDriver.install(this, this);
         mDevelopPlugin.onCreate(savedInstanceState);
         mDevelopPlugin.init(getActivity(), (activity, permissions, requestCode)
                 -> requestPermissions(permissions, requestCode), this);
@@ -46,7 +47,6 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        PluginDriver.install(this, this);
         return mDevelopPlugin.onCreateView(inflater, container, savedInstanceState);
     }
 
