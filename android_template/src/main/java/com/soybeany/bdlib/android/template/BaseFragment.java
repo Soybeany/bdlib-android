@@ -2,7 +2,6 @@ package com.soybeany.bdlib.android.template;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,16 +34,11 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mDevelopPlugin.init(getActivity(), (activity, permissions, requestCode)
-                -> requestPermissions(permissions, requestCode), this);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDevelopPlugin.onCreate(savedInstanceState);
+        mDevelopPlugin.init(getActivity(), (activity, permissions, requestCode)
+                -> requestPermissions(permissions, requestCode), this);
     }
 
     @Override
