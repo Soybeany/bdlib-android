@@ -1,5 +1,6 @@
 package com.soybeany.bdlib.android.template;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -16,7 +17,9 @@ import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
 import com.soybeany.bdlib.android.template.plugins.core.FragmentDevelopPlugin;
 import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
+import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
+import com.soybeany.bdlib.core.java8.Optional;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
@@ -34,15 +37,21 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mDevelopPlugin = new FragmentDevelopPlugin(getActivity(), this, (activity, permissions, requestCode)
+        FragmentActivity fActivity = getActivity();
+        mDevelopPlugin = new FragmentDevelopPlugin(fActivity, this, (activity, permissions, requestCode)
                 -> requestPermissions(permissions, requestCode), this);
+
+        Optional.ofNullable(fActivity).ifPresent(activity -> activity.getLifecycle().addObserver(new IObserver() {
+            @Override
+            public void onCreate(@NonNull LifecycleOwner owner) {
+                PluginDriver.install(BaseFragment.this, BaseFragment.this);
+            }
+        }));
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        PluginDriver.install(this, this);
-
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mDevelopPlugin.onCreate(savedInstanceState);
     }
 

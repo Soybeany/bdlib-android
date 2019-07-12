@@ -1,14 +1,9 @@
 package com.soybeany.bdlib.android.template;
 
-import android.app.Activity;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.interfaces.IInitTemplate;
@@ -33,9 +28,7 @@ public class PluginDriver implements IExtendPlugin {
     private Lifecycle mLifecycle;
 
     /**
-     * 安装驱动，
-     * Activity在{@link Activity#onCreate(Bundle)}中调用，
-     * Fragment在{@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}中调用
+     * 安装驱动
      */
     public static void install(LifecycleOwner owner, ICallback callback) {
         new PluginDriver(owner, callback);
