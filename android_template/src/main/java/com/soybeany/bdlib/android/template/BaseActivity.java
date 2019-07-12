@@ -26,12 +26,15 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     private StdDevelopPlugin mDevelopPlugin = new StdDevelopPlugin();
     private BackInterceptorPlugin mBackPlugin;
 
+    {
+        PluginDriver.install(this, this);
+    }
+
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PluginDriver.install(this, this);
         mDevelopPlugin.onCreate(savedInstanceState);
         mDevelopPlugin.init(this, ActivityCompat::requestPermissions, this);
     }
