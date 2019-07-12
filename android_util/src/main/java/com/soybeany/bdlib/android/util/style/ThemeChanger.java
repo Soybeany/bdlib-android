@@ -25,12 +25,14 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
 
     @Override
     public void onRecreate(AppCompatActivity activity, @Nullable Info oldInfo, @NonNull Info newInfo) {
+        boolean needRecreate = true;
         if (null != oldInfo && oldInfo.mode != newInfo.mode) {
             AppCompatDelegate.setDefaultNightMode(newInfo.mode);
-            activity.getDelegate().applyDayNight();
-            return;
+            needRecreate = !activity.getDelegate().applyDayNight();
         }
-        activity.recreate();
+        if (needRecreate) {
+            activity.recreate();
+        }
     }
 
     @Override
