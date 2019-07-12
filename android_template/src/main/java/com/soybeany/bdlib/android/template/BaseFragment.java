@@ -27,10 +27,6 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
 
     private FragmentDevelopPlugin mDevelopPlugin = new FragmentDevelopPlugin();
 
-    {
-        PluginDriver.install(this, this);
-    }
-
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
     @Override
@@ -50,6 +46,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        PluginDriver.install(this, this);
         return mDevelopPlugin.onCreateView(inflater, container, savedInstanceState);
     }
 
