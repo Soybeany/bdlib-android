@@ -28,14 +28,16 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
 
     private FragmentDevelopPlugin mDevelopPlugin = new FragmentDevelopPlugin();
 
+    {
+        PluginDriver.install(this, this);
+    }
+
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        FragmentActivity fActivity = getActivity();
-        PluginDriver.install(fActivity, this);
-        mDevelopPlugin.init(fActivity, (activity, permissions, requestCode)
+        mDevelopPlugin.init(getActivity(), (activity, permissions, requestCode)
                 -> requestPermissions(permissions, requestCode), this);
     }
 
