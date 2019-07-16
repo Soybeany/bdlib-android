@@ -11,6 +11,8 @@ import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 import com.soybeany.bdlib.web.okhttp.core.ParamAppender;
 import com.soybeany.bdlib.web.okhttp.parser.StringParser;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.soybeany.bdlib.project.RequestUtils.SERVER;
 
 /**
@@ -19,7 +21,8 @@ import static com.soybeany.bdlib.project.RequestUtils.SERVER;
 public class TestPresenter extends BasePresenter<ITestView> {
 
     public void testFile() {
-        RequestUtils.newRequest(null).showDialog(getTopDialogNotifier(), when -> new StdDialogMsg().hint("测试").cancelable(true))
+        RequestUtils.newRequest(setter -> setter.connectTimeout(5, TimeUnit.SECONDS))
+                .showDialog(getTopDialogNotifier(), when -> new StdDialogMsg().hint("测试").cancelable(true))
                 .newCall((builder, notifier) -> builder.url(new ParamAppender().add("test", "测试").toUrl(SERVER + "/mobile/auth//file")).build())
                 .enqueue(new OkHttpCallback<>(StringParser.get())
                         .addCallback(new TestCallback())
