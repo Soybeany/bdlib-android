@@ -20,6 +20,7 @@ import java.util.Set;
 
 /**
  * 插件驱动
+ * <br>需在super的onCreate前调用{@link #beforeOnCreate()}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class PluginDriver implements IExtendPlugin {
@@ -27,18 +28,16 @@ public class PluginDriver implements IExtendPlugin {
     private ICallback mCallback;
     private Lifecycle mLifecycle;
 
-    /**
-     * 安装驱动
-     */
-    public static void install(LifecycleOwner owner, ICallback callback) {
-        new PluginDriver(owner, callback);
-    }
-
-    private PluginDriver(LifecycleOwner owner, ICallback callback) {
+    public PluginDriver(LifecycleOwner owner, ICallback callback) {
         mLifecycle = owner.getLifecycle();
         mCallback = callback;
 
         mLifecycle.addObserver(this);
+    }
+
+    @Override
+    public void initBeforeOnCreate() {
+        mManager.invoke(IInitTemplate::initBeforeOnCreate);
     }
 
     @Override
@@ -82,6 +81,13 @@ public class PluginDriver implements IExtendPlugin {
     @Override
     public String getGroupId() {
         return "PluginDriver";
+    }
+
+    /**
+     * 需onCreate前主动调用，以触发相应回调
+     */
+    public void beforeOnCreate() {
+        initBeforeOnCreate();
     }
 
     public interface ICallback extends IInitTemplate {

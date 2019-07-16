@@ -5,6 +5,9 @@ package com.soybeany.bdlib.android.template.interfaces;
  * <br>Created by Soybeany on 2019/4/30.
  */
 public interface IInitTemplate {
+    default void initBeforeOnCreate() {
+    }
+
     default void initBeforeSetContentView() {
     }
 

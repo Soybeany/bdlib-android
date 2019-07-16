@@ -26,11 +26,8 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
         ViewModelPlugin.ICallback, ViewModelPlugin.IInvoker,
         LifecyclePlugin.ICallback {
 
+    private final PluginDriver mDriver = new PluginDriver(this, this);
     private FragmentDevelopPlugin mDevelopPlugin;
-
-    {
-        PluginDriver.install(this, this);
-    }
 
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
@@ -43,6 +40,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        mDriver.beforeOnCreate();
         super.onCreate(savedInstanceState);
         mDevelopPlugin.onCreate(savedInstanceState);
     }

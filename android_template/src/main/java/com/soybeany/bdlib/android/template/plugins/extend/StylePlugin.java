@@ -24,7 +24,7 @@ public abstract class StylePlugin<Data> implements IExtendPlugin {
     }
 
     @Override
-    public void initBeforeSetContentView() {
+    public void initBeforeOnCreate() {
         mChanger.applyChange(mActivity, getData());
         mData.observe(mActivity, data -> mChanger.recreate(mActivity, data));
     }
