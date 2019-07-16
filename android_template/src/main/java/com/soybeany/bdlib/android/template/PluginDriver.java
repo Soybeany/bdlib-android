@@ -31,9 +31,8 @@ public class PluginDriver implements IExtendPlugin {
     public PluginDriver(LifecycleOwner owner, ICallback callback) {
         mLifecycle = owner.getLifecycle();
         mCallback = callback;
-        // 添加观察者
+        // 添加全局观察者
         mLifecycle.addObserver(this);
-        mManager.invoke(plugin -> mLifecycle.addObserver(plugin));
     }
 
     @Override
@@ -87,6 +86,8 @@ public class PluginDriver implements IExtendPlugin {
         // 加载插件
         mCallback.onSetupPlugins(mManager);
         mManager.lockCheckAndSort();
+        // 插件添加观察者
+        mManager.invoke(plugin -> mLifecycle.addObserver(plugin));
         // 回调
         initBeforeOnCreate();
     }
