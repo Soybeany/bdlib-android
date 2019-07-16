@@ -27,6 +27,7 @@ public class PluginDriver implements IExtendPlugin {
     private final ManagerImpl mManager = new ManagerImpl();
     private ICallback mCallback;
     private Lifecycle mLifecycle;
+    private boolean mIsInit; // 标识是否已初始化
 
     public PluginDriver(LifecycleOwner owner, ICallback callback) {
         mLifecycle = owner.getLifecycle();
@@ -83,6 +84,11 @@ public class PluginDriver implements IExtendPlugin {
      * 需onCreate前主动调用，以触发相应回调
      */
     public void beforeOnCreate() {
+        // 只在未初始化时工作
+        if (mIsInit) {
+            return;
+        }
+        mIsInit = true;
         // 加载插件
         mCallback.onSetupPlugins(mManager);
         mManager.lockCheckAndSort();
