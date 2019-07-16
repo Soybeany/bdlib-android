@@ -23,8 +23,8 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
         BackInterceptorPlugin.ICallback, BackInterceptorPlugin.IInvoker,
         LifecyclePlugin.ICallback {
 
-    private final StdDevelopPlugin mDevelopPlugin = new StdDevelopPlugin(this, this, ActivityCompat::requestPermissions, this);
     private final PluginDriver mDriver = new PluginDriver(this, this);
+    private StdDevelopPlugin mDevelopPlugin;
     private BackInterceptorPlugin mBackPlugin;
 
     // //////////////////////////////////官方方法重写//////////////////////////////////
@@ -61,7 +61,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
 
     @Override
     public void onSetupPlugins(IPluginManager manager) {
-        manager.load(mDevelopPlugin);
+        manager.load(mDevelopPlugin = new StdDevelopPlugin(this, this, ActivityCompat::requestPermissions, this));
         manager.load(new LifecyclePlugin(this));
         manager.load(new ViewModelPlugin(this, null));
         manager.load(mBackPlugin = new BackInterceptorPlugin(this, this));

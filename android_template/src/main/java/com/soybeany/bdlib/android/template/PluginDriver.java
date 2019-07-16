@@ -105,7 +105,7 @@ public class PluginDriver implements IExtendPlugin {
         private boolean mIsLock;
 
         public void load(@Nullable IExtendPlugin plugin) {
-            checkLock(plugin);
+            checkLock();
             if (null != plugin) {
                 mPlugins.add(plugin);
                 plugin.onLoad(this);
@@ -113,7 +113,7 @@ public class PluginDriver implements IExtendPlugin {
         }
 
         public void unload(@Nullable IExtendPlugin plugin) {
-            checkLock(plugin);
+            checkLock();
             if (null != plugin) {
                 plugin.onUnload();
                 mPlugins.remove(plugin);
@@ -159,7 +159,7 @@ public class PluginDriver implements IExtendPlugin {
             mIsLock = false;
         }
 
-        private void checkLock(@Nullable IExtendPlugin plugin) {
+        private void checkLock() {
             if (mIsLock) {
                 throw new RuntimeException("插件列表已锁定，不能修改");
             }
