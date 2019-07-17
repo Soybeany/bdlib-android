@@ -1,5 +1,6 @@
 package com.soybeany.bdlib.android.web.dialog;
 
+import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
 import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg.PopMsg;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
@@ -30,7 +31,13 @@ public class DialogLogicSetter implements DialogClientPart.ILogicSetter {
         applier.addLogic(OnUpload.class, (msg, rn, dn) -> invoke(dn, progress.toPercent(msg.getData())));
         applier.addLogic(OnDownload.class, (msg, rn, dn) -> invoke(dn, progress.toPercent(msg.getData())));
         applier.addLogic(OnFinish.class, (msg, rn, dn) -> invoke(dn, new PopMsg(dialogMsg)));
+
         // 弹窗部分
-        applier.addLogic(OnDismissDialog.class, (msg, rn, dn) -> invoke(rn, new Cancel()));
+        applier.addLogic(OnDismissDialog.class, (msg, rn, dn) -> {
+            // 当非正常结束时才发送“取消通知”
+            if (!DialogDismissReason.NORM.equals(msg.getData())) {
+                invoke(rn, new Cancel());
+            }
+        });
     }
 }
