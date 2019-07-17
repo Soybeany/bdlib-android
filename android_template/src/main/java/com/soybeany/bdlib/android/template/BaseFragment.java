@@ -27,21 +27,20 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
         LifecyclePlugin.ICallback {
 
     private final PluginDriver mDriver = new PluginDriver(this, this);
-    private FragmentDevelopPlugin mDevelopPlugin;
+    private final FragmentDevelopPlugin mDevelopPlugin = new FragmentDevelopPlugin(this, this);
 
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mDevelopPlugin = new FragmentDevelopPlugin(getActivity(), this, (activity, permissions, requestCode)
-                -> requestPermissions(permissions, requestCode), this);
+        mDevelopPlugin.activate(getActivity(), (activity, permissions, requestCode) -> requestPermissions(permissions, requestCode));
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mDevelopPlugin = null;
+        mDevelopPlugin.deactivate();
     }
 
     @Override
@@ -66,15 +65,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (null != mDevelopPlugin) {
-            mDevelopPlugin.setUserVisibleHint(isVisibleToUser);
-        }
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-
+        mDevelopPlugin.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override

@@ -20,7 +20,8 @@ import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
 /**
  * 标准开发，一般用于Activity，也可用于Fragment(但建议使用{@link FragmentDevelopPlugin})，
  * 需自行调用{@link #onCreate(Bundle)}、
- * {@link #onRequestPermissionsResult(int, String[], int[])}
+ * {@link #onRequestPermissionsResult(int, String[], int[])}、
+ * {@link #activate(FragmentActivity, PermissionRequester.IPermissionDealer)}
  * <br>Created by Soybeany on 2019/4/30.
  */
 public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPermissionCallback {
@@ -34,14 +35,9 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
     @Nullable
     private LifecycleOwner mOwner;
 
-    public StdDevelopPlugin(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable ICallback callback) {
+    public StdDevelopPlugin(@Nullable LifecycleOwner owner, @Nullable ICallback callback) {
         mOwner = owner;
-
-        Set<String> permissionSet = new HashSet<>();
-        invokeOnNotNull(mCallback = callback, c -> c.onSetupEssentialPermissions(permissionSet));
-        if (null != activity && null != dealer) {
-            mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
-        }
+        mCallback = callback;
     }
 
     @Override
@@ -79,6 +75,19 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
 
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
         return null != mPR && mPR.requestPermissions(callback, permissions);
+    }
+
+    public StdDevelopPlugin activate(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer) {
+        Set<String> permissionSet = new HashSet<>();
+        invokeOnNotNull(mCallback, c -> c.onSetupEssentialPermissions(permissionSet));
+        if (null != activity && null != dealer) {
+            mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
+        }
+        return this;
+    }
+
+    public void deactivate() {
+        mPR = null;
     }
 
     /**

@@ -61,7 +61,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
 
     @Override
     public void onSetupPlugins(IPluginManager manager) {
-        manager.load(mDevelopPlugin = new StdDevelopPlugin(this, this, ActivityCompat::requestPermissions, this));
+        manager.load(mDevelopPlugin = new StdDevelopPlugin(this, this).activate(this, ActivityCompat::requestPermissions));
         manager.load(new LifecyclePlugin(this));
         manager.load(new ViewModelPlugin(this, null));
         manager.load(mBackPlugin = new BackInterceptorPlugin(this, this));

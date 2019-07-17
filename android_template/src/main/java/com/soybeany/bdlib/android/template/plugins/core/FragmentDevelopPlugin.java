@@ -20,7 +20,8 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 /**
  * 在Attach时创建，需额外自行调用{}{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
  * {@link #setUserVisibleHint(boolean)}、{@link #onSaveInstanceState(Bundle)}
- * <br>由于涉及到Activity，需在{@link Fragment#onAttach(Context)}时创建，然后在{@link Fragment#onDetach()}时置空
+ * <br>由于涉及到Activity，需在{@link Fragment#onAttach(Context)}时调用{@link #activate(FragmentActivity, PermissionRequester.IPermissionDealer)}，
+ * 然后在{@link Fragment#onDetach()}时调用{@link #deactivate()}
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class FragmentDevelopPlugin extends StdDevelopPlugin {
@@ -33,9 +34,8 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     private int mPreparedCount; // 已准备好的位置的计数
     private int mTargetCount; // 目标计数，默认为0
 
-    public FragmentDevelopPlugin(@Nullable FragmentActivity activity, @Nullable LifecycleOwner owner, @Nullable PermissionRequester.IPermissionDealer dealer, @Nullable StdDevelopPlugin.ICallback callback) {
-        super(activity, owner, dealer, callback);
-        invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
+    public FragmentDevelopPlugin(@Nullable LifecycleOwner owner, @Nullable StdDevelopPlugin.ICallback callback) {
+        super(owner, callback);
     }
 
     @Override
@@ -48,6 +48,12 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return mContentV;
+    }
+
+    @Override
+    public StdDevelopPlugin activate(@Nullable FragmentActivity activity, @Nullable PermissionRequester.IPermissionDealer dealer) {
+        invokeOnNotNull(activity, a -> mInflater = a.getLayoutInflater());
+        return super.activate(activity, dealer);
     }
 
     public void onSaveInstanceState(@NonNull Bundle outState) {
