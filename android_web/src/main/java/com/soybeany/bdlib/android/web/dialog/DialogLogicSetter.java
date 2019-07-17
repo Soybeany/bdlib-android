@@ -34,7 +34,7 @@ public class DialogLogicSetter implements DialogClientPart.ILogicSetter {
 
         // 弹窗部分
         applier.addLogic(OnDismissDialog.class, (msg, rn, dn) -> {
-            // 当非正常结束时才发送“取消通知”
+            // 当非正常结束时，发送“取消”通知
             if (!DialogDismissReason.NORM.equals(msg.getData())) {
                 invoke(rn, new Cancel());
             }
