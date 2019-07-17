@@ -1,9 +1,11 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
 import android.arch.lifecycle.LifecycleOwner;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invok
 /**
  * 在Attach时创建，需额外自行调用{}{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
  * {@link #setUserVisibleHint(boolean)}、{@link #onSaveInstanceState(Bundle)}
+ * <br>由于涉及到Activity，需在{@link Fragment#onAttach(Context)}时创建，然后在{@link Fragment#onDetach()}时置空
  * <br>Created by Soybeany on 2019/5/5.
  */
 public class FragmentDevelopPlugin extends StdDevelopPlugin {
