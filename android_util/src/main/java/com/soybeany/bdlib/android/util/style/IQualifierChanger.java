@@ -27,12 +27,12 @@ public interface IQualifierChanger<Data> {
      * 重新创建界面
      */
     default void recreate(AppCompatActivity activity, @Nullable Data data) {
-        Data oldData;
-        if (null == data || data.equals(oldData = getOldData(activity)) || !needForceRecreate()) {
+        Data appliedData;
+        if (null == data || data.equals(appliedData = getAppliedData(activity))) {
             return;
         }
         activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
-        onRecreate(activity, oldData, data);
+        onRecreate(activity, appliedData, data);
     }
 
     /**
@@ -43,16 +43,12 @@ public interface IQualifierChanger<Data> {
     /**
      * 执行真正的重建
      */
-    default void onRecreate(AppCompatActivity activity, @Nullable Data oldData, @NonNull Data newData) {
+    default void onRecreate(AppCompatActivity activity, @Nullable Data appliedData, @NonNull Data newData) {
         activity.recreate();
     }
 
     /**
-     * 是否需要强制重建
+     * 获得应用中的数据
      */
-    default boolean needForceRecreate() {
-        return false;
-    }
-
-    Data getOldData(AppCompatActivity activity);
+    Data getAppliedData(AppCompatActivity activity);
 }

@@ -33,8 +33,17 @@ public class ThemePlugin extends StylePlugin<ThemeChanger.Info> {
      *
      * @param mode null为不使用全局设置
      */
-    public void setNightMode(int mode) {
-        CHANGER.setNightMode(mActivity, mode);
+    public void setGlobalNightMode(Integer mode) {
+        ThemeChanger.Info info = CHANGER.getAppliedData(mActivity);
+        info.globalMode = mode;
+        toTheme(info);
+    }
+
+    /**
+     * 获得全局夜间模式
+     */
+    public Integer getGlobalNightMode() {
+        return CHANGER.getAppliedData(mActivity).globalMode;
     }
 
     public ThemeChanger.Info curTheme() {
@@ -49,5 +58,7 @@ public class ThemePlugin extends StylePlugin<ThemeChanger.Info> {
 
     public interface IGetter {
         ThemeChanger.Info curTheme();
+
+        Integer getGlobalNightMode();
     }
 }

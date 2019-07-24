@@ -20,7 +20,7 @@ public class LanguageChanger implements IQualifierChanger<Locale> {
     }
 
     @Override
-    public Locale getOldData(AppCompatActivity activity) {
+    public Locale getAppliedData(AppCompatActivity activity) {
         return activity.getResources().getConfiguration().locale;
     }
 
