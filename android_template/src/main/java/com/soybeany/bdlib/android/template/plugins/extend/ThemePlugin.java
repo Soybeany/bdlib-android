@@ -28,12 +28,23 @@ public class ThemePlugin extends StylePlugin<ThemeChanger.Info> {
         setData(info);
     }
 
+    /**
+     * 设置全局夜间模式
+     *
+     * @param mode null为不使用全局设置
+     */
+    public void setNightMode(int mode) {
+        CHANGER.setNightMode(mActivity, mode);
+    }
+
     public ThemeChanger.Info curTheme() {
         return getData();
     }
 
     public interface ISetter {
         void toTheme(ThemeChanger.Info info);
+
+        void setNightMode(int mode);
     }
 
     public interface IGetter {

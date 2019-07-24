@@ -13,9 +13,9 @@ import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
 public interface UICallback<Result> extends ICallback<Result> {
 
     @Override
-    default void onPreTreat(int id, boolean hasResponse) {
-        onWorkPreTreat(id, hasResponse);
-        MAIN_HANDLER.post(() -> onUIPreTreat(id, hasResponse));
+    default void onPreTreat(int id, int type) {
+        onWorkPreTreat(id, type);
+        MAIN_HANDLER.post(() -> onUIPreTreat(id, type));
     }
 
     @Override
@@ -25,15 +25,15 @@ public interface UICallback<Result> extends ICallback<Result> {
     }
 
     @Override
-    default void onFailure(int id, boolean isCanceled, String msg) {
-        onWorkFailure(id, isCanceled, msg);
-        MAIN_HANDLER.post(() -> onUIFailure(id, isCanceled, msg));
+    default void onFailure(int id, int type, String msg) {
+        onWorkFailure(id, type, msg);
+        MAIN_HANDLER.post(() -> onUIFailure(id, type, msg));
     }
 
     @Override
-    default void onFinal(int id, boolean isCanceled) {
-        onWorkFinal(id, isCanceled);
-        MAIN_HANDLER.post(() -> onUIFinal(id, isCanceled));
+    default void onFinal(int id, int type) {
+        onWorkFinal(id, type);
+        MAIN_HANDLER.post(() -> onUIFinal(id, type));
     }
 
     // //////////////////////////////////UI线程//////////////////////////////////
@@ -41,7 +41,7 @@ public interface UICallback<Result> extends ICallback<Result> {
     /**
      * 预处理的回调(UI线程)
      */
-    default void onUIPreTreat(int id, boolean hasResponse) {
+    default void onUIPreTreat(int id, int type) {
     }
 
     /**
@@ -52,14 +52,14 @@ public interface UICallback<Result> extends ICallback<Result> {
     /**
      * 失败时的回调(UI线程)
      */
-    default void onUIFailure(int id, boolean isCanceled, String msg) {
+    default void onUIFailure(int id, int type, String msg) {
         ToastUtils.show(msg);
     }
 
     /**
      * 最终的回调(UI线程)
      */
-    default void onUIFinal(int id, boolean isCanceled) {
+    default void onUIFinal(int id, int type) {
     }
 
     // //////////////////////////////////工作线程//////////////////////////////////
@@ -67,7 +67,7 @@ public interface UICallback<Result> extends ICallback<Result> {
     /**
      * 预处理的回调(工作线程)
      */
-    default void onWorkPreTreat(int id, boolean hasResponse) {
+    default void onWorkPreTreat(int id, int type) {
     }
 
     /**
@@ -79,13 +79,13 @@ public interface UICallback<Result> extends ICallback<Result> {
     /**
      * 失败时的回调(工作线程)
      */
-    default void onWorkFailure(int id, boolean isCanceled, String msg) {
+    default void onWorkFailure(int id, int type, String msg) {
     }
 
     /**
      * 最终的回调(工作线程)
      */
-    default void onWorkFinal(int id, boolean isCanceled) {
+    default void onWorkFinal(int id, int type) {
     }
 
     // //////////////////////////////////默认实现//////////////////////////////////
@@ -96,7 +96,7 @@ public interface UICallback<Result> extends ICallback<Result> {
         }
 
         @Override
-        default void onUIFailure(int id, boolean isCanceled, String msg) {
+        default void onUIFailure(int id, int type, String msg) {
         }
     }
 }

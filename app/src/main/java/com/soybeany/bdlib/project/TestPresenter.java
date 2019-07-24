@@ -47,12 +47,12 @@ public class TestPresenter extends BasePresenter<ITestView> {
 
     private class TestCallback implements UICallback<String> {
         @Override
-        public void onUISuccess(String s) {
+        public void onUISuccess(int id, String s) {
             showMsg("成功:", s);
         }
 
         @Override
-        public void onUIFailure(boolean isCanceled, String msg) {
+        public void onUIFailure(int id, int type, String msg) {
             showMsg("失败:", msg);
         }
 

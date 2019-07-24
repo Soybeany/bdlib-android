@@ -13,7 +13,7 @@ import com.soybeany.bdlib.android.util.style.IQualifierChanger;
  * <br>Created by Soybeany on 2019/5/5.
  */
 public abstract class StylePlugin<Data> implements IExtendPlugin {
-    private final AppCompatActivity mActivity;
+    protected final AppCompatActivity mActivity;
     private final IQualifierChanger<Data> mChanger;
     private final MutableLiveData<Data> mData;
 
