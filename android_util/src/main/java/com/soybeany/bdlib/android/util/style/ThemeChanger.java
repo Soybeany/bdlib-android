@@ -86,8 +86,9 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
         @Override
         public boolean equals(@Nullable Object obj) {
             if (obj instanceof Info) {
-                return mode == ((Info) obj).mode && resId == ((Info) obj).resId
-                        && ((globalMode == null && ((Info) obj).globalMode == null) || (globalMode != null && globalMode.equals(obj)));
+                boolean isSameGlobalMode = (globalMode == null && ((Info) obj).globalMode == null)
+                        || (globalMode != null && globalMode.equals(((Info) obj).globalMode));
+                return mode == ((Info) obj).mode && resId == ((Info) obj).resId && isSameGlobalMode;
             }
             return super.equals(obj);
         }
