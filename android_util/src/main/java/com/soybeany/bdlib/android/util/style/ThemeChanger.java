@@ -15,6 +15,8 @@ import java.io.Serializable;
 public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     private static final String OLD_VALUE_KEY = "THEME_CHANGER_OLD_VALUE";
 
+    public static Integer GLOBAL_NIGHT_MODE; // 全局夜间模式
+
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Info newData) {
         activity.getApplication().setTheme(newData.resId);
@@ -25,17 +27,23 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
 
     @Override
     public void onRecreate(AppCompatActivity activity, @Nullable Info appliedData, @NonNull Info newInfo) {
-        boolean needRecreate = true;
         // 应用夜间模式
-        if (!newInfo.equals(appliedData)) {
-            int mode = (null != newInfo.globalMode ? newInfo.globalMode : newInfo.mode);
-            AppCompatDelegate.setDefaultNightMode(mode);
-            needRecreate = !activity.getDelegate().applyDayNight();
-        }
-        // 按需重建
+        boolean needRecreate = !applyNightMode(activity, newInfo.mode);
+        // 按需重建，因为上一步可能已经重建了
         if (needRecreate) {
             activity.recreate();
         }
+    }
+
+    @Override
+    public void onNotRecreate(AppCompatActivity activity) {
+        // 全局夜间模式
+        if (null != GLOBAL_NIGHT_MODE) {
+            applyNightMode(activity, GLOBAL_NIGHT_MODE);
+            return;
+        }
+        // 非全局夜间模式
+        applyNightMode(activity, getInfo(activity).mode);
     }
 
     @Override
@@ -48,6 +56,19 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
      */
     public int getCurNightMode() {
         return AppCompatDelegate.getDefaultNightMode();
+    }
+
+    /**
+     * 应用夜间模式
+     *
+     * @return 是否生效
+     */
+    private boolean applyNightMode(AppCompatActivity activity, int mode) {
+        if (mode == getCurNightMode()) {
+            return false;
+        }
+        AppCompatDelegate.setDefaultNightMode(mode);
+        return activity.getDelegate().applyDayNight();
     }
 
     private void saveInfo(AppCompatActivity activity, @NonNull Info info) {
@@ -65,19 +86,18 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     }
 
     public static class Info implements Serializable {
-        public int mode;
-        public Integer globalMode;
+        int mode;
         int resId;
 
         public static Info theme(@StyleRes int resId) {
-            return new Info().copy(AppCompatDelegate.MODE_NIGHT_NO, null, resId);
+            return new Info().copy(AppCompatDelegate.MODE_NIGHT_NO, resId);
         }
 
         /**
          * 夜间模式作为
          */
         public static Info nightMode(@StyleRes int resId) {
-            return new Info().copy(AppCompatDelegate.MODE_NIGHT_YES, null, resId);
+            return new Info().copy(AppCompatDelegate.MODE_NIGHT_YES, resId);
         }
 
         Info() {
@@ -86,20 +106,17 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
         @Override
         public boolean equals(@Nullable Object obj) {
             if (obj instanceof Info) {
-                boolean isSameGlobalMode = (globalMode == null && ((Info) obj).globalMode == null)
-                        || (globalMode != null && globalMode.equals(((Info) obj).globalMode));
-                return mode == ((Info) obj).mode && resId == ((Info) obj).resId && isSameGlobalMode;
+                return mode == ((Info) obj).mode && resId == ((Info) obj).resId;
             }
             return super.equals(obj);
         }
 
         void copy(Info info) {
-            copy(info.mode, info.globalMode, info.resId);
+            copy(info.mode, info.resId);
         }
 
-        private Info copy(int mode, Integer globalMode, @StyleRes int resId) {
+        private Info copy(int mode, @StyleRes int resId) {
             this.mode = mode;
-            this.globalMode = globalMode;
             this.resId = resId;
             return this;
         }
