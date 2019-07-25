@@ -34,13 +34,9 @@ public class ThemePlugin extends StylePlugin<ThemeChanger.Info> {
 
     public interface ISetter {
         void toTheme(ThemeChanger.Info info);
-
-        void setGlobalNightMode(Integer mode);
     }
 
     public interface IGetter {
         ThemeChanger.Info curTheme();
-
-        Integer getGlobalNightMode();
     }
 }
