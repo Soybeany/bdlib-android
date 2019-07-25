@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * <br>Created by Soybeany on 2019/4/21.
  */
-public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
+public class ThemeChanger extends IQualifierChanger.Impl<ThemeChanger.Info> {
     private static final String OLD_VALUE_KEY = "THEME_CHANGER_OLD_VALUE";
 
     @Override
@@ -29,7 +29,7 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
         boolean needRecreate = !applyNightMode(activity, newInfo.mode);
         // 按需重建，因为上一步可能已经重建了
         if (needRecreate) {
-            activity.recreate();
+            super.onRecreate(activity, appliedData, newInfo);
         }
     }
 

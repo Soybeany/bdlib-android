@@ -12,7 +12,7 @@ import java.util.Locale;
 /**
  * <br>Created by Soybeany on 2019/4/21.
  */
-public class LanguageChanger implements IQualifierChanger<Locale> {
+public class LanguageChanger extends IQualifierChanger.Impl<Locale> {
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Locale newData) {
         setLocale(BDContext.getResources(), newData);
