@@ -28,8 +28,7 @@ public interface IQualifierChanger<Data> {
      */
     default void recreate(AppCompatActivity activity, @Nullable Data data) {
         Data appliedData;
-        if (null == data || data.equals(appliedData = getAppliedData(activity))) {
-            onNotRecreate(activity);
+        if (null == data || (data.equals(appliedData = getAppliedData(activity))) && !needForceRecreate()) {
             return;
         }
         activity.getWindow().setWindowAnimations(R.style.QualifierChangeAnimation);
@@ -49,9 +48,10 @@ public interface IQualifierChanger<Data> {
     }
 
     /**
-     * 不执行重建
+     * 是否强制重建
      */
-    default void onNotRecreate(AppCompatActivity activity) {
+    default boolean needForceRecreate() {
+        return false;
     }
 
     /**

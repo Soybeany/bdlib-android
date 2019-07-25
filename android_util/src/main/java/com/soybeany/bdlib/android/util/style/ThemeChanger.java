@@ -28,7 +28,13 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     @Override
     public void onRecreate(AppCompatActivity activity, @Nullable Info appliedData, @NonNull Info newInfo) {
         // 应用夜间模式
-        boolean needRecreate = !applyNightMode(activity, newInfo.mode);
+        boolean needRecreate;
+        if (null != GLOBAL_NIGHT_MODE) {
+            needRecreate = !applyNightMode(activity, GLOBAL_NIGHT_MODE);
+            needRecreate &= (GLOBAL_NIGHT_MODE == newInfo.mode);
+        } else {
+            needRecreate = !applyNightMode(activity, newInfo.mode);
+        }
         // 按需重建，因为上一步可能已经重建了
         if (needRecreate) {
             activity.recreate();
@@ -36,14 +42,8 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     }
 
     @Override
-    public void onNotRecreate(AppCompatActivity activity) {
-        // 全局夜间模式
-        if (null != GLOBAL_NIGHT_MODE) {
-            applyNightMode(activity, GLOBAL_NIGHT_MODE);
-            return;
-        }
-        // 非全局夜间模式
-        applyNightMode(activity, getInfo(activity).mode);
+    public boolean needForceRecreate() {
+        return null != GLOBAL_NIGHT_MODE;
     }
 
     @Override
