@@ -15,8 +15,6 @@ import java.io.Serializable;
 public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     private static final String OLD_VALUE_KEY = "THEME_CHANGER_OLD_VALUE";
 
-    public static Integer GLOBAL_NIGHT_MODE; // 全局夜间模式
-
     @Override
     public void onApply(AppCompatActivity activity, @NonNull Info newData) {
         activity.getApplication().setTheme(newData.resId);
@@ -28,22 +26,11 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
     @Override
     public void onRecreate(AppCompatActivity activity, @Nullable Info appliedData, @NonNull Info newInfo) {
         // 应用夜间模式
-        boolean needRecreate;
-        if (null != GLOBAL_NIGHT_MODE) {
-            needRecreate = !applyNightMode(activity, GLOBAL_NIGHT_MODE);
-            needRecreate &= (GLOBAL_NIGHT_MODE == newInfo.mode);
-        } else {
-            needRecreate = !applyNightMode(activity, newInfo.mode);
-        }
+        boolean needRecreate = !applyNightMode(activity, newInfo.mode);
         // 按需重建，因为上一步可能已经重建了
         if (needRecreate) {
             activity.recreate();
         }
-    }
-
-    @Override
-    public boolean needForceRecreate() {
-        return null != GLOBAL_NIGHT_MODE;
     }
 
     @Override
@@ -90,14 +77,11 @@ public class ThemeChanger implements IQualifierChanger<ThemeChanger.Info> {
         int resId;
 
         public static Info theme(@StyleRes int resId) {
-            return new Info().copy(AppCompatDelegate.MODE_NIGHT_NO, resId);
+            return theme(AppCompatDelegate.MODE_NIGHT_NO, resId);
         }
 
-        /**
-         * 夜间模式作为
-         */
-        public static Info nightMode(@StyleRes int resId) {
-            return new Info().copy(AppCompatDelegate.MODE_NIGHT_YES, resId);
+        public static Info theme(int mode, @StyleRes int resId) {
+            return new Info().copy(mode, resId);
         }
 
         Info() {

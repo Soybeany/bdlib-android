@@ -28,23 +28,6 @@ public class ThemePlugin extends StylePlugin<ThemeChanger.Info> {
         setData(info);
     }
 
-    /**
-     * 设置全局夜间模式
-     *
-     * @param mode null为不使用全局设置
-     */
-    public void setGlobalNightMode(Integer mode) {
-        ThemeChanger.GLOBAL_NIGHT_MODE = mode;
-        toTheme(getData());
-    }
-
-    /**
-     * 获得全局夜间模式
-     */
-    public Integer getGlobalNightMode() {
-        return ThemeChanger.GLOBAL_NIGHT_MODE;
-    }
-
     public ThemeChanger.Info curTheme() {
         return getData();
     }
