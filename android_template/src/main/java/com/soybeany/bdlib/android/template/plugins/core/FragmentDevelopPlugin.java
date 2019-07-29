@@ -34,7 +34,7 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     private int mPreparedCount; // 已准备好的位置的计数
     private int mTargetCount; // 目标计数，默认为0
 
-    public FragmentDevelopPlugin(@Nullable LifecycleOwner owner, @Nullable StdDevelopPlugin.ICallback callback) {
+    public FragmentDevelopPlugin(@Nullable LifecycleOwner owner, @Nullable ICallback callback) {
         super(owner, callback);
     }
 

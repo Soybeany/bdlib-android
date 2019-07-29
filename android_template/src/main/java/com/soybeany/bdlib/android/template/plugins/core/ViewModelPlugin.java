@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
-import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,8 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
-import com.soybeany.bdlib.android.template.interfaces.IVMProvider;
-import com.soybeany.bdlib.core.java8.Optional;
 
 /**
  * ViewModel
@@ -20,12 +18,16 @@ public class ViewModelPlugin implements IExtendPlugin {
 
     @Nullable
     private final ICallback mCallback;
-    private final IVMProvider mProvider;
+    private final ViewModelProvider mProvider;
 
-    public ViewModelPlugin(@Nullable ICallback callback, @Nullable IVMProvider provider) {
+    public ViewModelPlugin(@NonNull FragmentActivity activity, @Nullable ICallback callback) {
+        mProvider = ViewModelProviders.of(activity);
         mCallback = callback;
-        mProvider = Optional.ofNullable(provider).orElseGet(() -> new IInvoker() {
-        });
+    }
+
+    public ViewModelPlugin(@NonNull Fragment fragment, @Nullable ICallback callback) {
+        mProvider = ViewModelProviders.of(fragment);
+        mCallback = callback;
     }
 
     @Override
@@ -39,23 +41,11 @@ public class ViewModelPlugin implements IExtendPlugin {
         return GROUP_ID;
     }
 
-    public interface IInvoker extends IVMProvider {
-        @Override
-        default <T extends ViewModel> T getViewModel(Class<T> modelClass) {
-            if (this instanceof FragmentActivity) {
-                return ViewModelProviders.of((FragmentActivity) this).get(modelClass);
-            } else if (this instanceof Fragment) {
-                return ViewModelProviders.of((Fragment) this).get(modelClass);
-            }
-            throw new RuntimeException("请在FragmentActivity或Fragment中使用");
-        }
-    }
-
     public interface ICallback {
         /**
          * 初始化ViewModel
          */
-        default void onInitViewModels(IVMProvider provider) {
+        default void onInitViewModels(ViewModelProvider provider) {
         }
     }
 }

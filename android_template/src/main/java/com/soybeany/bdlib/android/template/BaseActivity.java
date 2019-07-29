@@ -19,7 +19,7 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
  */
 public abstract class BaseActivity extends AppCompatActivity implements PluginDriver.ICallback,
         StdDevelopPlugin.ICallback, StdDevelopPlugin.IInvoker,
-        ViewModelPlugin.ICallback, ViewModelPlugin.IInvoker,
+        ViewModelPlugin.ICallback,
         BackInterceptorPlugin.ICallback, BackInterceptorPlugin.IInvoker,
         LifecyclePlugin.ICallback {
 
@@ -63,7 +63,7 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     public void onSetupPlugins(IPluginManager manager) {
         manager.load(mDevelopPlugin = new StdDevelopPlugin(this, this).activate(this, ActivityCompat::requestPermissions));
         manager.load(new LifecyclePlugin(this));
-        manager.load(new ViewModelPlugin(this, null));
+        manager.load(new ViewModelPlugin(this, this));
         manager.load(mBackPlugin = new BackInterceptorPlugin(this, this));
     }
 
@@ -76,4 +76,5 @@ public abstract class BaseActivity extends AppCompatActivity implements PluginDr
     public boolean requestPermissions(@NonNull PermissionRequester.IPermissionCallback callback, @Nullable String... permissions) {
         return mDevelopPlugin.requestPermissions(callback, permissions);
     }
+
 }

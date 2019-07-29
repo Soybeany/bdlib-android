@@ -23,7 +23,7 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
  */
 public abstract class BaseFragment extends Fragment implements PluginDriver.ICallback,
         FragmentDevelopPlugin.ICallback, FragmentDevelopPlugin.IInvoker,
-        ViewModelPlugin.ICallback, ViewModelPlugin.IInvoker,
+        ViewModelPlugin.ICallback,
         LifecyclePlugin.ICallback {
 
     private final PluginDriver mDriver = new PluginDriver(this, this);
@@ -80,7 +80,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     public void onSetupPlugins(IPluginManager manager) {
         manager.load(mDevelopPlugin);
         manager.load(new LifecyclePlugin(this));
-        manager.load(new ViewModelPlugin(this, null));
+        manager.load(new ViewModelPlugin(this, this));
     }
 
     @Override

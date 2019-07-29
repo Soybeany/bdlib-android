@@ -19,7 +19,7 @@ import butterknife.BindView;
  * <br>Created by Soybeany on 2019/5/17.
  */
 public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier.IProvider, DialogNotifier.IDialogProvider,
-        ButterKnifePlugin.ICallback, ITestView, MvpPlugin.ITemplate {
+        ButterKnifePlugin.ICallback, ITestView, MvpPlugin.IActivityCallback {
 
     @BindView(R.id.srl)
     SwipeRefreshLayout srLayout;
@@ -49,7 +49,7 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
     public void onSetupPlugins(IPluginManager manager) {
         super.onSetupPlugins(manager);
         manager.load(new ButterKnifePlugin(this));
-        manager.load(new MvpPlugin(this, this, this));
+        manager.load(new MvpPlugin.AVer(this, this));
         manager.load(mDialogNotifierPlugin = new DialogNotifierPlugin(this, this));
     }
 
