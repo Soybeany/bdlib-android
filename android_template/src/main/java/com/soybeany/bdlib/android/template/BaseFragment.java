@@ -1,13 +1,10 @@
 package com.soybeany.bdlib.android.template;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +20,7 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
  */
 public abstract class BaseFragment extends Fragment implements PluginDriver.ICallback,
         FragmentDevelopPlugin.ICallback, FragmentDevelopPlugin.IInvoker,
-        ViewModelPlugin.ICallback,
+        ViewModelPlugin.IFragmentCallback,
         LifecyclePlugin.ICallback {
 
     private final PluginDriver mDriver = new PluginDriver(this, this);
@@ -101,13 +98,5 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     @Override
     public void onEssentialPermissionsPass(boolean isNew) {
         mDevelopPlugin.onEssentialPermissionsPass(isNew);
-    }
-
-    // //////////////////////////////////拓展方法//////////////////////////////////
-
-    @Nullable
-    public <T extends ViewModel> T getActivityViewModel(Class<T> modelClass) {
-        FragmentActivity activity = getActivity();
-        return null != activity ? ViewModelProviders.of(activity).get(modelClass) : null;
     }
 }

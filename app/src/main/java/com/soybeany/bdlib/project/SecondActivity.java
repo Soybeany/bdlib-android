@@ -18,7 +18,7 @@ import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
-public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.IActivityCallback,
+public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ICallback,
         DialogNotifier.IDialogProvider, DialogNotifier.IMultiTypeProvider {
     private ThemePlugin mThemePlugin;
     private DialogNotifierPlugin mDialogNotifierPlugin;
@@ -32,7 +32,7 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
 
     @Override
     public void onInitPresenters(IPresenterProvider provider) {
-        mPt = provider.getPresenter(TestPresenter.class, this);
+        mPt = provider.get(TestPresenter.class, this);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     @Override
     public void onSetupPlugins(IPluginManager manager) {
         super.onSetupPlugins(manager);
-        manager.load(new MvpPlugin.AVer(this, this));
+        manager.load(new MvpPlugin(this, this));
         manager.load(mThemePlugin = new ThemePlugin(this, MainActivity.THEME_DATA));
         manager.load(mDialogNotifierPlugin = new DialogNotifierPlugin(this, this));
     }

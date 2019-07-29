@@ -4,6 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
@@ -14,7 +15,45 @@ import java.util.Objects;
 /**
  * <br>Created by Soybeany on 2019/4/29.
  */
-public abstract class MvpPlugin implements IExtendPlugin {
+public class MvpPlugin implements IExtendPlugin {
+
+    private final IPresenterProviderS mProviderS; // 单例提供者
+    private final IPresenterProvider mProvider; // 普通提供者
+    private final ICallback mCallback;
+
+    @Nullable
+    private IPresenterProvider mActivityProvider; // Fragment中使用的Activity提供者
+
+    public MvpPlugin(@NonNull FragmentActivity activity, ICallback callback) {
+        this(ViewModelProviders.of(activity), activity.getLifecycle(), callback);
+    }
+
+    public MvpPlugin(@NonNull Fragment fragment, IFragmentCallback callback) {
+        this(ViewModelProviders.of(fragment), fragment.getLifecycle(), callback);
+        mActivityProvider = new IPresenterProvider() {
+            @Override
+            public <V extends IPresenterView, T extends BasePresenter<V>> T get(Class<T> clazz, V v) {
+                FragmentActivity activity = Objects.requireNonNull(fragment.getActivity());
+                return PresenterUtils.get(ViewModelProviders.of(activity), clazz, fragment.getLifecycle(), v);
+            }
+        };
+    }
+
+    private MvpPlugin(ViewModelProvider provider, Lifecycle lifecycle, ICallback callback) {
+        mProviderS = new PresenterProviderSImpl(lifecycle);
+        mProvider = new PresenterProviderImpl(provider, lifecycle);
+        mCallback = callback;
+    }
+
+    @Override
+    public void initAfterSetContentView() {
+        mCallback.onInitPresenters(mProviderS);
+        mCallback.onInitPresenters(mProvider);
+        // Fragment下额外回调
+        if (null != mActivityProvider && mCallback instanceof IFragmentCallback) {
+            ((IFragmentCallback) mCallback).onInitActivityPresenters(mActivityProvider);
+        }
+    }
 
     @NonNull
     @Override
@@ -24,26 +63,15 @@ public abstract class MvpPlugin implements IExtendPlugin {
 
     // //////////////////////////////////内部实现//////////////////////////////////
 
-    private static class PresenterProviderImpl implements IPresenterProvider {
-        private ViewModelProvider mProvider;
+    private static class PresenterProviderSImpl implements IPresenterProviderS {
         private Lifecycle mViewLifecycle;
 
-        PresenterProviderImpl(@NonNull FragmentActivity activity) {
-            this(ViewModelProviders.of(activity), activity.getLifecycle());
-        }
-
-        PresenterProviderImpl(ViewModelProvider provider, Lifecycle viewLifecycle) {
-            mProvider = provider;
+        PresenterProviderSImpl(Lifecycle viewLifecycle) {
             mViewLifecycle = viewLifecycle;
         }
 
         @Override
-        public <V extends IPresenterView, T extends BasePresenter<V>> T getPresenter(Class<T> clazz, V v) {
-            return PresenterUtils.get(mProvider, clazz, mViewLifecycle, v);
-        }
-
-        @Override
-        public <V extends IPresenterView, T extends BasePresenter<V>> T getSingleton(Class<T> clazz, V v, String type) {
+        public <V extends IPresenterView, T extends BasePresenter<V>> T get(Class<T> clazz, V v, String type) {
             return PresenterUtils.getSingleton(clazz, type, mViewLifecycle, v);
         }
 
@@ -56,74 +84,36 @@ public abstract class MvpPlugin implements IExtendPlugin {
         public <V extends IPresenterView, T extends BasePresenter<V>> boolean releaseAll(Class<T> clazz) {
             return PresenterUtils.releaseAll(clazz);
         }
-
-        Lifecycle getViewLifecycle() {
-            return mViewLifecycle;
-        }
     }
 
-    private static class FPresenterProviderImpl extends PresenterProviderImpl implements IFPresenterProvider {
-        private Fragment mFragment;
+    private static class PresenterProviderImpl implements IPresenterProvider {
+        private ViewModelProvider mProvider;
+        private Lifecycle mViewLifecycle;
 
-        FPresenterProviderImpl(@NonNull Fragment fragment) {
-            super(ViewModelProviders.of(fragment), fragment.getLifecycle());
-            mFragment = fragment;
+        PresenterProviderImpl(ViewModelProvider provider, Lifecycle viewLifecycle) {
+            mProvider = provider;
+            mViewLifecycle = viewLifecycle;
         }
 
         @Override
-        public <V extends IPresenterView, T extends BasePresenter<V>> T getActivityPresenter(Class<T> clazz, V v) {
-            FragmentActivity activity = Objects.requireNonNull(mFragment.getActivity());
-            return PresenterUtils.get(ViewModelProviders.of(activity), clazz, getViewLifecycle(), v);
+        public <V extends IPresenterView, T extends BasePresenter<V>> T get(Class<T> clazz, V v) {
+            return PresenterUtils.get(mProvider, clazz, mViewLifecycle, v);
         }
     }
 
-    // //////////////////////////////////Activity//////////////////////////////////
 
-    /**
-     * Activity版本
-     */
-    public static class AVer extends MvpPlugin {
-        private IPresenterProvider mProvider;
-        private IActivityCallback mCallback;
+    // //////////////////////////////////外部API//////////////////////////////////
 
-        public AVer(FragmentActivity activity, IActivityCallback callback) {
-            mProvider = new PresenterProviderImpl(activity);
-            mCallback = callback;
-        }
-
-        @Override
-        public void initAfterSetContentView() {
-            mCallback.onInitPresenters(mProvider);
-        }
-    }
-
-    public interface IActivityCallback {
+    public interface ICallback {
         default void onInitPresenters(IPresenterProvider provider) {
         }
-    }
 
-    // //////////////////////////////////Fragment//////////////////////////////////
-
-    /**
-     * Fragment版本
-     */
-    public static class FVer extends MvpPlugin {
-        private IFPresenterProvider mProvider;
-        private IFragmentCallback mCallback;
-
-        public FVer(Fragment fragment, IFragmentCallback callback) {
-            mProvider = new FPresenterProviderImpl(fragment);
-            mCallback = callback;
-        }
-
-        @Override
-        public void initAfterSetContentView() {
-            mCallback.onInitPresenters(mProvider);
+        default void onInitSingletonPresenters(IPresenterProviderS provider) {
         }
     }
 
-    public interface IFragmentCallback {
-        default void onInitPresenters(IFPresenterProvider provider) {
+    public interface IFragmentCallback extends ICallback {
+        default void onInitActivityPresenters(IPresenterProvider provider) {
         }
     }
 }
