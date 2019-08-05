@@ -32,7 +32,7 @@ public class LogUtils {
 
     static {
         // 注册日志写入回调
-        MessageCenter.register(WRITE_LOG_EXECUTABLE, KEY_WRITE_LOG, data -> {
+        MessageCenter.register(WRITE_LOG_EXECUTABLE, KEY_WRITE_LOG, (key, data) -> {
             directWriteFile((LogInfo) data);
         });
     }
