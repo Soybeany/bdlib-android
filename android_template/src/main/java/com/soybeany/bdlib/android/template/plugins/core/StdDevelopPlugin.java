@@ -52,7 +52,8 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
 
     @Override
     public void onPermissionPass() {
-        signalDoBusiness(mCallback, mIsNew);
+        invokeOnNotNull(mCallback, callback -> callback.onEssentialPermissionsPass(mIsNew));
+        onPermissionPassInner();
     }
 
     @Override
@@ -82,16 +83,20 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
         Set<String> permissionSet = new HashSet<>();
         invokeOnNotNull(mCallback, c -> c.onSetupEssentialPermissions(permissionSet));
         if (null != activity && null != dealer) {
-            mPR = new PermissionRequester(activity, dealer).withEPermission(() -> {
-                onPermissionPass();
-                invokeOnNotNull(mCallback, callback -> callback.onEssentialPermissionsPass(mIsNew));
-            }, permissionSet.toArray(new String[0]));
+            mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
         }
         return this;
     }
 
     public void deactivate() {
         mPR = null;
+    }
+
+    /**
+     * 权限通过后的内部操作
+     */
+    protected void onPermissionPassInner() {
+        signalDoBusiness(mCallback, mIsNew);
     }
 
     /**

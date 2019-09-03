@@ -50,7 +50,7 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     }
 
     @Override
-    public void onPermissionPass() {
+    protected void onPermissionPassInner() {
         // 默认不作处理
     }
 
