@@ -47,7 +47,7 @@ public class MvpPlugin implements IExtendPlugin {
 
     @Override
     public void initAfterSetContentView() {
-        mCallback.onInitPresenters(mProviderS);
+        mCallback.onInitSingletonPresenters(mProviderS);
         mCallback.onInitPresenters(mProvider);
         // Fragment下额外回调
         if (null != mActivityProvider && mCallback instanceof IFragmentCallback) {

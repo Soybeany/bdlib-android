@@ -14,6 +14,7 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeInUiThread;
 import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeOnNotNull;
 import static com.soybeany.bdlib.android.util.R.string.bd_permission_deny;
 
@@ -51,7 +52,7 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
 
     @Override
     public void onPermissionPass() {
-        invokeOnNotNull(mCallback, callback -> callback.onEssentialPermissionsPass(mIsNew));
+        signalDoBusiness(mCallback, mIsNew);
     }
 
     @Override
@@ -81,13 +82,23 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
         Set<String> permissionSet = new HashSet<>();
         invokeOnNotNull(mCallback, c -> c.onSetupEssentialPermissions(permissionSet));
         if (null != activity && null != dealer) {
-            mPR = new PermissionRequester(activity, dealer).withEPermission(this, permissionSet.toArray(new String[0]));
+            mPR = new PermissionRequester(activity, dealer).withEPermission(() -> {
+                onPermissionPass();
+                invokeOnNotNull(mCallback, callback -> callback.onEssentialPermissionsPass(mIsNew));
+            }, permissionSet.toArray(new String[0]));
         }
         return this;
     }
 
     public void deactivate() {
         mPR = null;
+    }
+
+    /**
+     * 触发doBusiness回调
+     */
+    protected void signalDoBusiness(ICallback callback, boolean isNew) {
+        invokeOnNotNull(callback, c -> invokeInUiThread(() -> c.doBusiness(isNew)));
     }
 
     /**
@@ -128,7 +139,6 @@ public class StdDevelopPlugin implements IExtendPlugin, PermissionRequester.IPer
          * 必要权限均通过
          */
         default void onEssentialPermissionsPass(boolean isNew) {
-            IExtendPlugin.invokeInUiThread(() -> doBusiness(isNew));
         }
 
         /**

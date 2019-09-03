@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 import com.soybeany.bdlib.core.java8.Optional;
 
-import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeInUiThread;
 import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeOnNotNull;
 
 /**
@@ -48,6 +47,11 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return mContentV;
+    }
+
+    @Override
+    public void onPermissionPass() {
+        // 默认不作处理
     }
 
     @Override
@@ -86,7 +90,7 @@ public class FragmentDevelopPlugin extends StdDevelopPlugin {
         if (mPreparedCount > mTargetCount) {
             return;
         } else if (mPreparedCount == mTargetCount) {
-            invokeOnNotNull(mCallback, callback -> invokeInUiThread(() -> callback.doBusiness(mIsNew)));
+            signalDoBusiness(mCallback, mIsNew);
         }
         mPreparedCount++;
     }
