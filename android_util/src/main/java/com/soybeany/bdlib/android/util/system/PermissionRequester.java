@@ -195,7 +195,7 @@ public class PermissionRequester implements IObserver {
             mCallbackMap.put(requestCode, callback);
             mDealer.onRequestPermissions(mActivity, requestList.toArray(new String[0]), requestCode);
             return false;
-        } else if (DEFAULT_REQUEST_CODE == requestCode && !mHasSignaled) {
+        } else if (!mHasSignaled) {
             callback.onPermissionPass();
             mHasSignaled = true;
         }
