@@ -191,13 +191,22 @@ public class PermissionRequester implements IObserver {
      */
     private boolean requestPermissions(int requestCode, @NonNull IPermissionCallback callback, @Nullable String... permissions) {
         List<String> requestList = getRequestList(permissions);
+        // 若还有权限需要申请
         if (!requestList.isEmpty()) {
             mCallbackMap.put(requestCode, callback);
             mDealer.onRequestPermissions(mActivity, requestList.toArray(new String[0]), requestCode);
             return false;
-        } else if (!mHasSignaled) {
+        }
+        // 若是申请必要权限，且全部通过
+        else if (DEFAULT_REQUEST_CODE == requestCode) {
+            if (!mHasSignaled) {
+                callback.onPermissionPass();
+                mHasSignaled = true;
+            }
+        }
+        // 若是手动申请权限，且全部通过
+        else {
             callback.onPermissionPass();
-            mHasSignaled = true;
         }
         return true;
     }
