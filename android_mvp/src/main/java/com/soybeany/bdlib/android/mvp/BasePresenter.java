@@ -11,10 +11,10 @@ import android.support.annotation.WorkerThread;
 import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.LogUtils;
-import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg.PopMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.DialogNotifierMsg.ShowMsg;
-import com.soybeany.bdlib.android.util.dialog.msg.IDialogMsg;
+import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
+import com.soybeany.bdlib.android.web.DialogNotifier;
+import com.soybeany.bdlib.android.web.dialog.DialogMsg;
+import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 import com.soybeany.bdlib.core.java8.function.Consumer;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
 
@@ -87,7 +87,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
 
     @Nullable
     protected DialogNotifier getTopDialogNotifier() {
-        return getTopDialogNotifier(DialogNotifier.IMultiTypeProvider.TYPE_DEFAULT);
+        return getTopDialogNotifier(INotifierProvider.TYPE_DEFAULT);
     }
 
     /**
@@ -97,10 +97,8 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     @SuppressWarnings("SameParameterValue")
     protected DialogNotifier getTopDialogNotifier(String type) {
         Activity activity = BDApplication.getTopActivity();
-        if (activity instanceof DialogNotifier.IMultiTypeProvider) {
-            return ((DialogNotifier.IMultiTypeProvider) activity).getDialogNotifier(type);
-        } else if (activity instanceof DialogNotifier.IProvider) {
-            return ((DialogNotifier.IProvider) activity).getDialogNotifier();
+        if (activity instanceof INotifierProvider) {
+            return ((INotifierProvider) activity).getDialogNotifier(type);
         }
         return null;
     }
@@ -108,7 +106,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     /**
      * 为工作线程的任务包装上弹窗(不可取消)
      */
-    protected void wrapDialog(@Nullable DialogNotifier notifier, @Nullable IDialogMsg msg, @WorkerThread Runnable runnable) {
+    protected void wrapDialog(@Nullable DialogNotifier notifier, @Nullable IDialogHint msg, @WorkerThread Runnable runnable) {
         if (null == notifier || null == msg) {
             LogUtils.w("包装弹窗", "notifier或msg为null，无法正常弹窗");
             runnable.run();
@@ -116,8 +114,8 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
         }
         // 正常执行
         msg.cancelable(false);
-        notifier.invoker().notifyNow(new ShowMsg(msg));
+        notifier.sendIMsg(new DialogMsg.ShowMsg(msg));
         runnable.run();
-        notifier.invoker().notifyNow(new PopMsg(msg));
+        notifier.sendIMsg(new DialogMsg.PopMsg(msg));
     }
 }

@@ -1,5 +1,5 @@
 package com.soybeany.bdlib.android.util.dialog;
 
 public enum DialogDismissReason {
-    CANCEL, NORM, OTHER
+    CANCEL, NORM, CLEAR
 }

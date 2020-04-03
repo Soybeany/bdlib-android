@@ -33,6 +33,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$rootProject.lifecycleExVersion"
     // BDLib
     api project(':android_util')
+    api project(':android_web')
     // ButterKnife
     compileOnly 'com.jakewharton:butterknife:8.8.1'
     // Test

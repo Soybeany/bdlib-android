@@ -1,22 +1,24 @@
-package com.soybeany.bdlib.android.util.dialog.msg;
+package com.soybeany.bdlib.android.web.dialog;
 
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
-import com.soybeany.bdlib.core.util.notify.INotifyMsg;
+import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
+import com.soybeany.connector.Msg;
 
 /**
  * <br>Created by Soybeany on 2019/5/27.
  */
-public class DialogNotifierMsg {
+@SuppressWarnings("WeakerAccess")
+public class DialogMsg {
 
     // //////////////////////////////////模板区//////////////////////////////////
 
-    public static class Invoker<Data> extends INotifyMsg.InvokerImpl<Data> {
+    public static class Invoker<Data> extends Msg.I<Data> {
         public Invoker(Data data) {
             super(data);
         }
     }
 
-    public static class Callback<Data> extends INotifyMsg.CallbackImpl<Data> {
+    public static class Callback<Data> extends Msg.C<Data> {
         public Callback(Data data) {
             super(data);
         }
@@ -25,19 +27,19 @@ public class DialogNotifierMsg {
     // //////////////////////////////////Invoker区//////////////////////////////////
 
     /**
-     * 显示信息，data为{@link IDialogMsg}
+     * 显示信息，data为{@link IDialogHint}
      */
-    public static class ShowMsg extends Invoker<IDialogMsg> {
-        public ShowMsg(IDialogMsg msg) {
+    public static class ShowMsg extends Invoker<IDialogHint> {
+        public ShowMsg(IDialogHint msg) {
             super(msg);
         }
     }
 
     /**
-     * 弹出信息，data为{@link IDialogMsg}
+     * 弹出信息，data为{@link IDialogHint}
      */
-    public static class PopMsg extends Invoker<IDialogMsg> {
-        public PopMsg(IDialogMsg msg) {
+    public static class PopMsg extends Invoker<IDialogHint> {
+        public PopMsg(IDialogHint msg) {
             super(msg);
         }
     }
@@ -50,7 +52,7 @@ public class DialogNotifierMsg {
             super(null);
         }
 
-        public ToProgress toPercent(Float percent) {
+        public ToProgress percent(Float percent) {
             setData(percent);
             return this;
         }
@@ -68,19 +70,19 @@ public class DialogNotifierMsg {
     // //////////////////////////////////Callback区//////////////////////////////////
 
     /**
-     * 显示信息时通知，data为{@link IDialogMsg}
+     * 显示信息时通知，data为{@link IDialogHint}
      */
-    public static class OnShow extends Callback<IDialogMsg> {
-        public OnShow(IDialogMsg msg) {
+    public static class OnShowMsg extends Callback<IDialogHint> {
+        public OnShowMsg(IDialogHint msg) {
             super(msg);
         }
     }
 
     /**
-     * 弹出信息时通知，data为{@link IDialogMsg}
+     * 弹出信息时通知，data为{@link IDialogHint}
      */
-    public static class OnPop extends Callback<IDialogMsg> {
-        public OnPop(IDialogMsg msg) {
+    public static class OnPopMsg extends Callback<IDialogHint> {
+        public OnPopMsg(IDialogHint msg) {
             super(msg);
         }
     }
@@ -88,9 +90,14 @@ public class DialogNotifierMsg {
     /**
      * 跳转进度时通知，data为{@link Float}(正常 0~1，缺失-1)
      */
-    public static class OnProgress extends Callback<Float> {
-        public OnProgress() {
+    public static class OnToProgress extends Callback<Float> {
+        public OnToProgress() {
             super(null);
+        }
+
+        public OnToProgress percent(Float percent) {
+            setData(percent);
+            return this;
         }
     }
 
@@ -109,6 +116,15 @@ public class DialogNotifierMsg {
     public static class OnDismissDialog extends Callback<DialogDismissReason> {
         public OnDismissDialog(DialogDismissReason reason) {
             super(reason);
+        }
+    }
+
+    /**
+     * 弹窗清除时通知，一般为相应activity被销毁时触发，data为null
+     */
+    public static class OnClearDialog extends Callback<Object> implements Msg.EndFlag {
+        public OnClearDialog() {
+            super(null);
         }
     }
 }

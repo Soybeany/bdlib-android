@@ -1,40 +1,69 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
-import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
+import com.soybeany.bdlib.android.util.dialog.DialogInfoVM;
+import com.soybeany.bdlib.android.util.dialog.IRealDialog;
+import com.soybeany.bdlib.android.web.DialogNotifier;
+import com.soybeany.bdlib.android.web.dialog.DialogMsg;
+import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
+import com.soybeany.bdlib.android.web.dialog.NotifierDialogInfoVM;
+import com.soybeany.bdlib.android.web.dialog.NotifierDialogManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <br>Created by Soybeany on 2019/4/30.
  */
-public class DialogNotifierPlugin implements IExtendPlugin, DialogNotifier.IMultiTypeProvider {
+public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
+
+    private final Map<String, NotifierDialogManager> mManagerMap = new HashMap<>();
     private final FragmentActivity mActivity;
-    private final DialogNotifier.IDialogProvider mProvider;
+    private final NotifierDialogInfoVM mVm;
+    private final ICallback mCallback;
 
-    private DialogNotifier.VM mVM;
-
-    public DialogNotifierPlugin(@NonNull FragmentActivity activity, @Nullable DialogNotifier.IDialogProvider provider) {
+    public DialogNotifierPlugin(@NonNull FragmentActivity activity, ICallback callback) {
         mActivity = activity;
-        mProvider = provider;
+        mVm = NotifierDialogInfoVM.get(activity);
+        mCallback = callback;
     }
 
     @Override
-    public void initAfterSetContentView() {
-        mVM = DialogNotifier.VM.initAndGet(mActivity, mProvider);
+    public void onCreate(@NonNull LifecycleOwner owner) {
+        mVm.execute(() -> {
+            for (Map.Entry<String, DialogInfoVM.Info> entry : mVm.infoMap.entrySet()) {
+                DialogInfoVM.Info info = entry.getValue();
+                // 若不需要立刻弹窗，则不作处理
+                if (!info.needDialogShow) {
+                    continue;
+                }
+                // 通知进行显示
+                getDialogNotifier(entry.getKey()).sendIMsg(new DialogMsg.ShowMsg(info.getCurDialogHint()));
+            }
+        });
     }
 
     @NonNull
     @Override
     public final String getGroupId() {
-        return "Dialog";
+        return "DialogNotifier";
     }
 
-    @Nullable
     @Override
-    public DialogNotifier getDialogNotifier(String type) {
-        return mVM.getNotifier(type);
+    public synchronized DialogNotifier getDialogNotifier(String type) {
+        NotifierDialogManager manager = mManagerMap.get(type);
+        if (null == manager) {
+            mManagerMap.put(type, manager = new NotifierDialogManager(type, mVm, mCallback.onGetNewDialog(type)));
+            mActivity.getLifecycle().addObserver(manager);
+        }
+        return manager.getNotifier();
+    }
+
+    public interface ICallback {
+        IRealDialog onGetNewDialog(String type);
     }
 }

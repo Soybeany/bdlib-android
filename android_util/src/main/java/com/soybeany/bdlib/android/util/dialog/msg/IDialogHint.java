@@ -5,42 +5,45 @@ import static com.soybeany.bdlib.android.util.BDContext.getString;
 /**
  * <br>Created by Soybeany on 2019/5/8.
  */
-public interface IDialogMsg extends Comparable<IDialogMsg> {
+public interface IDialogHint extends Comparable<IDialogHint> {
 
-    IDialogMsg hint(int resId);
+    IDialogHint hint(int resId);
 
-    IDialogMsg hint(String hint);
+    IDialogHint hint(String hint);
 
     String hint();
 
-    IDialogMsg cancelable(boolean flag);
+    IDialogHint cancelable(boolean flag);
 
     boolean cancelable();
 
-    IDialogMsg showTime(long time);
+    IDialogHint timestamp(long time);
 
     /**
      * 此信息被显示的时间
      */
-    long showTime();
+    long timestamp();
 
     @Override
-    default int compareTo(IDialogMsg o) {
-        return (int) (showTime() - o.showTime());
+    default int compareTo(IDialogHint o) {
+        // 由小到大排序
+        return (int) (timestamp() - o.timestamp());
     }
 
-    class Impl implements IDialogMsg {
+    // //////////////////////////////////默认实现//////////////////////////////////
+
+    class Impl implements IDialogHint {
         private String mHint;
         private boolean mCancelable;
-        private long mShowTime;
+        private long mTimestamp;
 
         @Override
-        public IDialogMsg hint(int resId) {
+        public IDialogHint hint(int resId) {
             return hint(getString(resId));
         }
 
         @Override
-        public IDialogMsg hint(String hint) {
+        public IDialogHint hint(String hint) {
             mHint = hint;
             return this;
         }
@@ -51,7 +54,7 @@ public interface IDialogMsg extends Comparable<IDialogMsg> {
         }
 
         @Override
-        public IDialogMsg cancelable(boolean flag) {
+        public IDialogHint cancelable(boolean flag) {
             mCancelable = flag;
             return this;
         }
@@ -62,14 +65,14 @@ public interface IDialogMsg extends Comparable<IDialogMsg> {
         }
 
         @Override
-        public IDialogMsg showTime(long time) {
-            mShowTime = time;
+        public IDialogHint timestamp(long time) {
+            mTimestamp = time;
             return this;
         }
 
         @Override
-        public long showTime() {
-            return mShowTime;
+        public long timestamp() {
+            return mTimestamp;
         }
     }
 

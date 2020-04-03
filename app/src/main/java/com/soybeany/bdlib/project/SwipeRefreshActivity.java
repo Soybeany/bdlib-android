@@ -1,6 +1,5 @@
 package com.soybeany.bdlib.project;
 
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.soybeany.bdlib.android.mvp.IPresenterProvider;
@@ -9,16 +8,18 @@ import com.soybeany.bdlib.android.template.BaseActivity;
 import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
 import com.soybeany.bdlib.android.template.plugins.extend.ButterKnifePlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.DialogNotifierPlugin;
-import com.soybeany.bdlib.android.ui.layout.NotifySRLDialog;
+import com.soybeany.bdlib.android.ui.layout.SwipeRefreshLayoutDialog;
 import com.soybeany.bdlib.android.util.ToastUtils;
-import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
+import com.soybeany.bdlib.android.util.dialog.IRealDialog;
+import com.soybeany.bdlib.android.web.DialogNotifier;
+import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 
 import butterknife.BindView;
 
 /**
  * <br>Created by Soybeany on 2019/5/17.
  */
-public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier.IProvider, DialogNotifier.IDialogProvider,
+public class SwipeRefreshActivity extends BaseActivity implements INotifierProvider, DialogNotifierPlugin.ICallback,
         ButterKnifePlugin.ICallback, ITestView, MvpPlugin.ICallback {
 
     @BindView(R.id.srl)
@@ -41,7 +42,7 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
     public void onInitViews() {
         srLayout.setColorSchemeResources(R.color.colorAccent);
         srLayout.setOnRefreshListener(() -> {
-            mPt.testFile();
+            mPt.testAsync();
         });
     }
 
@@ -63,15 +64,13 @@ public class SwipeRefreshActivity extends BaseActivity implements DialogNotifier
         return this;
     }
 
-    @Nullable
     @Override
-    public DialogNotifier.IDialog getNewDialog(String type, String notifierUid) {
-        return new NotifySRLDialog(srLayout);
+    public IRealDialog onGetNewDialog(String type) {
+        return new SwipeRefreshLayoutDialog(srLayout);
     }
 
-    @Nullable
     @Override
-    public DialogNotifier getDialogNotifier() {
-        return mDialogNotifierPlugin.getDialogNotifier();
+    public DialogNotifier getDialogNotifier(String type) {
+        return mDialogNotifierPlugin.getDialogNotifier(type);
     }
 }

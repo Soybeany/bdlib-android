@@ -1,6 +1,5 @@
 package com.soybeany.bdlib.project;
 
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.soybeany.bdlib.android.mvp.IPresenterProvider;
@@ -11,15 +10,18 @@ import com.soybeany.bdlib.android.template.plugins.extend.DialogNotifierPlugin;
 import com.soybeany.bdlib.android.template.plugins.extend.ThemePlugin;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
-import com.soybeany.bdlib.android.util.dialog.DialogNotifier;
-import com.soybeany.bdlib.android.util.dialog.NotifyDialogFragment;
-import com.soybeany.bdlib.android.util.dialog.ProgressNotifyDialogFragment;
+import com.soybeany.bdlib.android.util.dialog.DialogFragmentUtils;
+import com.soybeany.bdlib.android.util.dialog.IRealDialog;
+import com.soybeany.bdlib.android.web.DialogNotifier;
+import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
+import com.soybeany.bdlib.android.web.dialog.NotifierDialogFragment;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
  */
 public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin.ICallback,
-        DialogNotifier.IDialogProvider, DialogNotifier.IMultiTypeProvider {
+        INotifierProvider, DialogNotifierPlugin.ICallback {
+
     private ThemePlugin mThemePlugin;
     private DialogNotifierPlugin mDialogNotifierPlugin;
 
@@ -79,15 +81,13 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
         manager.load(mDialogNotifierPlugin = new DialogNotifierPlugin(this, this));
     }
 
-    @Nullable
     @Override
     public DialogNotifier getDialogNotifier(String type) {
         return mDialogNotifierPlugin.getDialogNotifier(type);
     }
 
-    @Nullable
     @Override
-    public DialogNotifier.IDialog getNewDialog(String type, String notifierUid) {
-        return NotifyDialogFragment.get(this, notifierUid, ProgressNotifyDialogFragment::new);
+    public IRealDialog onGetNewDialog(String type) {
+        return DialogFragmentUtils.getInstance(this, "test", NotifierDialogFragment::new);
     }
 }
