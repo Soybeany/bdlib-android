@@ -26,7 +26,7 @@ public class NotifierDialogManager extends DialogManager implements ITarget<Dial
     public NotifierDialogManager(String type, @NonNull NotifierDialogInfoVM vm, @NonNull IRealDialog dialog) {
         super(type, vm, dialog);
         mNotifier = vm.getNotifier(type);
-        mManager.bind(this, mNotifier);
+        mManager.bind(this, mNotifier, false);
         if (dialog instanceof INotifierRealDialog) {
             ((INotifierRealDialog) dialog).onSetupNotifier(mNotifier);
         }
@@ -36,46 +36,46 @@ public class NotifierDialogManager extends DialogManager implements ITarget<Dial
 
     @Override
     public void onDestroy(@NonNull LifecycleOwner owner) {
-        mManager.sendMsg(new DialogMsg.OnDismissDialog(DialogDismissReason.CLEAR));
-        mManager.sendMsg(new DialogMsg.OnClearDialog());
+        mNotifier.sendCMsgWithDefaultUid(new DialogMsg.OnDestroyDialog());
+        mManager.unbind(false);
     }
 
     @Override
-    protected void onShowMsg(IDialogHint msg) {
-        super.onShowMsg(msg);
-        mManager.sendMsg(new DialogMsg.OnShowMsg(msg));
+    protected void onShowMsg(String uid, IDialogHint msg) {
+        super.onShowMsg(uid, msg);
+        mNotifier.sendCMsg(uid, new DialogMsg.OnShowMsg(msg));
     }
 
     @Override
-    protected void onPopMsg(IDialogHint msg) {
-        super.onPopMsg(msg);
-        mManager.sendMsg(new DialogMsg.OnPopMsg(msg));
+    protected void onPopMsg(String uid, IDialogHint msg) {
+        super.onPopMsg(uid, msg);
+        mNotifier.sendCMsg(uid, new DialogMsg.OnPopMsg(msg));
     }
 
     @Override
-    protected void onToProgress(float percent) {
-        super.onToProgress(percent);
-        mManager.sendMsg(mOnToProgress.percent(percent));
+    protected void onToProgress(String uid, float percent) {
+        super.onToProgress(uid, percent);
+        mNotifier.sendCMsg(uid, mOnToProgress.percent(percent));
     }
 
     @Override
-    protected void onShowDialog() {
-        super.onShowDialog();
-        mManager.sendMsg(new DialogMsg.OnShowDialog());
+    protected void onShowDialog(String uid) {
+        super.onShowDialog(uid);
+        mNotifier.sendCMsg(uid, new DialogMsg.OnShowDialog());
     }
 
     @Override
-    protected void onDismissDialog(DialogDismissReason reason) {
-        super.onDismissDialog(reason);
-        mManager.sendMsg(new DialogMsg.OnDismissDialog(reason));
+    protected void onDismissDialog(String uid, DialogDismissReason reason) {
+        super.onDismissDialog(uid, reason);
+        mNotifier.sendCMsg(uid, new DialogMsg.OnDismissDialog(reason));
     }
 
     @Override
     public void onSetupMsgProcessors(List<MsgProcessor<? extends DialogMsg.Invoker>> list) {
-        list.add(new MsgProcessor<>(DialogMsg.ShowMsg.class, msg -> showMsg(msg.getData())));
-        list.add(new MsgProcessor<>(DialogMsg.PopMsg.class, msg -> popMsg(msg.getData())));
-        list.add(new MsgProcessor<>(DialogMsg.ToProgress.class, msg -> toProgress(msg.getData())));
-        list.add(new MsgProcessor<>(DialogMsg.DismissDialog.class, msg -> dismiss(msg.getData())));
+        list.add(new MsgProcessor<>(DialogMsg.ShowMsg.class, msg -> showMsg(msg.senderUid, msg.data)));
+        list.add(new MsgProcessor<>(DialogMsg.PopMsg.class, msg -> popMsg(msg.senderUid, msg.data)));
+        list.add(new MsgProcessor<>(DialogMsg.ToProgress.class, msg -> toProgress(msg.senderUid, msg.data)));
+        list.add(new MsgProcessor<>(DialogMsg.DismissDialog.class, msg -> dismissDialog(msg.senderUid, msg.data)));
     }
 
     // //////////////////////////////////公开方法//////////////////////////////////

@@ -28,7 +28,7 @@ public class DialogInfoVM extends ViewModel {
     /**
      * 将全部操作放到主线程进行，确保线程安全
      */
-    public void execute(Runnable task) {
+    public void exeInMainThread(Runnable task) {
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             task.run();
         } else {
@@ -69,7 +69,7 @@ public class DialogInfoVM extends ViewModel {
          * 获得当前正在显示的信息
          */
         public IDialogHint getCurDialogHint() {
-            return hintSet.last();
+            return !hintSet.isEmpty() ? hintSet.last() : null;
         }
 
         /**

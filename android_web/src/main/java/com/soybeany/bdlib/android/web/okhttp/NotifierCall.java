@@ -72,16 +72,20 @@ public class NotifierCall extends CallWrapper {
 
         @Override
         public void onSetupMsgProcessors(List<MsgProcessor<? extends RequestMsg.Invoker>> processors) {
-            processors.add(new MsgProcessor<>(RequestMsg.Cancel.class, msg -> cancel()));
+            processors.add(new MsgProcessor<>(RequestMsg.Cancel.class, msg -> {
+                cancel();
+                mNotifier.sendCMsg(msg.senderUid, new RequestMsg.OnFinish(RequestFinishReason.CANCEL));
+            }));
         }
 
         private void register(RequestNotifier notifier) {
-            mManager.bind(this, notifier);
-            mManager.sendMsg(new RequestMsg.OnStart());
+            mManager.bind(this, notifier, false);
+            mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnStart());
         }
 
         private void unregister(RequestFinishReason reason) {
-            mManager.sendMsg(new RequestMsg.OnFinish(reason));
+            mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnFinish(reason));
+            mManager.unbind(false);
         }
     }
 }

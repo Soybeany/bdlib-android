@@ -47,7 +47,7 @@ public class RequestMsg {
     /**
      * 请求完成，data为{@link RequestFinishReason}
      */
-    public static class OnFinish extends Callback<RequestFinishReason> implements Msg.EndFlag {
+    public static class OnFinish extends Callback<RequestFinishReason> {
         public OnFinish(RequestFinishReason reason) {
             super(reason);
         }

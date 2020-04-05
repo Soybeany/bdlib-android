@@ -53,7 +53,7 @@ public class DialogMsg {
         }
 
         public ToProgress percent(Float percent) {
-            setData(percent);
+            data = percent;
             return this;
         }
     }
@@ -96,7 +96,7 @@ public class DialogMsg {
         }
 
         public OnToProgress percent(Float percent) {
-            setData(percent);
+            data = percent;
             return this;
         }
     }
@@ -120,10 +120,10 @@ public class DialogMsg {
     }
 
     /**
-     * 弹窗清除时通知，一般为相应activity被销毁时触发，data为null
+     * 弹窗销毁时通知，一般为相应activity被销毁时触发，data为null
      */
-    public static class OnClearDialog extends Callback<Object> implements Msg.EndFlag {
-        public OnClearDialog() {
+    public static class OnDestroyDialog extends Callback<Object> {
+        public OnDestroyDialog() {
             super(null);
         }
     }

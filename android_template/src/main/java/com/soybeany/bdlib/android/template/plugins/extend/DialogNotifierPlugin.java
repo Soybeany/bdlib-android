@@ -34,17 +34,15 @@ public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
 
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
-        mVm.execute(() -> {
-            for (Map.Entry<String, DialogInfoVM.Info> entry : mVm.infoMap.entrySet()) {
-                DialogInfoVM.Info info = entry.getValue();
-                // 若不需要立刻弹窗，则不作处理
-                if (!info.needDialogShow) {
-                    continue;
-                }
-                // 通知进行显示
-                getDialogNotifier(entry.getKey()).sendIMsg(new DialogMsg.ShowMsg(info.getCurDialogHint()));
+        for (Map.Entry<String, DialogInfoVM.Info> entry : mVm.infoMap.entrySet()) {
+            DialogInfoVM.Info info = entry.getValue();
+            // 若不需要立刻弹窗，则不作处理
+            if (!info.needDialogShow) {
+                continue;
             }
-        });
+            // 通知进行显示
+            getDialogNotifier(entry.getKey()).sendIMsg(new DialogMsg.ShowMsg(info.getCurDialogHint()));
+        }
     }
 
     @NonNull
@@ -57,6 +55,7 @@ public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
     public synchronized DialogNotifier getDialogNotifier(String type) {
         NotifierDialogManager manager = mManagerMap.get(type);
         if (null == manager) {
+            // TODO: 2020/4/5 需到主线程中创建
             mManagerMap.put(type, manager = new NotifierDialogManager(type, mVm, mCallback.onGetNewDialog(type)));
             mActivity.getLifecycle().addObserver(manager);
         }

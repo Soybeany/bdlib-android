@@ -14,6 +14,8 @@ import static com.soybeany.bdlib.android.util.dialog.DialogDismissReason.NORM;
 @SuppressWarnings("WeakerAccess")
 public class DialogManager {
 
+    private static final String DEFAULT_UID = "DEFAULT_UID";
+
     private final DialogInfoVM mVm;
     private final DialogInfoVM.Info mInfo;
     private final IRealDialog mRealDialog;
@@ -30,10 +32,37 @@ public class DialogManager {
      * 显示指定的弹窗提示
      */
     public void showMsg(@Nullable IDialogHint msg) {
+        showMsg(DEFAULT_UID, msg);
+    }
+
+    /**
+     * 弹出指定的弹窗提示
+     */
+    public void popMsg(@Nullable IDialogHint msg) {
+        popMsg(DEFAULT_UID, msg);
+    }
+
+    /**
+     * 设置进度
+     */
+    public void toProgress(float percent) {
+        toProgress(DEFAULT_UID, percent);
+    }
+
+    /**
+     * 关闭弹窗
+     */
+    public void dismissDialog(DialogDismissReason reason) {
+        dismissDialog(DEFAULT_UID, reason);
+    }
+
+    // //////////////////////////////////子类方法区//////////////////////////////////
+
+    protected void showMsg(String uid, @Nullable IDialogHint msg) {
         if (null == msg) {
             return;
         }
-        mVm.execute(() -> {
+        mVm.exeInMainThread(() -> {
             // 不可取消列表按需设置
             if (msg.cancelable()) {
                 // 有可能是已有消息的修改，故尝试移除
@@ -46,51 +75,42 @@ public class DialogManager {
             // 添加至信息集(可能覆盖)
             mInfo.hintSet.add(msg);
             // 显示
-            showNewestMsg(mInfo, false);
+            showNewestMsg(uid, mInfo, false);
         });
     }
 
-    /**
-     * 弹出指定的弹窗提示
-     */
-    public void popMsg(@Nullable IDialogHint msg) {
-        mVm.execute(() -> {
+    protected void popMsg(String uid, @Nullable IDialogHint msg) {
+        mVm.exeInMainThread(() -> {
             if (!mInfo.hintSet.remove(msg)) {
                 return;
             }
             mInfo.unableCancelSet.remove(msg);
-            onPopMsg(msg);
+            onPopMsg(uid, msg);
             // 更改或关闭弹窗
             if (!mInfo.hintSet.isEmpty()) {
-                showNewestMsg(mInfo, true);
+                showNewestMsg(uid, mInfo, true);
             } else {
-                dismiss(NORM);
+                dismissDialog(uid, NORM);
             }
         });
     }
 
-    /**
-     * 设置进度
-     */
-    public synchronized void toProgress(float percent) {
+    protected void toProgress(String uid, float percent) {
         mRealDialog.onToProgress(percent);
-        onToProgress(percent);
+        onToProgress(uid, percent);
     }
 
-    /**
-     * 关闭弹窗
-     */
-    public synchronized void dismiss(DialogDismissReason reason) {
-        mVm.execute(() -> {
+    protected void dismissDialog(String uid, DialogDismissReason reason) {
+        mVm.exeInMainThread(() -> {
             for (IDialogHint msg : mInfo.hintSet) {
-                onPopMsg(msg);
+                onPopMsg(uid, msg);
             }
             mInfo.hintSet.clear();
             mInfo.unableCancelSet.clear();
             // 若弹窗没有关闭，则关闭
-            if (mRealDialog.isDialogShowing()) {
+            if (mInfo.needDialogShow || mRealDialog.isDialogShowing()) {
                 mRealDialog.onDismissDialog(reason);
-                onDismissDialog(reason);
+                onDismissDialog(uid, reason);
             }
             // 设置弹窗标识
             if (mInfo.needDialogShow) {
@@ -101,31 +121,31 @@ public class DialogManager {
 
     // //////////////////////////////////回调区//////////////////////////////////
 
-    protected void onShowMsg(IDialogHint msg) {
+    protected void onShowMsg(String uid, IDialogHint msg) {
     }
 
-    protected void onReshowMsg(IDialogHint msg) {
+    protected void onReshowMsg(String uid, IDialogHint msg) {
     }
 
-    protected void onPopMsg(IDialogHint msg) {
+    protected void onPopMsg(String uid, IDialogHint msg) {
     }
 
-    protected void onToProgress(float percent) {
+    protected void onToProgress(String uid, float percent) {
     }
 
-    protected void onShowDialog() {
+    protected void onShowDialog(String uid) {
     }
 
-    protected void onDismissDialog(DialogDismissReason reason) {
+    protected void onDismissDialog(String uid, DialogDismissReason reason) {
     }
 
     // //////////////////////////////////内部区//////////////////////////////////
 
-    private void showNewestMsg(DialogInfoVM.Info info, boolean isReshow) {
+    private void showNewestMsg(String uid, DialogInfoVM.Info info, boolean isReshow) {
         // 若弹窗没有显示，则显示
-        if (!mRealDialog.isDialogShowing()) {
+        if (!mInfo.needDialogShow || !mRealDialog.isDialogShowing()) {
             mRealDialog.onShowDialog();
-            onShowDialog();
+            onShowDialog(uid);
         }
         // 设置弹窗标识
         if (!info.needDialogShow) {
@@ -133,9 +153,9 @@ public class DialogManager {
         }
         IDialogHint hint = info.getCurDialogHint();
         if (isReshow) {
-            onReshowMsg(hint);
+            onReshowMsg(uid, hint);
         } else {
-            onShowMsg(hint);
+            onShowMsg(uid, hint);
         }
         mRealDialog.onChangeDialogHint(hint, info.shouldDialogCancelable());
     }

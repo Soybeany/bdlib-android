@@ -16,7 +16,7 @@ public class RequestNotifier extends BaseNotifier<RequestMsg.Invoker, RequestMsg
     private final DialogMsg.ToProgress mProgressMsg = new DialogMsg.ToProgress();
     private final IDialogHint mHint;
 
-    RequestNotifier(IDialogHint hint) {
+    public RequestNotifier(IDialogHint hint) {
         mHint = hint;
     }
 
@@ -24,7 +24,7 @@ public class RequestNotifier extends BaseNotifier<RequestMsg.Invoker, RequestMsg
     protected void onSetupMsgConverters(List<MsgConverter<? extends RequestMsg.Callback, DialogMsg.Invoker>> list) {
         list.add(new MsgConverter<>(RequestMsg.OnStart.class, msg -> new DialogMsg.ShowMsg(mHint)));
         list.add(new MsgConverter<>(RequestMsg.OnFinish.class, msg -> new DialogMsg.PopMsg(mHint)));
-        list.add(new MsgConverter<>(RequestMsg.OnDownload.class, msg -> mProgressMsg.percent(msg.getData())));
-        list.add(new MsgConverter<>(RequestMsg.OnUpload.class, msg -> mProgressMsg.percent(msg.getData())));
+        list.add(new MsgConverter<>(RequestMsg.OnDownload.class, msg -> mProgressMsg.percent(msg.data)));
+        list.add(new MsgConverter<>(RequestMsg.OnUpload.class, msg -> mProgressMsg.percent(msg.data)));
     }
 }

@@ -42,7 +42,8 @@ public class SwipeRefreshActivity extends BaseActivity implements INotifierProvi
     public void onInitViews() {
         srLayout.setColorSchemeResources(R.color.colorAccent);
         srLayout.setOnRefreshListener(() -> {
-            mPt.testAsync();
+//            mPt.testAsync();
+            mPt.testFile();
         });
     }
 

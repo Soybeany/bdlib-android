@@ -43,8 +43,8 @@ public class NotifierCountingBody {
 
         @Override
         public void inProgress(float percent, long cur, long total) {
-            mMsg.setData(percent);
-            mNotifier.sendCMsg(mMsg);
+            mMsg.data = percent;
+            mNotifier.sendCMsgWithDefaultUid(mMsg);
         }
     }
 }
