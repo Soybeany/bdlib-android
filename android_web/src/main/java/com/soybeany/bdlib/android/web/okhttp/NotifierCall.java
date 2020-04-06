@@ -1,10 +1,13 @@
 package com.soybeany.bdlib.android.web.okhttp;
 
+import android.support.annotation.Nullable;
+
 import com.soybeany.bdlib.android.web.RequestNotifier;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.web.okhttp.core.CallWrapper;
 import com.soybeany.connector.ITarget;
 import com.soybeany.connector.MsgManager;
+import com.soybeany.connector.MsgSender;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,10 +29,13 @@ import static com.soybeany.bdlib.android.web.okhttp.RequestFinishReason.NORM;
 @EverythingIsNonNull
 public class NotifierCall extends CallWrapper {
     private final RequestNotifier mNotifier;
+    @Nullable
+    private final MsgSender<?, ?> mAnotherSender; // 用于通讯的另一个sender
 
-    public NotifierCall(Call target, RequestNotifier notifier) {
+    public NotifierCall(Call target, RequestNotifier notifier, @Nullable MsgSender<?, ?> anotherSender) {
         super(target);
         mNotifier = notifier;
+        mAnotherSender = anotherSender;
     }
 
     @Override
@@ -42,7 +48,7 @@ public class NotifierCall extends CallWrapper {
 
     @Override
     public Call clone() {
-        return new NotifierCall(super.clone(), mNotifier);
+        return new NotifierCall(super.clone(), mNotifier, mAnotherSender);
     }
 
     public RequestNotifier getNotifier() {
@@ -79,6 +85,9 @@ public class NotifierCall extends CallWrapper {
         }
 
         private void register(RequestNotifier notifier) {
+            if (null != mAnotherSender) {
+                MsgSender.connect(mNotifier, mAnotherSender);
+            }
             mManager.bind(this, notifier, false);
             mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnStart());
         }
@@ -86,6 +95,9 @@ public class NotifierCall extends CallWrapper {
         private void unregister(RequestFinishReason reason) {
             mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnFinish(reason));
             mManager.unbind(false);
+            if (null != mAnotherSender) {
+                MsgSender.disconnect(mNotifier, mAnotherSender);
+            }
         }
     }
 }

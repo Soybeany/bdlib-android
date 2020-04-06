@@ -1,7 +1,6 @@
 package com.soybeany.bdlib.project;
 
 import com.soybeany.bdlib.android.mvp.BasePresenter;
-import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.msg.StdDialogHint;
@@ -10,12 +9,10 @@ import com.soybeany.bdlib.android.web.RequestNotifier;
 import com.soybeany.bdlib.android.web.UICallback;
 import com.soybeany.bdlib.android.web.okhttp.NotifierCall;
 import com.soybeany.bdlib.core.util.file.IProgressListener;
-import com.soybeany.bdlib.web.okhttp.core.ICallback;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpCallback;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestBuilder;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.parser.StringParser;
-import com.soybeany.connector.MsgSender;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,18 +28,9 @@ public class TestPresenter extends BasePresenter<ITestView> {
         OkHttpClient client = OkHttpUtils.getNewClient(setter -> OkHttpUtils.IClientSetter.setupTimeout(setter, 3));
         RequestNotifier rNotifier = new RequestNotifier(new StdDialogHint());
         Request request = new OkHttpRequestBuilder().url(mUrl).build();
-        DialogNotifier dNotifier = getTopDialogNotifier();
-        MsgSender.connect(dNotifier, rNotifier);
-        NotifierCall call = new NotifierCall(client.newCall(request), rNotifier);
+        NotifierCall call = new NotifierCall(client.newCall(request), rNotifier, getTopDialogNotifier());
         call.enqueue(new OkHttpCallback<>(StringParser.get())
                 .addCallback(new TestCallback())
-                .addCallback(new ICallback.Empty<String>() {
-                    @Override
-                    public void onFinal(int id, int type) {
-                        // TODO: 2020/4/6 替换为更优雅的解绑方案
-                        BDContext.MAIN_HANDLER.postDelayed(() -> MsgSender.disconnect(rNotifier, dNotifier), 500);
-                    }
-                })
                 .addDownloadListener(getLogListener("测试"))
         );
 //        RequestUtils.newRequest()
