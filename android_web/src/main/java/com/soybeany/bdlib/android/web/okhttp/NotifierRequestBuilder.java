@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.web.okhttp;
 
-import com.soybeany.bdlib.android.web.RequestNotifier;
+import com.soybeany.bdlib.android.web.notifier.RequestNotifier;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestBuilder;
 import com.soybeany.bdlib.web.okhttp.counting.CountingRequestBody;
 

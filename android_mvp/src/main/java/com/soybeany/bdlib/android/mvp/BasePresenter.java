@@ -12,9 +12,9 @@ import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
-import com.soybeany.bdlib.android.web.DialogNotifier;
-import com.soybeany.bdlib.android.web.dialog.DialogMsg;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
+import com.soybeany.bdlib.android.web.msg.DialogMsg;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 import com.soybeany.bdlib.core.java8.function.Consumer;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
 
@@ -114,7 +114,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
         }
         // 正常执行
         msg.cancelable(false);
-        notifier.sendIMsg(new DialogMsg.ShowMsg(msg));
+        notifier.sendIMsg(new DialogMsg.PushMsg(msg));
         runnable.run();
         notifier.sendIMsg(new DialogMsg.PopMsg(msg));
     }

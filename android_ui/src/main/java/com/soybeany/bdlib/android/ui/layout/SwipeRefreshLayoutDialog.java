@@ -17,22 +17,22 @@ public class SwipeRefreshLayoutDialog implements IRealDialog {
     }
 
     @Override
-    public boolean isDialogShowing() {
-        return mLayout.isRefreshing();
-    }
-
-    @Override
-    public void onChangeDialogHint(IDialogHint hint, boolean cancelable) {
-        // 留空
-    }
-
-    @Override
     public void onShowDialog() {
         mLayout.setRefreshing(true);
     }
 
     @Override
     public void onToProgress(float percent) {
+        // 留空
+    }
+
+    @Override
+    public void onDisplayHint(IDialogHint hint) {
+        // 留空
+    }
+
+    @Override
+    public void onChangeCancelable(boolean cancelable) {
         // 留空
     }
 

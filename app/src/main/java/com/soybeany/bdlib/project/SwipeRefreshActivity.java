@@ -11,8 +11,8 @@ import com.soybeany.bdlib.android.template.plugins.extend.DialogNotifierPlugin;
 import com.soybeany.bdlib.android.ui.layout.SwipeRefreshLayoutDialog;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
-import com.soybeany.bdlib.android.web.DialogNotifier;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 
 import butterknife.BindView;
 

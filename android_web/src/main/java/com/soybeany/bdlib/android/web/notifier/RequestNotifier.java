@@ -1,8 +1,8 @@
-package com.soybeany.bdlib.android.web;
+package com.soybeany.bdlib.android.web.notifier;
 
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
-import com.soybeany.bdlib.android.web.dialog.DialogMsg;
-import com.soybeany.bdlib.android.web.okhttp.RequestMsg;
+import com.soybeany.bdlib.android.web.msg.DialogMsg;
+import com.soybeany.bdlib.android.web.msg.RequestMsg;
 import com.soybeany.connector.MsgManager;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class RequestNotifier extends BaseNotifier<RequestMsg.Invoker, RequestMsg
 
     @Override
     protected void onSetupMsgConverters(List<MsgConverter<? extends RequestMsg.Callback, DialogMsg.Invoker>> list) {
-        list.add(new MsgConverter<>(RequestMsg.OnStart.class, msg -> new DialogMsg.ShowMsg(mHint)));
+        list.add(new MsgConverter<>(RequestMsg.OnStart.class, msg -> new DialogMsg.PushMsg(mHint)));
         list.add(new MsgConverter<>(RequestMsg.OnFinish.class, msg -> new DialogMsg.PopMsg(mHint)));
         list.add(new MsgConverter<>(RequestMsg.OnDownload.class, msg -> mProgressMsg.percent(msg.data)));
         list.add(new MsgConverter<>(RequestMsg.OnUpload.class, msg -> mProgressMsg.percent(msg.data)));

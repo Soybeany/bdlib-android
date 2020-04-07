@@ -5,13 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
-import com.soybeany.bdlib.android.util.dialog.DialogInfoVM;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
-import com.soybeany.bdlib.android.web.DialogNotifier;
-import com.soybeany.bdlib.android.web.dialog.DialogMsg;
+import com.soybeany.bdlib.android.web.dialog.DialogInfoManager;
+import com.soybeany.bdlib.android.web.dialog.DialogInfoVM;
+import com.soybeany.bdlib.android.web.dialog.DialogManager;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
-import com.soybeany.bdlib.android.web.dialog.NotifierDialogInfoVM;
-import com.soybeany.bdlib.android.web.dialog.NotifierDialogManager;
+import com.soybeany.bdlib.android.web.msg.DialogMsg;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,27 +21,27 @@ import java.util.Map;
  */
 public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
 
-    private final Map<String, NotifierDialogManager> mManagerMap = new HashMap<>();
+    private final Map<String, DialogManager> mManagerMap = new HashMap<>();
     private final FragmentActivity mActivity;
-    private final NotifierDialogInfoVM mVm;
+    private final DialogInfoVM mVm;
     private final ICallback mCallback;
 
     public DialogNotifierPlugin(@NonNull FragmentActivity activity, ICallback callback) {
         mActivity = activity;
-        mVm = NotifierDialogInfoVM.get(activity);
+        mVm = DialogInfoVM.get(activity);
         mCallback = callback;
     }
 
     @Override
     public void onCreate(@NonNull LifecycleOwner owner) {
-        for (Map.Entry<String, DialogInfoVM.Info> entry : mVm.infoMap.entrySet()) {
-            DialogInfoVM.Info info = entry.getValue();
+        for (Map.Entry<String, DialogInfoManager> entry : mVm.infoManagerMap.entrySet()) {
+            DialogInfoManager info = entry.getValue();
             // 若不需要立刻弹窗，则不作处理
-            if (!info.needDialogShow) {
+            if (!info.needShowDialog()) {
                 continue;
             }
             // 通知进行显示
-            getDialogNotifier(entry.getKey()).sendIMsg(new DialogMsg.ShowMsg(info.getCurDialogHint()));
+            getDialogNotifier(entry.getKey()).sendIMsg(new DialogMsg.PushMsg(info.getCurDialogHint()));
         }
     }
 
@@ -53,13 +53,13 @@ public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
 
     @Override
     public synchronized DialogNotifier getDialogNotifier(String type) {
-        NotifierDialogManager manager = mManagerMap.get(type);
+        DialogManager manager = mManagerMap.get(type);
         if (null == manager) {
             // TODO: 2020/4/5 需到主线程中创建
-            mManagerMap.put(type, manager = new NotifierDialogManager(type, mVm, mCallback.onGetNewDialog(type)));
+            mManagerMap.put(type, manager = new DialogManager(type, mVm, mCallback.onGetNewDialog(type)));
             mActivity.getLifecycle().addObserver(manager);
         }
-        return manager.getNotifier();
+        return manager.dNotifier;
     }
 
     public interface ICallback {

@@ -1,5 +1,6 @@
-package com.soybeany.bdlib.android.web.okhttp;
+package com.soybeany.bdlib.android.web.msg;
 
+import com.soybeany.bdlib.android.web.okhttp.RequestFinishReason;
 import com.soybeany.connector.Msg;
 
 /**

@@ -9,7 +9,7 @@ import static com.soybeany.bdlib.android.util.BDContext.getString;
 /**
  * <br>Created by Soybeany on 2019/5/9.
  */
-public class StdDialogHint extends IDialogHint.Impl {
+public class StdDialogHint extends SimpleDialogHint {
     private static final String DEFAULT_HINT = getString(R.string.bd_dialog_default_hint);
 
     private String mPrefix = StdHintUtils.loadingPrefix();

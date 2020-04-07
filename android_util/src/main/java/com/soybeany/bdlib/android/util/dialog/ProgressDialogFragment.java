@@ -26,7 +26,7 @@ public class ProgressDialogFragment extends BaseDialogFragment {
         mDialog = new ProgressDialog(getContext());
         mDialog.setCanceledOnTouchOutside(false);
         // 设置默认值
-        setupDialog();
+        applyChange();
         return mDialog;
     }
 
@@ -37,24 +37,24 @@ public class ProgressDialogFragment extends BaseDialogFragment {
     }
 
     @Override
-    public boolean isDialogShowing() {
-        if (mDialog != null) {
-            return mDialog.isShowing();
-        }
-        return false;
+    public void onDisplayHint(IDialogHint hint) {
+        mLastDialogHint = hint;
+        applyChange();
     }
 
     @Override
-    public void onChangeDialogHint(IDialogHint hint, boolean cancelable) {
-        mLastDialogHint = hint;
+    public void onChangeCancelable(boolean cancelable) {
         mCancelable = cancelable;
-        setupDialog();
+        applyChange();
     }
 
-    private void setupDialog() {
-        if (null != mDialog && null != mLastDialogHint) {
-            mDialog.setMessage(mLastDialogHint.hint());
-            setCancelable(mCancelable);
+    private void applyChange() {
+        if (null == mDialog) {
+            return;
         }
+        if (null != mLastDialogHint) {
+            mDialog.setMessage(mLastDialogHint.hint());
+        }
+        setCancelable(mCancelable);
     }
 }

@@ -2,7 +2,8 @@ package com.soybeany.bdlib.android.web.okhttp;
 
 import android.support.annotation.Nullable;
 
-import com.soybeany.bdlib.android.web.RequestNotifier;
+import com.soybeany.bdlib.android.web.msg.RequestMsg;
+import com.soybeany.bdlib.android.web.notifier.RequestNotifier;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.web.okhttp.core.CallWrapper;
 import com.soybeany.connector.ITarget;

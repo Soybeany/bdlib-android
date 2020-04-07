@@ -1,4 +1,4 @@
-package com.soybeany.bdlib.android.web;
+package com.soybeany.bdlib.android.web.notifier;
 
 import com.soybeany.connector.Msg;
 import com.soybeany.connector.MsgCenter;

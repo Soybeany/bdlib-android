@@ -12,9 +12,9 @@ import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.DialogFragmentUtils;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
-import com.soybeany.bdlib.android.web.DialogNotifier;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 import com.soybeany.bdlib.android.web.dialog.NotifierDialogFragment;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
