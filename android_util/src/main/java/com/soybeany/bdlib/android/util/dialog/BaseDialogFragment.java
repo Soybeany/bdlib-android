@@ -27,7 +27,7 @@ public abstract class BaseDialogFragment extends DialogFragment implements IReal
 
     @Override
     public void onDismissDialog(DialogDismissReason reason) {
-        dismiss();
+        dismissAllowingStateLoss();
     }
 
     @Override

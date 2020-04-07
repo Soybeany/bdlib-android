@@ -52,6 +52,7 @@ public class DialogInfoVM extends ViewModel {
 
         /**
          * 入栈的弹窗信息
+         * todo 在添加速度很快，即时间戳相同时，会存在消息丢失的问题
          */
         public final SortedSet<IDialogHint> hintSet = new TreeSet<>();
 

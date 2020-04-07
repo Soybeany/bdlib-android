@@ -1,5 +1,6 @@
 package com.soybeany.bdlib.android.web;
 
+import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.web.dialog.DialogMsg;
 import com.soybeany.bdlib.android.web.okhttp.RequestMsg;
 
@@ -12,6 +13,7 @@ public class DialogNotifier extends BaseNotifier<DialogMsg.Invoker, DialogMsg.Ca
 
     @Override
     protected void onSetupMsgConverters(List<MsgConverter<? extends DialogMsg.Callback, RequestMsg.Invoker>> list) {
-        list.add(new MsgConverter<>(DialogMsg.OnDismissDialog.class, msg -> new RequestMsg.Cancel()));
+        list.add(new MsgConverter<>(DialogMsg.OnDismissDialog.class,
+                msg -> DialogDismissReason.CANCEL == msg.data ? new RequestMsg.Cancel() : null));
     }
 }
