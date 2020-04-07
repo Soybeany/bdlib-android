@@ -5,7 +5,7 @@ import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
 import com.soybeany.connector.Msg;
 
 /**
- * <br>Created by Soybeany on 2020/4/7.
+ * <br>Created by Soybeany on 2019/5/27.
  */
 @SuppressWarnings("WeakerAccess")
 public class DialogMsg {
@@ -27,89 +27,98 @@ public class DialogMsg {
     // //////////////////////////////////Invoker区//////////////////////////////////
 
     /**
-     * 显示信息，data为{@link IDialogHint}
+     * 显示弹窗
      */
-    public static class PushMsg extends Invoker<IDialogHint> {
-        public PushMsg(IDialogHint msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * 弹出信息，data为{@link IDialogHint}
-     */
-    public static class PopMsg extends Invoker<IDialogHint> {
-        public PopMsg(IDialogHint msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * 跳转至进度，data为{@link Float}(正常 0~1，缺失-1)
-     */
-    public static class ToProgress extends Invoker<Float> {
-        public ToProgress() {
+    public static class ShowDialog extends Invoker<Object> {
+        public ShowDialog() {
             super(null);
         }
+    }
 
-        public ToProgress percent(Float percent) {
-            data = percent;
-            return this;
+    /**
+     * 关闭弹窗
+     */
+    public static class DismissDialog extends Invoker<DialogDismissReason> {
+        public DismissDialog(DialogDismissReason reason) {
+            super(reason);
+        }
+    }
+
+    /**
+     * 用于展示的消息
+     */
+    public static class DisplayMsg extends Invoker<IDialogHint> {
+        public DisplayMsg(IDialogHint msg) {
+            super(msg);
+        }
+    }
+
+    /**
+     * 更改可取消性
+     */
+    public static class ChangeCancelable extends Invoker<Boolean> {
+        public ChangeCancelable(Boolean flag) {
+            super(flag);
+        }
+    }
+
+    /**
+     * 更改进度
+     */
+    public static class ChangeProgress extends Invoker<Float> {
+        public ChangeProgress(Float percent) {
+            super(percent);
         }
     }
 
     // //////////////////////////////////Callback区//////////////////////////////////
 
     /**
-     * 显示信息时通知，data为{@link IDialogHint}
+     * 弹窗打开时通知，data为null
      */
-    public static class OnPushMsg extends Callback<IDialogHint> {
-        public OnPushMsg(IDialogHint msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * 弹出信息时通知，data为{@link IDialogHint}
-     */
-    public static class OnPopMsg extends Callback<IDialogHint> {
-        public OnPopMsg(IDialogHint msg) {
-            super(msg);
-        }
-    }
-
-    /**
-     * 弹出信息时通知，data为{@link IDialogHint}
-     */
-    public static class OnNeedShowDialog extends Callback<Object> {
-        public OnNeedShowDialog() {
+    public static class OnShowDialog extends Callback<Object> {
+        public OnShowDialog() {
             super(null);
         }
     }
 
     /**
-     * 弹出信息时通知，data为{@link IDialogHint}
+     * 弹窗关闭时通知，data为{@link DialogDismissReason}
      */
-    public static class OnNeedDismissDialog extends Callback<DialogDismissReason> {
-        public OnNeedDismissDialog(DialogDismissReason reason) {
+    public static class OnDismissDialog extends Callback<DialogDismissReason> {
+        public OnDismissDialog(DialogDismissReason reason) {
             super(reason);
         }
     }
 
     /**
-     * 弹出信息时通知，data为{@link IDialogHint}
+     * 更改进度时通知，data为{@link Float}(正常 0~1，缺失-1)
      */
-    public static class OnSelectMsg extends Callback<IDialogHint> {
-        public OnSelectMsg(IDialogHint msg) {
-            super(msg);
+    public static class OnChangeProgress extends Callback<Float> {
+        public OnChangeProgress() {
+            super(null);
+        }
+
+        public OnChangeProgress percent(Float percent) {
+            data = percent;
+            return this;
+        }
+    }
+
+    /**
+     * 显示消息时通知
+     */
+    public static class OnDisplayMsg extends Callback<IDialogHint> {
+        public OnDisplayMsg(IDialogHint hint) {
+            super(hint);
         }
     }
 
     /**
      * 弹出信息时通知
      */
-    public static class OnSwitchCancelable extends Callback<Boolean> {
-        public OnSwitchCancelable(Boolean flag) {
+    public static class OnChangeCancelable extends Callback<Boolean> {
+        public OnChangeCancelable(Boolean flag) {
             super(flag);
         }
     }

@@ -5,7 +5,7 @@ import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.msg.StdDialogHint;
 import com.soybeany.bdlib.android.web.UICallback;
-import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
+import com.soybeany.bdlib.android.web.notifier.DVNotifier;
 import com.soybeany.bdlib.android.web.notifier.RequestNotifier;
 import com.soybeany.bdlib.android.web.okhttp.NotifierCall;
 import com.soybeany.bdlib.core.util.file.IProgressListener;
@@ -43,7 +43,7 @@ public class TestPresenter extends BasePresenter<ITestView> {
     }
 
     public void testAsync() {
-        DialogNotifier notifier = getTopDialogNotifier();
+        DVNotifier notifier = getTopDialogNotifier();
         new Thread(() -> {
             uiInvoke(v -> v.showMsg("任务", "开始"));
             wrapDialog(notifier, new StdDialogHint().hint("测试异步"), () -> {

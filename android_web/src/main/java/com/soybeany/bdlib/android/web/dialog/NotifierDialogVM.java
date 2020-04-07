@@ -16,7 +16,7 @@ import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
  * <br>Created by Soybeany on 2020/4/2.
  */
 @SuppressWarnings("WeakerAccess")
-public class DialogInfoVM extends ViewModel {
+public class NotifierDialogVM extends ViewModel {
 
     public final Map<String, DialogInfoManager> infoManagerMap = new ConcurrentHashMap<>();
 
@@ -31,15 +31,17 @@ public class DialogInfoVM extends ViewModel {
         }
     }
 
-    public static DialogInfoVM get(FragmentActivity activity) {
-        return ViewModelProviders.of(activity).get(DialogInfoVM.class);
+    public static NotifierDialogVM get(FragmentActivity activity) {
+        return ViewModelProviders.of(activity).get(NotifierDialogVM.class);
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
         for (DialogInfoManager manager : infoManagerMap.values()) {
-            manager.clearMsg(null, DialogDismissReason.CLEAR);
+            if (manager.hasHint()) {
+                manager.clearMsg(DialogDismissReason.CLEAR);
+            }
             manager.unbind();
         }
     }

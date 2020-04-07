@@ -81,7 +81,7 @@ public class NotifierCall extends CallWrapper {
         public void onSetupMsgProcessors(List<MsgProcessor<? extends RequestMsg.Invoker>> processors) {
             processors.add(new MsgProcessor<>(RequestMsg.Cancel.class, msg -> {
                 cancel();
-                mNotifier.sendCMsg(msg.senderUid, new RequestMsg.OnFinish(RequestFinishReason.CANCEL));
+                mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnFinish(RequestFinishReason.CANCEL));
             }));
         }
 

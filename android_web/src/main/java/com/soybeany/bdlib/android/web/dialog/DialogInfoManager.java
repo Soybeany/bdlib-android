@@ -2,13 +2,16 @@ package com.soybeany.bdlib.android.web.dialog;
 
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
-import com.soybeany.bdlib.android.web.msg.DialogMsg;
+import com.soybeany.bdlib.android.web.msg.DVMsg;
+import com.soybeany.bdlib.android.web.msg.RVMsg;
+import com.soybeany.bdlib.android.web.notifier.DVNotifier;
 import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
-import com.soybeany.connector.ITarget;
+import com.soybeany.bdlib.android.web.notifier.RVNotifier;
+import com.soybeany.connector.ITarget.MsgProcessor;
 import com.soybeany.connector.MsgManager;
+import com.soybeany.connector.MsgSender;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -16,7 +19,7 @@ import java.util.TreeSet;
 /**
  * <br>Created by Soybeany on 2020/4/7.
  */
-public class DialogInfoManager implements ITarget<DialogMsg.Invoker> {
+public class DialogInfoManager {
 
     /**
      * 标识是否有弹窗正在显示
@@ -28,7 +31,9 @@ public class DialogInfoManager implements ITarget<DialogMsg.Invoker> {
      */
     public float toPercent;
 
-    public final DialogNotifier notifier = new DialogNotifier();
+    public final DVNotifier dvNotifier = new DVNotifier();
+    public final DialogNotifier dialogNotifier = new DialogNotifier();
+    public final RVNotifier rvNotifier = new RVNotifier();
 
     /**
      * 入栈的弹窗信息
@@ -40,32 +45,41 @@ public class DialogInfoManager implements ITarget<DialogMsg.Invoker> {
      */
     private final Set<IDialogHint> mUnableCancelSet = new HashSet<>();
 
-    private final MsgManager<DialogMsg.Invoker, DialogMsg.Callback> mManager = new MsgManager<>();
-
-    // //////////////////////////////////方法重写//////////////////////////////////
-
-    @Override
-    public void onSetupMsgProcessors(List<MsgProcessor<? extends DialogMsg.Invoker>> list) {
-        list.add(new MsgProcessor<>(DialogMsg.PushMsg.class, msg -> pushMsg(msg.senderUid, msg.data)));
-        list.add(new MsgProcessor<>(DialogMsg.PopMsg.class, msg -> popMsg(msg.senderUid, msg.data)));
-        list.add(new MsgProcessor<>(DialogMsg.ToProgress.class, msg -> toPercent = msg.data));
-    }
+    private final MsgManager<DVMsg.Invoker, DVMsg.Callback> mDvManager = new MsgManager<>();
+    private final MsgManager<RVMsg.Invoker, RVMsg.Callback> mRvManager = new MsgManager<>();
 
     // //////////////////////////////////公开方法区//////////////////////////////////
 
     public void bind() {
-        mManager.bind(this, notifier, false);
+        mDvManager.bind(list -> {
+            list.add(new MsgProcessor<>(DVMsg.PushMsg.class, msg -> pushMsg(msg.data)));
+            list.add(new MsgProcessor<>(DVMsg.PopMsg.class, msg -> popMsg(msg.data)));
+            list.add(new MsgProcessor<>(DVMsg.ToProgress.class, msg -> toPercent = msg.data));
+        }, dvNotifier, false);
+        mRvManager.bind(list -> {
+            list.add(new MsgProcessor<>(RVMsg.NeedCancel.class, msg -> rvNotifier.sendCMsgWithDefaultUid(new RVMsg.OnNeedCancel())));
+        }, rvNotifier, false);
     }
 
     public void unbind() {
-        mManager.unbind(false);
+        mDvManager.unbind(false);
     }
 
-    public void pushMsg(String uid, IDialogHint msg) {
+    public void connect() {
+        MsgSender.connect(dialogNotifier, dvNotifier);
+        MsgSender.connect(dialogNotifier, rvNotifier);
+    }
+
+    public void disconnect() {
+        MsgSender.disconnect(dialogNotifier, dvNotifier);
+        MsgSender.disconnect(dialogNotifier, rvNotifier);
+    }
+
+    public void pushMsg(IDialogHint msg) {
         if (null == msg) {
             return;
         }
-        DialogInfoVM.exeInMainThread(() -> {
+        NotifierDialogVM.exeInMainThread(() -> {
             // 不可取消列表按需设置
             if (msg.cancelable()) {
                 // 有可能是已有消息的修改，故尝试移除
@@ -76,37 +90,35 @@ public class DialogInfoManager implements ITarget<DialogMsg.Invoker> {
             // 添加至信息集(可能覆盖)
             mHintSet.add(msg);
             // 显示
-            showNewestMsg(uid, false);
+            showNewestMsg(false);
         });
     }
 
-    public void popMsg(String uid, IDialogHint msg) {
-        DialogInfoVM.exeInMainThread(() -> {
+    public void popMsg(IDialogHint msg) {
+        NotifierDialogVM.exeInMainThread(() -> {
             if (!mHintSet.remove(msg)) {
                 return;
             }
             mUnableCancelSet.remove(msg);
-            notifier.sendCMsg(uid, new DialogMsg.OnPopMsg(msg));
+            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnPopMsg(msg));
             // 更改或关闭弹窗
             if (!mHintSet.isEmpty()) {
-                showNewestMsg(uid, true);
+                showNewestMsg(true);
             } else {
-                clearMsg(uid, DialogDismissReason.NORM);
+                clearMsg(DialogDismissReason.NORM);
             }
         });
     }
 
-    public void clearMsg(String uid, DialogDismissReason reason) {
+    public void clearMsg(DialogDismissReason reason) {
         for (IDialogHint msg : mHintSet) {
-            notifier.sendCMsg(uid, new DialogMsg.OnPopMsg(msg));
+            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnPopMsg(msg));
         }
         mHintSet.clear();
         mUnableCancelSet.clear();
-        // 若弹窗没有关闭，则关闭
-//        if (hasDialogShowing) {
-        notifier.sendCMsg(uid, new DialogMsg.OnNeedDismissDialog(reason));
+        // 关闭弹窗
+        dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnNeedDismissDialog(reason));
         hasDialogShowing = false;
-//        }
     }
 
     /**
@@ -130,29 +142,22 @@ public class DialogInfoManager implements ITarget<DialogMsg.Invoker> {
         return mUnableCancelSet.isEmpty();
     }
 
-    /**
-     * 是否需要显示弹窗
-     */
-    public boolean needShowDialog() {
-        return hasHint() && !hasDialogShowing;
-    }
-
     // //////////////////////////////////内部方法//////////////////////////////////
 
-    private void showNewestMsg(String uid, boolean isReshow) {
+    private void showNewestMsg(boolean isReshow) {
         // 若弹窗没有显示，则显示
         if (!hasDialogShowing) {
-            notifier.sendCMsg(uid, new DialogMsg.OnNeedShowDialog());
+            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnNeedShowDialog());
             hasDialogShowing = true;
         }
 
         IDialogHint hint = getCurDialogHint();
         if (!isReshow) {
-            notifier.sendCMsg(uid, new DialogMsg.OnPushMsg(hint));
+            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnPushMsg(hint));
         }
 
-        notifier.sendCMsg(uid, new DialogMsg.OnSelectMsg(hint));
-        notifier.sendCMsg(uid, new DialogMsg.OnSwitchCancelable(shouldDialogCancelable()));
+        dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnSelectMsg(hint));
+        dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnSwitchCancelable(shouldDialogCancelable()));
     }
 
 }
