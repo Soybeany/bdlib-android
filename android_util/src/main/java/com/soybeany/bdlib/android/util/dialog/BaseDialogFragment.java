@@ -22,7 +22,7 @@ public abstract class BaseDialogFragment extends DialogFragment implements IReal
         if (null == mActivity || null == mUid) {
             throw new RuntimeException("mActivity或mUid不能为null");
         }
-        show(mActivity.getSupportFragmentManager(), mUid);
+        showNow(mActivity.getSupportFragmentManager(), mUid);
     }
 
     @Override
