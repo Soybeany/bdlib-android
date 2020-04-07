@@ -53,7 +53,7 @@ public class DialogManager implements ITarget<DialogMsg.Invoker>, IObserver {
     public void onDestroy(@NonNull LifecycleOwner owner) {
         // 按需发送回调
         if (mManager.hasDialogShowing) {
-            MAIN_HANDLER.post(() -> mDialogNotifier.sendCMsgWithDefaultUid(new DialogMsg.OnDismissDialog(DialogDismissReason.DESTROY)));
+            MAIN_HANDLER.post(() -> mDialogNotifier.sendCMsg(new DialogMsg.OnDismissDialog(DialogDismissReason.DESTROY)));
             mManager.hasDialogShowing = false;
         }
         // 解绑
@@ -66,23 +66,23 @@ public class DialogManager implements ITarget<DialogMsg.Invoker>, IObserver {
     public void onSetupMsgProcessors(List<MsgProcessor<? extends DialogMsg.Invoker>> list) {
         list.add(new MsgProcessor<>(DialogMsg.ShowDialog.class, msg -> {
             mRealDialog.onShowDialog();
-            mDialogNotifier.sendCMsgWithDefaultUid(new DialogMsg.OnShowDialog());
+            mDialogNotifier.sendCMsg(new DialogMsg.OnShowDialog());
         }));
         list.add(new MsgProcessor<>(DialogMsg.DismissDialog.class, msg -> {
             mRealDialog.onDismissDialog(msg.data);
-            mDialogNotifier.sendCMsgWithDefaultUid(new DialogMsg.OnDismissDialog(msg.data));
+            mDialogNotifier.sendCMsg(new DialogMsg.OnDismissDialog(msg.data));
         }));
         list.add(new MsgProcessor<>(DialogMsg.DisplayMsg.class, msg -> {
             mRealDialog.onDisplayHint(msg.data);
-            mDialogNotifier.sendCMsgWithDefaultUid(new DialogMsg.OnDisplayMsg(msg.data));
+            mDialogNotifier.sendCMsg(new DialogMsg.OnDisplayMsg(msg.data));
         }));
         list.add(new MsgProcessor<>(DialogMsg.ChangeCancelable.class, msg -> {
             mRealDialog.onChangeCancelable(msg.data);
-            mDialogNotifier.sendCMsgWithDefaultUid(new DialogMsg.OnChangeCancelable(msg.data));
+            mDialogNotifier.sendCMsg(new DialogMsg.OnChangeCancelable(msg.data));
         }));
         list.add(new MsgProcessor<>(DialogMsg.ChangeProgress.class, msg -> {
             mRealDialog.onToProgress(msg.data);
-            mDialogNotifier.sendCMsgWithDefaultUid(mProgress.percent(msg.data));
+            mDialogNotifier.sendCMsg(mProgress.percent(msg.data));
         }));
     }
 

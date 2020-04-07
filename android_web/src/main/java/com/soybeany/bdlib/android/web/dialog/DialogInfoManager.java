@@ -57,7 +57,7 @@ public class DialogInfoManager {
             list.add(new MsgProcessor<>(DVMsg.ToProgress.class, msg -> toPercent = msg.data));
         }, dvNotifier, false);
         mRvManager.bind(list -> {
-            list.add(new MsgProcessor<>(RVMsg.NeedCancel.class, msg -> rvNotifier.sendCMsgWithDefaultUid(new RVMsg.OnNeedCancel())));
+            list.add(new MsgProcessor<>(RVMsg.NeedCancel.class, msg -> rvNotifier.sendCMsg(new RVMsg.OnNeedCancel())));
         }, rvNotifier, false);
     }
 
@@ -100,7 +100,7 @@ public class DialogInfoManager {
                 return;
             }
             mUnableCancelSet.remove(msg);
-            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnPopMsg(msg));
+            dvNotifier.sendCMsg(new DVMsg.OnPopMsg(msg));
             // 更改或关闭弹窗
             if (!mHintSet.isEmpty()) {
                 showNewestMsg(true);
@@ -112,12 +112,12 @@ public class DialogInfoManager {
 
     public void clearMsg(DialogDismissReason reason) {
         for (IDialogHint msg : mHintSet) {
-            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnPopMsg(msg));
+            dvNotifier.sendCMsg(new DVMsg.OnPopMsg(msg));
         }
         mHintSet.clear();
         mUnableCancelSet.clear();
         // 关闭弹窗
-        dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnNeedDismissDialog(reason));
+        dvNotifier.sendCMsg(new DVMsg.OnNeedDismissDialog(reason));
         hasDialogShowing = false;
     }
 
@@ -147,17 +147,17 @@ public class DialogInfoManager {
     private void showNewestMsg(boolean isReshow) {
         // 若弹窗没有显示，则显示
         if (!hasDialogShowing) {
-            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnNeedShowDialog());
+            dvNotifier.sendCMsg(new DVMsg.OnNeedShowDialog());
             hasDialogShowing = true;
         }
 
         IDialogHint hint = getCurDialogHint();
         if (!isReshow) {
-            dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnPushMsg(hint));
+            dvNotifier.sendCMsg(new DVMsg.OnPushMsg(hint));
         }
 
-        dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnSelectMsg(hint));
-        dvNotifier.sendCMsgWithDefaultUid(new DVMsg.OnSwitchCancelable(shouldDialogCancelable()));
+        dvNotifier.sendCMsg(new DVMsg.OnSelectMsg(hint));
+        dvNotifier.sendCMsg(new DVMsg.OnSwitchCancelable(shouldDialogCancelable()));
     }
 
 }

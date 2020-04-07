@@ -17,7 +17,7 @@ public class NotifierDialogFragment extends ProgressDialogFragment implements IN
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        mNotifier.sendCMsgWithDefaultUid(new DialogMsg.OnDismissDialog(DialogDismissReason.CANCEL));
+        mNotifier.sendCMsg(new DialogMsg.OnDismissDialog(DialogDismissReason.CANCEL));
     }
 
     @Override

@@ -81,7 +81,7 @@ public class NotifierCall extends CallWrapper {
         public void onSetupMsgProcessors(List<MsgProcessor<? extends RequestMsg.Invoker>> processors) {
             processors.add(new MsgProcessor<>(RequestMsg.Cancel.class, msg -> {
                 cancel();
-                mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnFinish(RequestFinishReason.CANCEL));
+                mNotifier.sendCMsg(new RequestMsg.OnFinish(RequestFinishReason.CANCEL));
             }));
         }
 
@@ -90,11 +90,11 @@ public class NotifierCall extends CallWrapper {
                 MsgSender.connect(mNotifier, mAnotherSender);
             }
             mManager.bind(this, notifier, false);
-            mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnStart());
+            mNotifier.sendCMsg(new RequestMsg.OnStart());
         }
 
         private void unregister(RequestFinishReason reason) {
-            mNotifier.sendCMsgWithDefaultUid(new RequestMsg.OnFinish(reason));
+            mNotifier.sendCMsg(new RequestMsg.OnFinish(reason));
             mManager.unbind(false);
             if (null != mAnotherSender) {
                 MsgSender.disconnect(mNotifier, mAnotherSender);
