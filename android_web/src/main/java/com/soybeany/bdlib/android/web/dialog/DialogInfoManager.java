@@ -129,15 +129,15 @@ public class DialogInfoManager {
     // //////////////////////////////////内部方法//////////////////////////////////
 
     private void showNewestMsg(boolean isReshow) {
+        IDialogHint hint = getCurDialogHint();
+        if (!isReshow) {
+            dvNotifier.sendCMsg(new DVMsg.OnPushMsg(hint));
+        }
+
         // 若弹窗没有显示，则显示
         if (!hasDialogShowing) {
             dvNotifier.sendCMsg(new DVMsg.OnNeedShowDialog());
             hasDialogShowing = true;
-        }
-
-        IDialogHint hint = getCurDialogHint();
-        if (!isReshow) {
-            dvNotifier.sendCMsg(new DVMsg.OnPushMsg(hint));
         }
 
         dvNotifier.sendCMsg(new DVMsg.OnSelectMsg(hint));

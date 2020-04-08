@@ -11,11 +11,8 @@ import com.soybeany.bdlib.android.web.notifier.DNotifier;
 import com.soybeany.bdlib.android.web.notifier.DVNotifier;
 import com.soybeany.connector.ITarget;
 import com.soybeany.connector.MsgManager;
-import com.soybeany.connector.MsgSender;
 
 import java.util.List;
-
-import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
 
 /**
  * 弹窗管理器，负责单弹窗多消息的处理
@@ -41,7 +38,7 @@ public class DialogManager implements ITarget<DMsg.Invoker>, IObserver {
         mDNotifier = mManager.dNotifier;
         mRealDialog = realDialog;
         // 开始连接
-        MsgSender.connect(mDNotifier, dvNotifier);
+        dvNotifier.connect(mDNotifier);
         // 绑定
         mIManager.bind(this, mDNotifier, false);
         // 设置Notifier
@@ -54,13 +51,13 @@ public class DialogManager implements ITarget<DMsg.Invoker>, IObserver {
     public void onDestroy(@NonNull LifecycleOwner owner) {
         // 按需发送回调
         if (mManager.hasDialogShowing) {
-            MAIN_HANDLER.post(() -> mDNotifier.sendCMsg(new DMsg.OnDismissDialog(DialogDismissReason.DESTROY)));
+            mDNotifier.sendCMsg(new DMsg.OnDismissDialog(DialogDismissReason.DESTROY));
             mManager.hasDialogShowing = false;
         }
         // 解绑
         mIManager.unbind(false);
         // 断开连接
-        MsgSender.disconnect(mDNotifier, dvNotifier);
+        dvNotifier.disconnect(mDNotifier);
     }
 
     @Override

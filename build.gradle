@@ -18,7 +18,7 @@ ext {
     targetSdkVersion = 28
     androidSupportVerion = '28.+'
     lifecycleExVersion = '1.1.1'
-    bdlibCoreVersion = '1.1.1'
+    bdlibCoreVersion = '1.1.2'
 }
 
 allprojects {

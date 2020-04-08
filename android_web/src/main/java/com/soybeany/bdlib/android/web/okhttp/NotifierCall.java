@@ -9,7 +9,6 @@ import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.web.okhttp.core.CallWrapper;
 import com.soybeany.connector.ITarget;
 import com.soybeany.connector.MsgManager;
-import com.soybeany.connector.MsgSender;
 
 import java.io.IOException;
 import java.util.List;
@@ -80,16 +79,13 @@ public class NotifierCall extends CallWrapper {
 
         @Override
         public void onSetupMsgProcessors(List<MsgProcessor<? extends RMsg.Invoker>> processors) {
-            processors.add(new MsgProcessor<>(RMsg.Cancel.class, msg -> {
-                cancel();
-                mNotifier.sendCMsg(new RMsg.OnFinish(RequestFinishReason.CANCEL));
-            }));
+            processors.add(new MsgProcessor<>(RMsg.Cancel.class, msg -> cancel()));
         }
 
         private void register(RNotifier notifier) {
             if (null != mAnotherNotifier) {
-                MsgSender.connect(mNotifier, mAnotherNotifier.sender);
-                MsgSender.connect(mNotifier, mAnotherNotifier.receiver);
+                Optional.ofNullable(mAnotherNotifier.receiver).ifPresent(receiver -> receiver.connect(mNotifier));
+                mNotifier.connect(mAnotherNotifier.sender);
             }
             mManager.bind(this, notifier, false);
             mNotifier.sendCMsg(new RMsg.OnStart());
@@ -99,8 +95,8 @@ public class NotifierCall extends CallWrapper {
             mNotifier.sendCMsg(new RMsg.OnFinish(reason));
             mManager.unbind(false);
             if (null != mAnotherNotifier) {
-                MsgSender.disconnect(mNotifier, mAnotherNotifier.sender);
-                MsgSender.disconnect(mNotifier, mAnotherNotifier.receiver);
+                Optional.ofNullable(mAnotherNotifier.receiver).ifPresent(receiver -> receiver.disconnect(mNotifier));
+                mNotifier.disconnect(mAnotherNotifier.sender);
             }
         }
     }

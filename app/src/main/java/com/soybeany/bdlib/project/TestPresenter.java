@@ -16,6 +16,7 @@ import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestBuilder;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpUtils;
 import com.soybeany.bdlib.web.okhttp.parser.StringParser;
 
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -30,7 +31,7 @@ public class TestPresenter extends BasePresenter<ITestView> {
         OkHttpClient client = OkHttpUtils.getNewClient(setter -> OkHttpUtils.IClientSetter.setupTimeout(setter, 5));
         RNotifier rNotifier = new RNotifier(new StdDialogHint().cancelable(true));
         Request request = new OkHttpRequestBuilder().url(mUrl).build();
-        NotifierCall call = new NotifierCall(client.newCall(request), rNotifier, getTopDialogNotifier());
+        Call call = new NotifierCall(client.newCall(request), rNotifier, getTopDialogNotifier());
         call.enqueue(new OkHttpCallback<>(StringParser.get())
                 .addCallback(new TestCallback())
                 .addDownloadListener(getLogListener("测试"))
