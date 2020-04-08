@@ -8,7 +8,7 @@ import com.soybeany.connector.Msg;
  * <br>Created by Soybeany on 2019/5/27.
  */
 @SuppressWarnings("WeakerAccess")
-public class DialogMsg {
+public class DMsg {
 
     // //////////////////////////////////模板区//////////////////////////////////
 

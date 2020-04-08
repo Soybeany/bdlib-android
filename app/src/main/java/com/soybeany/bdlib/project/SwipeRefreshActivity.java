@@ -12,7 +12,7 @@ import com.soybeany.bdlib.android.ui.layout.SwipeRefreshLayoutDialog;
 import com.soybeany.bdlib.android.util.ToastUtils;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
-import com.soybeany.bdlib.android.web.notifier.DVNotifier;
+import com.soybeany.bdlib.android.web.notifier.DNotifiers;
 
 import butterknife.BindView;
 
@@ -71,7 +71,7 @@ public class SwipeRefreshActivity extends BaseActivity implements INotifierProvi
     }
 
     @Override
-    public DVNotifier getDialogNotifier(String type) {
+    public DNotifiers getDialogNotifier(String type) {
         return mDialogNotifierPlugin.getDialogNotifier(type);
     }
 }

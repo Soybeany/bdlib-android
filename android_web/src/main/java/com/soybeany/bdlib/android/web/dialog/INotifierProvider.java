@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.web.dialog;
 
-import com.soybeany.bdlib.android.web.notifier.DVNotifier;
+import com.soybeany.bdlib.android.web.notifier.DNotifiers;
 
 /**
  * <br>Created by Soybeany on 2020/4/2.
@@ -9,6 +9,6 @@ public interface INotifierProvider {
 
     String TYPE_DEFAULT = "default";
 
-    DVNotifier getDialogNotifier(String type);
+    DNotifiers getDialogNotifier(String type);
 
 }

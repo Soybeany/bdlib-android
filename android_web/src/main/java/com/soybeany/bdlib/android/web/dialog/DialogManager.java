@@ -6,11 +6,12 @@ import android.support.annotation.NonNull;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
-import com.soybeany.bdlib.android.web.msg.DialogMsg;
+import com.soybeany.bdlib.android.web.msg.DMsg;
+import com.soybeany.bdlib.android.web.notifier.DNotifier;
 import com.soybeany.bdlib.android.web.notifier.DVNotifier;
-import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 import com.soybeany.connector.ITarget;
 import com.soybeany.connector.MsgManager;
+import com.soybeany.connector.MsgSender;
 
 import java.util.List;
 
@@ -21,28 +22,28 @@ import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
  * <br>Created by Soybeany on 2020/4/2.
  */
 @SuppressWarnings("WeakerAccess")
-public class DialogManager implements ITarget<DialogMsg.Invoker>, IObserver {
+public class DialogManager implements ITarget<DMsg.Invoker>, IObserver {
 
     public final DVNotifier dvNotifier;
 
-    private final MsgManager<DialogMsg.Invoker, DialogMsg.Callback> mIManager = new MsgManager<>();
-    private final DialogMsg.OnChangeProgress mProgress = new DialogMsg.OnChangeProgress();
+    private final MsgManager<DMsg.Invoker, DMsg.Callback> mIManager = new MsgManager<>();
+    private final DMsg.OnChangeProgress mProgress = new DMsg.OnChangeProgress();
 
     private final DialogInfoManager mManager;
     private final IRealDialog mRealDialog;
 
-    private final DialogNotifier mDialogNotifier;
+    private final DNotifier mDNotifier;
 
     public DialogManager(@NonNull DialogInfoManager manager, @NonNull IRealDialog realDialog) {
         // 赋值
         mManager = manager;
         dvNotifier = mManager.dvNotifier;
-        mDialogNotifier = mManager.dialogNotifier;
+        mDNotifier = mManager.dNotifier;
         mRealDialog = realDialog;
         // 开始连接
-        mManager.connect();
+        MsgSender.connect(mDNotifier, dvNotifier);
         // 绑定
-        mIManager.bind(this, mDialogNotifier, false);
+        mIManager.bind(this, mDNotifier, false);
         // 设置Notifier
         if (realDialog instanceof INotifierRealDialog) {
             ((INotifierRealDialog) realDialog).onSetupDVNotifier(dvNotifier);
@@ -53,36 +54,36 @@ public class DialogManager implements ITarget<DialogMsg.Invoker>, IObserver {
     public void onDestroy(@NonNull LifecycleOwner owner) {
         // 按需发送回调
         if (mManager.hasDialogShowing) {
-            MAIN_HANDLER.post(() -> mDialogNotifier.sendCMsg(new DialogMsg.OnDismissDialog(DialogDismissReason.DESTROY)));
+            MAIN_HANDLER.post(() -> mDNotifier.sendCMsg(new DMsg.OnDismissDialog(DialogDismissReason.DESTROY)));
             mManager.hasDialogShowing = false;
         }
         // 解绑
         mIManager.unbind(false);
         // 断开连接
-        mManager.disconnect();
+        MsgSender.disconnect(mDNotifier, dvNotifier);
     }
 
     @Override
-    public void onSetupMsgProcessors(List<MsgProcessor<? extends DialogMsg.Invoker>> list) {
-        list.add(new MsgProcessor<>(DialogMsg.ShowDialog.class, msg -> {
+    public void onSetupMsgProcessors(List<MsgProcessor<? extends DMsg.Invoker>> list) {
+        list.add(new MsgProcessor<>(DMsg.ShowDialog.class, msg -> {
             mRealDialog.onShowDialog();
-            mDialogNotifier.sendCMsg(new DialogMsg.OnShowDialog());
+            mDNotifier.sendCMsg(new DMsg.OnShowDialog());
         }));
-        list.add(new MsgProcessor<>(DialogMsg.DismissDialog.class, msg -> {
+        list.add(new MsgProcessor<>(DMsg.DismissDialog.class, msg -> {
             mRealDialog.onDismissDialog(msg.data);
-            mDialogNotifier.sendCMsg(new DialogMsg.OnDismissDialog(msg.data));
+            mDNotifier.sendCMsg(new DMsg.OnDismissDialog(msg.data));
         }));
-        list.add(new MsgProcessor<>(DialogMsg.DisplayMsg.class, msg -> {
+        list.add(new MsgProcessor<>(DMsg.DisplayMsg.class, msg -> {
             mRealDialog.onDisplayHint(msg.data);
-            mDialogNotifier.sendCMsg(new DialogMsg.OnDisplayMsg(msg.data));
+            mDNotifier.sendCMsg(new DMsg.OnDisplayMsg(msg.data));
         }));
-        list.add(new MsgProcessor<>(DialogMsg.ChangeCancelable.class, msg -> {
+        list.add(new MsgProcessor<>(DMsg.ChangeCancelable.class, msg -> {
             mRealDialog.onChangeCancelable(msg.data);
-            mDialogNotifier.sendCMsg(new DialogMsg.OnChangeCancelable(msg.data));
+            mDNotifier.sendCMsg(new DMsg.OnChangeCancelable(msg.data));
         }));
-        list.add(new MsgProcessor<>(DialogMsg.ChangeProgress.class, msg -> {
+        list.add(new MsgProcessor<>(DMsg.ChangeProgress.class, msg -> {
             mRealDialog.onToProgress(msg.data);
-            mDialogNotifier.sendCMsg(mProgress.percent(msg.data));
+            mDNotifier.sendCMsg(mProgress.percent(msg.data));
         }));
     }
 

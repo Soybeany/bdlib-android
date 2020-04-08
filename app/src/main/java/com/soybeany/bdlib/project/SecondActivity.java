@@ -14,7 +14,7 @@ import com.soybeany.bdlib.android.util.dialog.DialogFragmentUtils;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 import com.soybeany.bdlib.android.web.dialog.NotifierDialogFragment;
-import com.soybeany.bdlib.android.web.notifier.DVNotifier;
+import com.soybeany.bdlib.android.web.notifier.DNotifiers;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
@@ -82,7 +82,7 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     @Override
-    public DVNotifier getDialogNotifier(String type) {
+    public DNotifiers getDialogNotifier(String type) {
         return mDialogNotifierPlugin.getDialogNotifier(type);
     }
 

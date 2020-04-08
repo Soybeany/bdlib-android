@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.web.okhttp;
 
-import com.soybeany.bdlib.android.web.notifier.RequestNotifier;
+import com.soybeany.bdlib.android.web.notifier.RNotifier;
 import com.soybeany.bdlib.web.okhttp.core.OkHttpRequestBuilder;
 import com.soybeany.bdlib.web.okhttp.counting.CountingRequestBody;
 
@@ -10,9 +10,9 @@ import okhttp3.RequestBody;
  * <br>Created by Soybeany on 2019/5/29.
  */
 public class NotifierRequestBuilder extends OkHttpRequestBuilder {
-    private RequestNotifier mNotifier;
+    private RNotifier mNotifier;
 
-    public NotifierRequestBuilder(RequestNotifier notifier) {
+    public NotifierRequestBuilder(RNotifier notifier) {
         mNotifier = notifier;
     }
 

@@ -7,7 +7,7 @@ import com.soybeany.connector.Msg;
  * <br>Created by Soybeany on 2019/5/8.
  */
 @SuppressWarnings("WeakerAccess")
-public class RequestMsg {
+public class RMsg {
 
     // //////////////////////////////////模板区//////////////////////////////////
 

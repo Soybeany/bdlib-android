@@ -3,13 +3,10 @@ package com.soybeany.bdlib.android.web.dialog;
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
 import com.soybeany.bdlib.android.web.msg.DVMsg;
-import com.soybeany.bdlib.android.web.msg.RVMsg;
+import com.soybeany.bdlib.android.web.notifier.DNotifier;
 import com.soybeany.bdlib.android.web.notifier.DVNotifier;
-import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
-import com.soybeany.bdlib.android.web.notifier.RVNotifier;
 import com.soybeany.connector.ITarget.MsgProcessor;
 import com.soybeany.connector.MsgManager;
-import com.soybeany.connector.MsgSender;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,8 +29,7 @@ public class DialogInfoManager {
     public float toPercent;
 
     public final DVNotifier dvNotifier = new DVNotifier();
-    public final DialogNotifier dialogNotifier = new DialogNotifier();
-    public final RVNotifier rvNotifier = new RVNotifier();
+    public final DNotifier dNotifier = new DNotifier();
 
     /**
      * 入栈的弹窗信息
@@ -46,7 +42,6 @@ public class DialogInfoManager {
     private final Set<IDialogHint> mUnableCancelSet = new HashSet<>();
 
     private final MsgManager<DVMsg.Invoker, DVMsg.Callback> mDvManager = new MsgManager<>();
-    private final MsgManager<RVMsg.Invoker, RVMsg.Callback> mRvManager = new MsgManager<>();
 
     // //////////////////////////////////公开方法区//////////////////////////////////
 
@@ -57,23 +52,10 @@ public class DialogInfoManager {
             list.add(new MsgProcessor<>(DVMsg.ClearMsg.class, msg -> clearMsg(msg.data)));
             list.add(new MsgProcessor<>(DVMsg.ToProgress.class, msg -> toPercent = msg.data));
         }, dvNotifier, false);
-        mRvManager.bind(list -> {
-            list.add(new MsgProcessor<>(RVMsg.NeedCancel.class, msg -> rvNotifier.sendCMsg(new RVMsg.OnNeedCancel())));
-        }, rvNotifier, false);
     }
 
     public void unbind() {
         mDvManager.unbind(false);
-    }
-
-    public void connect() {
-        MsgSender.connect(dialogNotifier, dvNotifier);
-        MsgSender.connect(dialogNotifier, rvNotifier);
-    }
-
-    public void disconnect() {
-        MsgSender.disconnect(dialogNotifier, dvNotifier);
-        MsgSender.disconnect(dialogNotifier, rvNotifier);
     }
 
     public void pushMsg(IDialogHint msg) {

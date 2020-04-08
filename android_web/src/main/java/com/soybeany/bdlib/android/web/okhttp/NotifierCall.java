@@ -2,8 +2,9 @@ package com.soybeany.bdlib.android.web.okhttp;
 
 import android.support.annotation.Nullable;
 
-import com.soybeany.bdlib.android.web.msg.RequestMsg;
-import com.soybeany.bdlib.android.web.notifier.RequestNotifier;
+import com.soybeany.bdlib.android.web.msg.RMsg;
+import com.soybeany.bdlib.android.web.notifier.DNotifiers;
+import com.soybeany.bdlib.android.web.notifier.RNotifier;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.web.okhttp.core.CallWrapper;
 import com.soybeany.connector.ITarget;
@@ -29,14 +30,14 @@ import static com.soybeany.bdlib.android.web.okhttp.RequestFinishReason.NORM;
  */
 @EverythingIsNonNull
 public class NotifierCall extends CallWrapper {
-    private final RequestNotifier mNotifier;
+    private final RNotifier mNotifier;
     @Nullable
-    private final MsgSender<?, ?> mAnotherSender; // 用于通讯的另一个sender
+    private final DNotifiers mAnotherNotifier; // 用于通讯的另一个notifier
 
-    public NotifierCall(Call target, RequestNotifier notifier, @Nullable MsgSender<?, ?> anotherSender) {
+    public NotifierCall(Call target, RNotifier notifier, @Nullable DNotifiers anotherNotifier) {
         super(target);
         mNotifier = notifier;
-        mAnotherSender = anotherSender;
+        mAnotherNotifier = anotherNotifier;
     }
 
     @Override
@@ -49,15 +50,15 @@ public class NotifierCall extends CallWrapper {
 
     @Override
     public Call clone() {
-        return new NotifierCall(super.clone(), mNotifier, mAnotherSender);
+        return new NotifierCall(super.clone(), mNotifier, mAnotherNotifier);
     }
 
-    public RequestNotifier getNotifier() {
+    public RNotifier getNotifier() {
         return mNotifier;
     }
 
-    private class CallbackWrapper implements Callback, ITarget<RequestMsg.Invoker> {
-        private final MsgManager<RequestMsg.Invoker, RequestMsg.Callback> mManager = new MsgManager<>();
+    private class CallbackWrapper implements Callback, ITarget<RMsg.Invoker> {
+        private final MsgManager<RMsg.Invoker, RMsg.Callback> mManager = new MsgManager<>();
         private Callback mTarget;
 
         CallbackWrapper(Callback target) {
@@ -78,26 +79,28 @@ public class NotifierCall extends CallWrapper {
         }
 
         @Override
-        public void onSetupMsgProcessors(List<MsgProcessor<? extends RequestMsg.Invoker>> processors) {
-            processors.add(new MsgProcessor<>(RequestMsg.Cancel.class, msg -> {
+        public void onSetupMsgProcessors(List<MsgProcessor<? extends RMsg.Invoker>> processors) {
+            processors.add(new MsgProcessor<>(RMsg.Cancel.class, msg -> {
                 cancel();
-                mNotifier.sendCMsg(new RequestMsg.OnFinish(RequestFinishReason.CANCEL));
+                mNotifier.sendCMsg(new RMsg.OnFinish(RequestFinishReason.CANCEL));
             }));
         }
 
-        private void register(RequestNotifier notifier) {
-            if (null != mAnotherSender) {
-                MsgSender.connect(mNotifier, mAnotherSender);
+        private void register(RNotifier notifier) {
+            if (null != mAnotherNotifier) {
+                MsgSender.connect(mNotifier, mAnotherNotifier.sender);
+                MsgSender.connect(mNotifier, mAnotherNotifier.receiver);
             }
             mManager.bind(this, notifier, false);
-            mNotifier.sendCMsg(new RequestMsg.OnStart());
+            mNotifier.sendCMsg(new RMsg.OnStart());
         }
 
         private void unregister(RequestFinishReason reason) {
-            mNotifier.sendCMsg(new RequestMsg.OnFinish(reason));
+            mNotifier.sendCMsg(new RMsg.OnFinish(reason));
             mManager.unbind(false);
-            if (null != mAnotherSender) {
-                MsgSender.disconnect(mNotifier, mAnotherSender);
+            if (null != mAnotherNotifier) {
+                MsgSender.disconnect(mNotifier, mAnotherNotifier.sender);
+                MsgSender.disconnect(mNotifier, mAnotherNotifier.receiver);
             }
         }
     }
