@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
+import com.soybeany.bdlib.android.web.msg.DVMsg;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +41,7 @@ public class NotifierDialogVM extends ViewModel {
         super.onCleared();
         for (DialogInfoManager manager : infoManagerMap.values()) {
             if (manager.hasHint()) {
-                manager.clearMsg(DialogDismissReason.CLEAR);
+                manager.dvNotifier.sendIMsg(new DVMsg.ClearMsg(DialogDismissReason.CLEAR));
             }
             manager.unbind();
         }

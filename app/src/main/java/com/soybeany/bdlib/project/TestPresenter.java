@@ -27,8 +27,8 @@ public class TestPresenter extends BasePresenter<ITestView> {
     private String mUrl = "http://192.168.0.104:8080/test/test.do";
 
     public void testFile() {
-        OkHttpClient client = OkHttpUtils.getNewClient(setter -> OkHttpUtils.IClientSetter.setupTimeout(setter, 3));
-        RequestNotifier rNotifier = new RequestNotifier(new StdDialogHint());
+        OkHttpClient client = OkHttpUtils.getNewClient(setter -> OkHttpUtils.IClientSetter.setupTimeout(setter, 5));
+        RequestNotifier rNotifier = new RequestNotifier(new StdDialogHint().cancelable(true));
         Request request = new OkHttpRequestBuilder().url(mUrl).build();
         NotifierCall call = new NotifierCall(client.newCall(request), rNotifier, getTopDialogNotifier());
         call.enqueue(new OkHttpCallback<>(StringParser.get())

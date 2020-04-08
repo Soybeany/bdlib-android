@@ -45,6 +45,15 @@ public class DVMsg {
     }
 
     /**
+     * 清除信息
+     */
+    public static class ClearMsg extends Invoker<DialogDismissReason> {
+        public ClearMsg(DialogDismissReason reason) {
+            super(reason);
+        }
+    }
+
+    /**
      * 跳转至进度，data为{@link Float}(正常 0~1，缺失-1)
      */
     public static class ToProgress extends Invoker<Float> {
@@ -88,7 +97,16 @@ public class DVMsg {
     }
 
     /**
-     * 弹出信息时通知，data为{@link IDialogHint}
+     * 清除信息时通知
+     */
+    public static class OnClearMsg extends Callback<DialogDismissReason> {
+        public OnClearMsg(DialogDismissReason reason) {
+            super(reason);
+        }
+    }
+
+    /**
+     * 弹出信息时通知
      */
     public static class OnNeedDismissDialog extends Callback<DialogDismissReason> {
         public OnNeedDismissDialog(DialogDismissReason reason) {

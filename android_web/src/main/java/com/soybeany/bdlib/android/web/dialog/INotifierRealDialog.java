@@ -1,13 +1,13 @@
 package com.soybeany.bdlib.android.web.dialog;
 
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
-import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
+import com.soybeany.bdlib.android.web.notifier.DVNotifier;
 
 /**
  * <br>Created by Soybeany on 2020/4/2.
  */
 public interface INotifierRealDialog extends IRealDialog {
 
-    void onSetupNotifier(DialogNotifier notifier);
+    void onSetupDVNotifier(DVNotifier notifier);
 
 }

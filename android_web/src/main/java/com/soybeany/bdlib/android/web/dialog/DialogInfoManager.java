@@ -54,6 +54,7 @@ public class DialogInfoManager {
         mDvManager.bind(list -> {
             list.add(new MsgProcessor<>(DVMsg.PushMsg.class, msg -> pushMsg(msg.data)));
             list.add(new MsgProcessor<>(DVMsg.PopMsg.class, msg -> popMsg(msg.data)));
+            list.add(new MsgProcessor<>(DVMsg.ClearMsg.class, msg -> clearMsg(msg.data)));
             list.add(new MsgProcessor<>(DVMsg.ToProgress.class, msg -> toPercent = msg.data));
         }, dvNotifier, false);
         mRvManager.bind(list -> {
@@ -105,12 +106,13 @@ public class DialogInfoManager {
             if (!mHintSet.isEmpty()) {
                 showNewestMsg(true);
             } else {
-                clearMsg(DialogDismissReason.NORM);
+                dvNotifier.sendIMsg(new DVMsg.ClearMsg(DialogDismissReason.NORM));
             }
         });
     }
 
     public void clearMsg(DialogDismissReason reason) {
+        dvNotifier.sendCMsg(new DVMsg.OnClearMsg(reason));
         for (IDialogHint msg : mHintSet) {
             dvNotifier.sendCMsg(new DVMsg.OnPopMsg(msg));
         }

@@ -45,7 +45,7 @@ public class DialogManager implements ITarget<DialogMsg.Invoker>, IObserver {
         mIManager.bind(this, mDialogNotifier, false);
         // 设置Notifier
         if (realDialog instanceof INotifierRealDialog) {
-            ((INotifierRealDialog) realDialog).onSetupNotifier(mDialogNotifier);
+            ((INotifierRealDialog) realDialog).onSetupDVNotifier(dvNotifier);
         }
     }
 
