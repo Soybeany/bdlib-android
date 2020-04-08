@@ -56,7 +56,6 @@ public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
         DialogManager dialogManager = mManagerMap.get(type);
         DialogInfoManager infoManager = mVm.getInfoManager(type);
         if (null == dialogManager) {
-            // TODO: 2020/4/5 需到主线程中创建
             mManagerMap.put(type, dialogManager = new DialogManager(infoManager, mCallback.onGetNewDialog(type)));
             mActivity.getLifecycle().addObserver(dialogManager);
         }

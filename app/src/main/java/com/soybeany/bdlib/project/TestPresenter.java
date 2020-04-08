@@ -3,8 +3,10 @@ package com.soybeany.bdlib.project;
 import com.soybeany.bdlib.android.mvp.BasePresenter;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.ToastUtils;
+import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
 import com.soybeany.bdlib.android.util.dialog.msg.StdDialogHint;
 import com.soybeany.bdlib.android.web.UICallback;
+import com.soybeany.bdlib.android.web.msg.DVMsg;
 import com.soybeany.bdlib.android.web.notifier.DVNotifier;
 import com.soybeany.bdlib.android.web.notifier.RequestNotifier;
 import com.soybeany.bdlib.android.web.okhttp.NotifierCall;
@@ -43,12 +45,35 @@ public class TestPresenter extends BasePresenter<ITestView> {
     }
 
     public void testAsync() {
-        DVNotifier notifier = getTopDialogNotifier();
         new Thread(() -> {
+            DVNotifier notifier = getTopDialogNotifier();
             uiInvoke(v -> v.showMsg("任务", "开始"));
             wrapDialog(notifier, new StdDialogHint().hint("测试异步"), () -> {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
+                    IDialogHint hint = new StdDialogHint().hint("第二条");
+                    IDialogHint hint3 = new StdDialogHint().hint("第4条");
+                    IDialogHint hint4 = new StdDialogHint().hint("第5条");
+                    IDialogHint hint5 = new StdDialogHint().hint("第6条");
+                    IDialogHint hint6 = new StdDialogHint().hint("第7条");
+                    notifier.sendIMsg(new DVMsg.PushMsg(hint));
+                    notifier.sendIMsg(new DVMsg.PushMsg(hint3));
+                    notifier.sendIMsg(new DVMsg.PushMsg(hint4));
+                    notifier.sendIMsg(new DVMsg.PushMsg(hint5));
+                    notifier.sendIMsg(new DVMsg.PushMsg(hint6));
+                    Thread.sleep(1000);
+                    IDialogHint hint2 = new StdDialogHint().hint("第三条");
+                    notifier.sendIMsg(new DVMsg.PushMsg(hint2));
+                    Thread.sleep(1000);
+                    notifier.sendIMsg(new DVMsg.PopMsg(hint2));
+                    Thread.sleep(1000);
+                    notifier.sendIMsg(new DVMsg.PopMsg(hint6));
+                    notifier.sendIMsg(new DVMsg.PopMsg(hint5));
+                    notifier.sendIMsg(new DVMsg.PopMsg(hint4));
+                    notifier.sendIMsg(new DVMsg.PopMsg(hint3));
+                    notifier.sendIMsg(new DVMsg.PopMsg(hint));
+
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
