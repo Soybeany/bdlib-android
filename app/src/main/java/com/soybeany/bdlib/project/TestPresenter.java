@@ -8,7 +8,7 @@ import com.soybeany.bdlib.android.util.dialog.msg.StdDialogHint;
 import com.soybeany.bdlib.android.web.UICallback;
 import com.soybeany.bdlib.android.web.msg.DVMsg;
 import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
-import com.soybeany.bdlib.android.web.notifier.RNotifier;
+import com.soybeany.bdlib.android.web.notifier.RSender;
 import com.soybeany.bdlib.android.web.okhttp.NotifierCall;
 import com.soybeany.bdlib.core.util.file.IProgressListener;
 import com.soybeany.bdlib.web.okhttp.core.FastFailCall;
@@ -30,7 +30,7 @@ public class TestPresenter extends BasePresenter<ITestView> {
 
     public void testFile() {
         OkHttpClient client = OkHttpUtils.getNewClient(setter -> OkHttpUtils.IClientSetter.setupTimeout(setter, 5));
-        RNotifier rNotifier = new RNotifier(new StdDialogHint().cancelable(true));
+        RSender rNotifier = new RSender(new StdDialogHint().cancelable(true));
         Request request = new OkHttpRequestBuilder().url(mUrl).build();
         Call call = new NotifierCall(new FastFailCall(client.newCall(request)), rNotifier, getTopDialogNotifier());
         call.enqueue(new OkHttpCallback<>(StringParser.get())

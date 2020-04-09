@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.web.msg.RMsg;
 import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
-import com.soybeany.bdlib.android.web.notifier.RNotifier;
+import com.soybeany.bdlib.android.web.notifier.RSender;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.web.okhttp.core.CallWrapper;
 import com.soybeany.connector.ITarget;
@@ -29,31 +29,31 @@ import static com.soybeany.bdlib.android.web.okhttp.RequestFinishReason.NORM;
  */
 @EverythingIsNonNull
 public class NotifierCall extends CallWrapper {
-    private final RNotifier mNotifier;
+    private final RSender mSender;
     @Nullable
     private final DialogNotifier mDialogNotifier; // 用于通讯的另一个notifier
 
-    public NotifierCall(Call target, RNotifier notifier, @Nullable DialogNotifier dialogNotifier) {
+    public NotifierCall(Call target, RSender sender, @Nullable DialogNotifier dialogNotifier) {
         super(target);
-        mNotifier = notifier;
+        mSender = sender;
         mDialogNotifier = dialogNotifier;
     }
 
     @Override
     public void enqueue(Callback callback) {
         if (callback instanceof NotifierCallback) {
-            ((NotifierCallback) callback).setNotifier(mNotifier);
+            ((NotifierCallback) callback).setSender(mSender);
         }
         super.enqueue(new CallbackWrapper(callback));
     }
 
     @Override
     public Call clone() {
-        return new NotifierCall(super.clone(), mNotifier, mDialogNotifier);
+        return new NotifierCall(super.clone(), mSender, mDialogNotifier);
     }
 
-    public RNotifier getNotifier() {
-        return mNotifier;
+    public RSender getSender() {
+        return mSender;
     }
 
     private class CallbackWrapper implements Callback, ITarget<RMsg.Invoker> {
@@ -62,19 +62,19 @@ public class NotifierCall extends CallWrapper {
 
         CallbackWrapper(Callback target) {
             mTarget = target;
-            Optional.ofNullable(mNotifier).ifPresent(this::register);
+            Optional.ofNullable(mSender).ifPresent(this::register);
         }
 
         @Override
         public void onFailure(Call call, IOException e) {
             mTarget.onFailure(call, e);
-            Optional.ofNullable(mNotifier).ifPresent(notifier -> unregister(call.isCanceled() ? CANCEL : ERROR));
+            Optional.ofNullable(mSender).ifPresent(notifier -> unregister(call.isCanceled() ? CANCEL : ERROR));
         }
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
             mTarget.onResponse(call, response);
-            Optional.ofNullable(mNotifier).ifPresent(notifier -> unregister(NORM));
+            Optional.ofNullable(mSender).ifPresent(notifier -> unregister(NORM));
         }
 
         @Override
@@ -82,21 +82,21 @@ public class NotifierCall extends CallWrapper {
             processors.add(new MsgProcessor<>(RMsg.Cancel.class, msg -> cancel()));
         }
 
-        private void register(RNotifier notifier) {
+        private void register(RSender sender) {
             if (null != mDialogNotifier) {
-                Optional.ofNullable(mDialogNotifier.receiver).ifPresent(receiver -> receiver.connect(mNotifier, false));
-                mNotifier.connect(mDialogNotifier.sender, false);
+                Optional.ofNullable(mDialogNotifier.receiver).ifPresent(receiver -> receiver.connect(mSender, false));
+                mSender.connect(mDialogNotifier.sender, false);
             }
-            mManager.bind(this, notifier, false);
-            mNotifier.sendCMsg(new RMsg.OnStart());
+            mManager.bind(this, sender, false);
+            mSender.sendCMsg(new RMsg.OnStart());
         }
 
         private void unregister(RequestFinishReason reason) {
-            mNotifier.sendCMsg(new RMsg.OnFinish(reason));
+            mSender.sendCMsg(new RMsg.OnFinish(reason));
             mManager.unbind(true);
             if (null != mDialogNotifier) {
-                Optional.ofNullable(mDialogNotifier.receiver).ifPresent(receiver -> receiver.disconnect(mNotifier, true));
-                mNotifier.disconnect(mDialogNotifier.sender, true);
+                Optional.ofNullable(mDialogNotifier.receiver).ifPresent(receiver -> receiver.disconnect(mSender, true));
+                mSender.disconnect(mDialogNotifier.sender, true);
             }
         }
     }

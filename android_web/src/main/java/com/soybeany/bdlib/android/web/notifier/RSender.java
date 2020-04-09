@@ -8,15 +8,15 @@ import com.soybeany.connector.MsgManager;
 import java.util.List;
 
 /**
- * 禁止将一个{@link RNotifier}同时绑定到多个{@link MsgManager}中，因为内部重用了{@link DVMsg.ToProgress}
+ * 禁止将一个{@link RSender}同时绑定到多个{@link MsgManager}中，因为内部重用了{@link DVMsg.ToProgress}
  * <br>Created by Soybeany on 2020/4/2.
  */
-public class RNotifier extends BaseNotifier<RMsg.Invoker, RMsg.Callback, DVMsg.Invoker> {
+public class RSender extends BaseSender<RMsg.Invoker, RMsg.Callback, DVMsg.Invoker> {
 
     private final DVMsg.ToProgress mProgressMsg = new DVMsg.ToProgress();
     private final IDialogHint mHint;
 
-    public RNotifier(IDialogHint hint) {
+    public RSender(IDialogHint hint) {
         mHint = hint;
     }
 

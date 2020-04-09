@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * <br>Created by Soybeany on 2020/4/2.
  */
-public class DNotifier extends BaseNotifier<DMsg.Invoker, DMsg.Callback, RMsg.Invoker> {
+public class DSender extends BaseSender<DMsg.Invoker, DMsg.Callback, RMsg.Invoker> {
 
     @Override
     protected void onSetupMsgConverters(List<MsgConverter<? extends DMsg.Callback, RMsg.Invoker>> list) {

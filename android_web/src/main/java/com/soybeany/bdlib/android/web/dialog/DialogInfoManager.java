@@ -3,8 +3,8 @@ package com.soybeany.bdlib.android.web.dialog;
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
 import com.soybeany.bdlib.android.web.msg.DVMsg;
-import com.soybeany.bdlib.android.web.notifier.DNotifier;
-import com.soybeany.bdlib.android.web.notifier.DVNotifier;
+import com.soybeany.bdlib.android.web.notifier.DSender;
+import com.soybeany.bdlib.android.web.notifier.DVSender;
 import com.soybeany.connector.ITarget.MsgProcessor;
 import com.soybeany.connector.MsgManager;
 
@@ -28,8 +28,8 @@ public class DialogInfoManager {
      */
     public float toPercent;
 
-    public final DVNotifier dvNotifier = new DVNotifier();
-    public final DNotifier dNotifier = new DNotifier();
+    public final DVSender dvSender = new DVSender();
+    public final DSender dSender = new DSender();
 
     /**
      * 入栈的弹窗信息
@@ -51,7 +51,7 @@ public class DialogInfoManager {
             list.add(new MsgProcessor<>(DVMsg.PopMsg.class, msg -> popMsg(msg.data)));
             list.add(new MsgProcessor<>(DVMsg.ClearMsg.class, msg -> clearMsg(msg.data)));
             list.add(new MsgProcessor<>(DVMsg.ToProgress.class, msg -> toPercent = msg.data));
-        }, dvNotifier, false);
+        }, dvSender, false);
     }
 
     public void unbind() {
@@ -83,25 +83,25 @@ public class DialogInfoManager {
                 return;
             }
             mUnableCancelSet.remove(msg);
-            dvNotifier.sendCMsg(new DVMsg.OnPopMsg(msg));
+            dvSender.sendCMsg(new DVMsg.OnPopMsg(msg));
             // 更改或关闭弹窗
             if (!mHintSet.isEmpty()) {
                 showNewestMsg(true);
             } else {
-                dvNotifier.sendIMsg(new DVMsg.ClearMsg(DialogDismissReason.NORM));
+                dvSender.sendIMsg(new DVMsg.ClearMsg(DialogDismissReason.NORM));
             }
         });
     }
 
     public void clearMsg(DialogDismissReason reason) {
-        dvNotifier.sendCMsg(new DVMsg.OnClearMsg(reason));
+        dvSender.sendCMsg(new DVMsg.OnClearMsg(reason));
         for (IDialogHint msg : mHintSet) {
-            dvNotifier.sendCMsg(new DVMsg.OnPopMsg(msg));
+            dvSender.sendCMsg(new DVMsg.OnPopMsg(msg));
         }
         mHintSet.clear();
         mUnableCancelSet.clear();
         // 关闭弹窗
-        dvNotifier.sendCMsg(new DVMsg.OnNeedDismissDialog(reason));
+        dvSender.sendCMsg(new DVMsg.OnNeedDismissDialog(reason));
         hasDialogShowing = false;
     }
 
@@ -131,17 +131,17 @@ public class DialogInfoManager {
     private void showNewestMsg(boolean isReshow) {
         IDialogHint hint = getCurDialogHint();
         if (!isReshow) {
-            dvNotifier.sendCMsg(new DVMsg.OnPushMsg(hint));
+            dvSender.sendCMsg(new DVMsg.OnPushMsg(hint));
         }
 
         // 若弹窗没有显示，则显示
         if (!hasDialogShowing) {
-            dvNotifier.sendCMsg(new DVMsg.OnNeedShowDialog());
+            dvSender.sendCMsg(new DVMsg.OnNeedShowDialog());
             hasDialogShowing = true;
         }
 
-        dvNotifier.sendCMsg(new DVMsg.OnSelectMsg(hint));
-        dvNotifier.sendCMsg(new DVMsg.OnSwitchCancelable(shouldDialogCancelable()));
+        dvSender.sendCMsg(new DVMsg.OnSelectMsg(hint));
+        dvSender.sendCMsg(new DVMsg.OnSwitchCancelable(shouldDialogCancelable()));
     }
 
 }

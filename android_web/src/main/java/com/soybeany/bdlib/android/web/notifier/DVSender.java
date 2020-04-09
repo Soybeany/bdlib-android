@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * <br>Created by Soybeany on 2020/4/7.
  */
-public class DVNotifier extends BaseNotifier<DVMsg.Invoker, DVMsg.Callback, DMsg.Invoker> {
+public class DVSender extends BaseSender<DVMsg.Invoker, DVMsg.Callback, DMsg.Invoker> {
 
     @Override
     protected void onSetupMsgConverters(List<MsgConverter<? extends DVMsg.Callback, DMsg.Invoker>> list) {

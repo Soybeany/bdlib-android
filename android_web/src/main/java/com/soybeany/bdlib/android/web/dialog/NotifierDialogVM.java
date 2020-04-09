@@ -41,7 +41,7 @@ public class NotifierDialogVM extends ViewModel {
         super.onCleared();
         for (DialogInfoManager manager : infoManagerMap.values()) {
             if (manager.hasHint()) {
-                manager.dvNotifier.sendIMsg(new DVMsg.ClearMsg(DialogDismissReason.CLEAR));
+                manager.dvSender.sendIMsg(new DVMsg.ClearMsg(DialogDismissReason.CLEAR));
             }
             manager.unbind();
         }

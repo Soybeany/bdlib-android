@@ -62,7 +62,7 @@ public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
             mManagerMap.put(type, dialogManager = new DialogManager(infoManager, mCallback.onGetNewDialog(type)));
             mActivity.getLifecycle().addObserver(dialogManager);
         }
-        return new DialogNotifier(infoManager.dNotifier, infoManager.dvNotifier);
+        return new DialogNotifier(infoManager.dSender, infoManager.dvSender);
     }
 
     public interface ICallback {

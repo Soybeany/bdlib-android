@@ -44,8 +44,8 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     public void onClick(View view) {
-//        mPt.testFile();
-        mPt.testAsync();
+        mPt.testFile();
+//        mPt.testAsync();
 //        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
 //        new Thread(() -> {
 //            List<IDialogMsg> mDataList = new LinkedList<>();
