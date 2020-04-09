@@ -14,7 +14,7 @@ import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 import com.soybeany.bdlib.android.web.msg.DVMsg;
-import com.soybeany.bdlib.android.web.notifier.DNotifiers;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 import com.soybeany.bdlib.core.java8.function.Consumer;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
 
@@ -86,7 +86,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     }
 
     @Nullable
-    protected DNotifiers getTopDialogNotifier() {
+    protected DialogNotifier getTopDialogNotifier() {
         return getTopDialogNotifier(INotifierProvider.TYPE_DEFAULT);
     }
 
@@ -95,7 +95,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
      */
     @Nullable
     @SuppressWarnings("SameParameterValue")
-    protected DNotifiers getTopDialogNotifier(String type) {
+    protected DialogNotifier getTopDialogNotifier(String type) {
         Activity activity = BDApplication.getTopActivity();
         if (activity instanceof INotifierProvider) {
             return ((INotifierProvider) activity).getDialogNotifier(type);
@@ -106,7 +106,7 @@ public abstract class BasePresenter<V extends IPresenterView> extends ViewModel 
     /**
      * 为工作线程的任务包装上弹窗(不可取消)
      */
-    protected void wrapDialog(@Nullable DNotifiers notifier, @Nullable IDialogHint msg, @WorkerThread Runnable runnable) {
+    protected void wrapDialog(@Nullable DialogNotifier notifier, @Nullable IDialogHint msg, @WorkerThread Runnable runnable) {
         if (null == notifier || null == notifier.sender || null == msg) {
             LogUtils.w("包装弹窗", "notifier、notifier.sender或msg为null，无法正常弹窗");
             runnable.run();

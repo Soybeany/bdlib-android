@@ -55,7 +55,7 @@ public class DialogInfoManager {
     }
 
     public void unbind() {
-        mDvManager.unbind(false);
+        mDvManager.unbind(true);
     }
 
     public void pushMsg(IDialogHint msg) {

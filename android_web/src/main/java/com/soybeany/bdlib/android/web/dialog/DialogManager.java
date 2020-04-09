@@ -38,7 +38,7 @@ public class DialogManager implements ITarget<DMsg.Invoker>, IObserver {
         mDNotifier = mManager.dNotifier;
         mRealDialog = realDialog;
         // 开始连接
-        dvNotifier.connect(mDNotifier);
+        dvNotifier.connect(mDNotifier, false);
         // 绑定
         mIManager.bind(this, mDNotifier, false);
         // 设置Notifier
@@ -55,9 +55,9 @@ public class DialogManager implements ITarget<DMsg.Invoker>, IObserver {
             mManager.hasDialogShowing = false;
         }
         // 解绑
-        mIManager.unbind(false);
+        mIManager.unbind(true);
         // 断开连接
-        dvNotifier.disconnect(mDNotifier);
+        dvNotifier.disconnect(mDNotifier, true);
     }
 
     @Override

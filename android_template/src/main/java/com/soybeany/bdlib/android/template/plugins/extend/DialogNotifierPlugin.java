@@ -11,7 +11,7 @@ import com.soybeany.bdlib.android.web.dialog.DialogManager;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 import com.soybeany.bdlib.android.web.dialog.NotifierDialogVM;
 import com.soybeany.bdlib.android.web.msg.DVMsg;
-import com.soybeany.bdlib.android.web.notifier.DNotifiers;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
                 continue;
             }
             // 通知进行显示
-            DNotifiers notifier = getDialogNotifier(entry.getKey());
+            DialogNotifier notifier = getDialogNotifier(entry.getKey());
             if (null != notifier && null != notifier.sender) {
                 notifier.sender.sendIMsg(new DVMsg.PushMsg(info.getCurDialogHint()));
             }
@@ -55,14 +55,14 @@ public class DialogNotifierPlugin implements IExtendPlugin, INotifierProvider {
     }
 
     @Override
-    public synchronized DNotifiers getDialogNotifier(String type) {
+    public synchronized DialogNotifier getDialogNotifier(String type) {
         DialogManager dialogManager = mManagerMap.get(type);
         DialogInfoManager infoManager = mVm.getInfoManager(type);
         if (null == dialogManager) {
             mManagerMap.put(type, dialogManager = new DialogManager(infoManager, mCallback.onGetNewDialog(type)));
             mActivity.getLifecycle().addObserver(dialogManager);
         }
-        return new DNotifiers(infoManager.dNotifier, infoManager.dvNotifier);
+        return new DialogNotifier(infoManager.dNotifier, infoManager.dvNotifier);
     }
 
     public interface ICallback {

@@ -14,7 +14,7 @@ import com.soybeany.bdlib.android.util.dialog.DialogFragmentUtils;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 import com.soybeany.bdlib.android.web.dialog.NotifierDialogFragment;
-import com.soybeany.bdlib.android.web.notifier.DNotifiers;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 
 /**
  * <br>Created by Soybeany on 2019/4/15.
@@ -44,8 +44,8 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     public void onClick(View view) {
-        mPt.testFile();
-//        mPt.testAsync();
+//        mPt.testFile();
+        mPt.testAsync();
 //        mThemePlugin.toTheme(ThemeChanger.Info.theme(R.style.NoActionBar));
 //        new Thread(() -> {
 //            List<IDialogMsg> mDataList = new LinkedList<>();
@@ -82,7 +82,7 @@ public class SecondActivity extends BaseActivity implements ITestView, MvpPlugin
     }
 
     @Override
-    public DNotifiers getDialogNotifier(String type) {
+    public DialogNotifier getDialogNotifier(String type) {
         return mDialogNotifierPlugin.getDialogNotifier(type);
     }
 

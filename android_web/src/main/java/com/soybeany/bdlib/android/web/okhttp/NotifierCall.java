@@ -3,7 +3,7 @@ package com.soybeany.bdlib.android.web.okhttp;
 import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.web.msg.RMsg;
-import com.soybeany.bdlib.android.web.notifier.DNotifiers;
+import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 import com.soybeany.bdlib.android.web.notifier.RNotifier;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.web.okhttp.core.CallWrapper;
@@ -31,12 +31,12 @@ import static com.soybeany.bdlib.android.web.okhttp.RequestFinishReason.NORM;
 public class NotifierCall extends CallWrapper {
     private final RNotifier mNotifier;
     @Nullable
-    private final DNotifiers mAnotherNotifier; // 用于通讯的另一个notifier
+    private final DialogNotifier mDialogNotifier; // 用于通讯的另一个notifier
 
-    public NotifierCall(Call target, RNotifier notifier, @Nullable DNotifiers anotherNotifier) {
+    public NotifierCall(Call target, RNotifier notifier, @Nullable DialogNotifier dialogNotifier) {
         super(target);
         mNotifier = notifier;
-        mAnotherNotifier = anotherNotifier;
+        mDialogNotifier = dialogNotifier;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class NotifierCall extends CallWrapper {
 
     @Override
     public Call clone() {
-        return new NotifierCall(super.clone(), mNotifier, mAnotherNotifier);
+        return new NotifierCall(super.clone(), mNotifier, mDialogNotifier);
     }
 
     public RNotifier getNotifier() {
@@ -83,9 +83,9 @@ public class NotifierCall extends CallWrapper {
         }
 
         private void register(RNotifier notifier) {
-            if (null != mAnotherNotifier) {
-                Optional.ofNullable(mAnotherNotifier.receiver).ifPresent(receiver -> receiver.connect(mNotifier));
-                mNotifier.connect(mAnotherNotifier.sender);
+            if (null != mDialogNotifier) {
+                Optional.ofNullable(mDialogNotifier.receiver).ifPresent(receiver -> receiver.connect(mNotifier, false));
+                mNotifier.connect(mDialogNotifier.sender, false);
             }
             mManager.bind(this, notifier, false);
             mNotifier.sendCMsg(new RMsg.OnStart());
@@ -93,10 +93,10 @@ public class NotifierCall extends CallWrapper {
 
         private void unregister(RequestFinishReason reason) {
             mNotifier.sendCMsg(new RMsg.OnFinish(reason));
-            mManager.unbind(false);
-            if (null != mAnotherNotifier) {
-                Optional.ofNullable(mAnotherNotifier.receiver).ifPresent(receiver -> receiver.disconnect(mNotifier));
-                mNotifier.disconnect(mAnotherNotifier.sender);
+            mManager.unbind(true);
+            if (null != mDialogNotifier) {
+                Optional.ofNullable(mDialogNotifier.receiver).ifPresent(receiver -> receiver.disconnect(mNotifier, true));
+                mNotifier.disconnect(mDialogNotifier.sender, true);
             }
         }
     }

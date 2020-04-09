@@ -2,6 +2,7 @@ package com.soybeany.bdlib.android.util.dialog;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,8 +24,7 @@ public class ProgressDialogFragment extends BaseDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        mDialog = new ProgressDialog(getContext());
-        mDialog.setCanceledOnTouchOutside(false);
+        mDialog = onGetNewDialog(getContext());
         // 设置默认值
         applyChange();
         return mDialog;
@@ -46,6 +46,13 @@ public class ProgressDialogFragment extends BaseDialogFragment {
     public void onChangeCancelable(boolean cancelable) {
         mCancelable = cancelable;
         applyChange();
+    }
+
+    @NonNull
+    protected ProgressDialog onGetNewDialog(Context context) {
+        ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setCanceledOnTouchOutside(false);
+        return dialog;
     }
 
     private void applyChange() {
