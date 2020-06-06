@@ -2,9 +2,6 @@ package com.soybeany.bdlib.android.template;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +11,10 @@ import com.soybeany.bdlib.android.template.plugins.core.FragmentDevelopPlugin;
 import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 /**
  * <br>Created by Soybeany on 2019/3/19.
@@ -29,7 +30,7 @@ public abstract class BaseFragment extends Fragment implements PluginDriver.ICal
     // //////////////////////////////////官方方法重写//////////////////////////////////
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mDevelopPlugin.activate(getActivity(), (activity, permissions, requestCode) -> requestPermissions(permissions, requestCode));
     }

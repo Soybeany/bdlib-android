@@ -4,10 +4,11 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * todo 进度监听{@link #onToProgress(float)}

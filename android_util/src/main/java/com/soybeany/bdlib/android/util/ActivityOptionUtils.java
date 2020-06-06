@@ -2,7 +2,8 @@ package com.soybeany.bdlib.android.util;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
+
+import androidx.core.app.ActivityOptionsCompat;
 
 /**
  * Activity切换动画工具类

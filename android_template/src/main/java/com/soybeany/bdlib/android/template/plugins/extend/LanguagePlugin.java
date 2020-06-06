@@ -1,13 +1,14 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
 import android.app.Activity;
-import android.arch.lifecycle.MutableLiveData;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 
 import com.soybeany.bdlib.android.util.style.LanguageChanger;
 
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
 
 /**
  * 只在{@link Activity}中使用

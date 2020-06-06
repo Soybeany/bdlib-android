@@ -1,10 +1,11 @@
 package com.soybeany.bdlib.android.ui.layout;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
 import com.soybeany.bdlib.android.util.dialog.msg.IDialogHint;
+
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
  * <br>Created by Soybeany on 2019/5/17.

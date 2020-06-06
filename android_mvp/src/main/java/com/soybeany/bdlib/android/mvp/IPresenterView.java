@@ -1,8 +1,8 @@
 package com.soybeany.bdlib.android.mvp;
 
-import android.support.annotation.MainThread;
-
 import com.soybeany.bdlib.android.util.ToastUtils;
+
+import androidx.annotation.MainThread;
 
 /**
  * <br>Created by Soybeany on 2019/4/16.

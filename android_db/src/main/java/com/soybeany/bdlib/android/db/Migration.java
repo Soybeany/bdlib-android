@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.db;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 
 /**

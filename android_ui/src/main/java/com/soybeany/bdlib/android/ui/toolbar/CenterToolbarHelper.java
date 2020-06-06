@@ -1,16 +1,17 @@
 package com.soybeany.bdlib.android.ui.toolbar;
 
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
 import com.soybeany.bdlib.android.ui.R;
 import com.soybeany.bdlib.android.util.BDContext;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 /**
  * <br>Created by Soybeany on 2019/4/26.

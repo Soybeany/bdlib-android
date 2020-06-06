@@ -9,10 +9,10 @@ import java.util.List;
 /**
  * <br>Created by Soybeany on 2020/4/2.
  */
-public class DSender extends BaseSender<DMsg.Invoker, DMsg.Callback, RMsg.Invoker> {
+public class DSender extends BaseSender<DMsg.Invoker<?>, DMsg.Callback<?>, RMsg.Invoker<?>> {
 
     @Override
-    protected void onSetupMsgConverters(List<MsgConverter<? extends DMsg.Callback, RMsg.Invoker>> list) {
+    protected void onSetupMsgConverters(List<MsgConverter<? extends DMsg.Callback<?>, RMsg.Invoker<?>>> list) {
         list.add(new MsgConverter<>(DMsg.OnDismissDialog.class,
                 msg -> DialogDismissReason.CANCEL == msg.data ? new RMsg.Cancel() : null)
         );

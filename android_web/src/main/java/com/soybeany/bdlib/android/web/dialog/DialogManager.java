@@ -1,8 +1,5 @@
 package com.soybeany.bdlib.android.web.dialog;
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.android.util.dialog.DialogDismissReason;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
@@ -14,16 +11,19 @@ import com.soybeany.connector.MsgManager;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+
 /**
  * 弹窗管理器，负责单弹窗多消息的处理
  * <br>Created by Soybeany on 2020/4/2.
  */
 @SuppressWarnings("WeakerAccess")
-public class DialogManager implements ITarget<DMsg.Invoker>, IObserver {
+public class DialogManager implements ITarget<DMsg.Invoker<?>>, IObserver {
 
     public final DVSender dvNotifier;
 
-    private final MsgManager<DMsg.Invoker, DMsg.Callback> mIManager = new MsgManager<>();
+    private final MsgManager<DMsg.Invoker<?>, DMsg.Callback<?>> mIManager = new MsgManager<>();
     private final DMsg.OnChangeProgress mProgress = new DMsg.OnChangeProgress();
 
     private final DialogInfoManager mManager;
@@ -61,7 +61,7 @@ public class DialogManager implements ITarget<DMsg.Invoker>, IObserver {
     }
 
     @Override
-    public void onSetupMsgProcessors(List<MsgProcessor<? extends DMsg.Invoker>> list) {
+    public void onSetupMsgProcessors(List<MsgProcessor<? extends DMsg.Invoker<?>>> list) {
         list.add(new MsgProcessor<>(DMsg.ShowDialog.class, msg -> {
             mRealDialog.onShowDialog();
             mDSender.sendCMsg(new DMsg.OnShowDialog());

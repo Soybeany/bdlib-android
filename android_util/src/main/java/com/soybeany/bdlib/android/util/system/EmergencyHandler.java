@@ -1,7 +1,5 @@
 package com.soybeany.bdlib.android.util.system;
 
-import android.support.annotation.Nullable;
-
 import com.soybeany.bdlib.android.util.AFileUtils;
 import com.soybeany.bdlib.android.util.LogUtils;
 import com.soybeany.bdlib.core.util.IterableUtils;
@@ -15,6 +13,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.annotation.Nullable;
 
 /**
  * 在程序崩溃时记录崩溃情况

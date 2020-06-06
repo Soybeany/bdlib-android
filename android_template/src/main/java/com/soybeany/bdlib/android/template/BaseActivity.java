@@ -1,10 +1,6 @@
 package com.soybeany.bdlib.android.template;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 
 import com.soybeany.bdlib.android.template.annotation.BackType;
 import com.soybeany.bdlib.android.template.interfaces.IPluginManager;
@@ -13,6 +9,11 @@ import com.soybeany.bdlib.android.template.plugins.core.LifecyclePlugin;
 import com.soybeany.bdlib.android.template.plugins.core.StdDevelopPlugin;
 import com.soybeany.bdlib.android.template.plugins.core.ViewModelPlugin;
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 /**
  * <br>Created by Soybeany on 2019/2/1.

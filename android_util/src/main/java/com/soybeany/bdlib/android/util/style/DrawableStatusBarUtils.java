@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.R;
 import com.soybeany.bdlib.core.java8.Optional;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
 import static com.soybeany.bdlib.android.util.BDContext.getResources;
 

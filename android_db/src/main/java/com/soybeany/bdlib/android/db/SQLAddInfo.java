@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.db;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * <br>Created by Soybeany on 2018/1/18.

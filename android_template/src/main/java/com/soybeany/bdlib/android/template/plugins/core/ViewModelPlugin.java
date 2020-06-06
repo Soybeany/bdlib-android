@@ -1,15 +1,14 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 /**
  * ViewModel
@@ -26,12 +25,12 @@ public class ViewModelPlugin implements IExtendPlugin {
     private Fragment mFragment;
 
     public ViewModelPlugin(@NonNull FragmentActivity activity, @Nullable ICallback callback) {
-        mProvider = ViewModelProviders.of(activity);
+        mProvider = new ViewModelProvider(activity);
         mCallback = callback;
     }
 
     public ViewModelPlugin(@NonNull Fragment fragment, @Nullable IFragmentCallback callback) {
-        mProvider = ViewModelProviders.of(mFragment = fragment);
+        mProvider = new ViewModelProvider(mFragment = fragment);
         mCallback = callback;
     }
 
@@ -41,7 +40,7 @@ public class ViewModelPlugin implements IExtendPlugin {
         // Fragment下额外回调
         if (null != mFragment && mCallback instanceof IFragmentCallback) {
             FragmentActivity activity = Objects.requireNonNull(mFragment.getActivity());
-            ((IFragmentCallback) mCallback).onInitActivityViewModels(ViewModelProviders.of(activity));
+            ((IFragmentCallback) mCallback).onInitActivityViewModels(new ViewModelProvider(activity));
         }
     }
 

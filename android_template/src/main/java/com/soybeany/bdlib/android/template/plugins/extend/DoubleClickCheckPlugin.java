@@ -1,9 +1,6 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
 import android.app.Activity;
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.annotation.BackType;
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
@@ -12,6 +9,10 @@ import com.soybeany.bdlib.android.template.plugins.core.BackInterceptorPlugin;
 import com.soybeany.bdlib.android.util.system.DoubleClickChecker;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.java8.function.Supplier;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 
 /**
  * 只在{@link Activity}中使用，双击检测，需先加载{@link BackInterceptorPlugin}

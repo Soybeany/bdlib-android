@@ -1,13 +1,13 @@
 package com.soybeany.bdlib.android.template.vm;
 
-import android.arch.lifecycle.ViewModel;
-
 import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.core.util.storage.KeyValueStorage;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import androidx.lifecycle.ViewModel;
 
 /**
  * 用于计划任务的ViewModel

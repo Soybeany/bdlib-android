@@ -41,7 +41,7 @@ public class DialogInfoManager {
      */
     private final Set<IDialogHint> mUnableCancelSet = new HashSet<>();
 
-    private final MsgManager<DVMsg.Invoker, DVMsg.Callback> mDvManager = new MsgManager<>();
+    private final MsgManager<DVMsg.Invoker<?>, DVMsg.Callback<?>> mDvManager = new MsgManager<>();
 
     // //////////////////////////////////公开方法区//////////////////////////////////
 

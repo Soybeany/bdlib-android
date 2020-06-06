@@ -1,16 +1,16 @@
 package com.soybeany.bdlib.android.mvp;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 
 /**
  * <br>Created by Soybeany on 2019/4/29.
@@ -25,16 +25,16 @@ public class MvpPlugin implements IExtendPlugin {
     private IPresenterProvider mActivityProvider; // Fragment中使用的Activity提供者
 
     public MvpPlugin(@NonNull FragmentActivity activity, ICallback callback) {
-        this(ViewModelProviders.of(activity), activity.getLifecycle(), callback);
+        this(new ViewModelProvider(activity), activity.getLifecycle(), callback);
     }
 
     public MvpPlugin(@NonNull Fragment fragment, IFragmentCallback callback) {
-        this(ViewModelProviders.of(fragment), fragment.getLifecycle(), callback);
+        this(new ViewModelProvider(fragment), fragment.getLifecycle(), callback);
         mActivityProvider = new IPresenterProvider() {
             @Override
             public <V extends IPresenterView, T extends BasePresenter<V>> T get(Class<T> clazz, V v) {
                 FragmentActivity activity = Objects.requireNonNull(fragment.getActivity());
-                return PresenterUtils.get(ViewModelProviders.of(activity), clazz, fragment.getLifecycle(), v);
+                return PresenterUtils.get(new ViewModelProvider(activity), clazz, fragment.getLifecycle(), v);
             }
         };
     }

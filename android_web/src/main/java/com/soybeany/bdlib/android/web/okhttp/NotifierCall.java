@@ -1,7 +1,5 @@
 package com.soybeany.bdlib.android.web.okhttp;
 
-import android.support.annotation.Nullable;
-
 import com.soybeany.bdlib.android.web.msg.RMsg;
 import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 import com.soybeany.bdlib.android.web.notifier.RSender;
@@ -13,6 +11,7 @@ import com.soybeany.connector.MsgManager;
 import java.io.IOException;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -42,7 +41,7 @@ public class NotifierCall extends CallWrapper {
     @Override
     public void enqueue(Callback callback) {
         if (callback instanceof NotifierCallback) {
-            ((NotifierCallback) callback).setSender(mSender);
+            ((NotifierCallback<?>) callback).setSender(mSender);
         }
         super.enqueue(new CallbackWrapper(callback));
     }
@@ -56,8 +55,8 @@ public class NotifierCall extends CallWrapper {
         return mSender;
     }
 
-    private class CallbackWrapper implements Callback, ITarget<RMsg.Invoker> {
-        private final MsgManager<RMsg.Invoker, RMsg.Callback> mManager = new MsgManager<>();
+    private class CallbackWrapper implements Callback, ITarget<RMsg.Invoker<?>> {
+        private final MsgManager<RMsg.Invoker<?>, RMsg.Callback<?>> mManager = new MsgManager<>();
         private Callback mTarget;
 
         CallbackWrapper(Callback target) {
@@ -78,7 +77,7 @@ public class NotifierCall extends CallWrapper {
         }
 
         @Override
-        public void onSetupMsgProcessors(List<MsgProcessor<? extends RMsg.Invoker>> processors) {
+        public void onSetupMsgProcessors(List<MsgProcessor<? extends RMsg.Invoker<?>>> processors) {
             processors.add(new MsgProcessor<>(RMsg.Cancel.class, msg -> cancel()));
         }
 

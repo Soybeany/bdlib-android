@@ -8,10 +8,10 @@ import com.soybeany.bdlib.android.web.msg.RMsg;
  */
 public class DialogNotifier {
 
-    public BaseSender<?, ?, RMsg.Invoker> receiver;
-    public BaseSender<DVMsg.Invoker, ?, ?> sender;
+    public BaseSender<?, ?, RMsg.Invoker<?>> receiver;
+    public BaseSender<DVMsg.Invoker<?>, ?, ?> sender;
 
-    public DialogNotifier(BaseSender<?, ?, RMsg.Invoker> receiver, BaseSender<DVMsg.Invoker, ?, ?> sender) {
+    public DialogNotifier(BaseSender<?, ?, RMsg.Invoker<?>> receiver, BaseSender<DVMsg.Invoker<?>, ?, ?> sender) {
         this.receiver = receiver;
         this.sender = sender;
     }

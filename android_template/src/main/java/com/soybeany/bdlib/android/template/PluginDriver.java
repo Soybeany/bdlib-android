@@ -1,9 +1,5 @@
 package com.soybeany.bdlib.android.template;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.template.interfaces.IInitTemplate;
@@ -17,6 +13,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 /**
  * 插件驱动

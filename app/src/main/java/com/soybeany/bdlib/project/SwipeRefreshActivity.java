@@ -1,7 +1,5 @@
 package com.soybeany.bdlib.project;
 
-import android.support.v4.widget.SwipeRefreshLayout;
-
 import com.soybeany.bdlib.android.mvp.IPresenterProvider;
 import com.soybeany.bdlib.android.mvp.MvpPlugin;
 import com.soybeany.bdlib.android.template.BaseActivity;
@@ -14,6 +12,7 @@ import com.soybeany.bdlib.android.util.dialog.IRealDialog;
 import com.soybeany.bdlib.android.web.dialog.INotifierProvider;
 import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 
 /**

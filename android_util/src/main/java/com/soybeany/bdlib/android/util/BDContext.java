@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Handler;
-import android.support.annotation.StringRes;
 import android.util.TypedValue;
 
 import com.soybeany.bdlib.core.java8.Optional;
@@ -15,6 +14,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import androidx.annotation.StringRes;
 
 /**
  * 应用上下文，供没有界面但需要上下文的类使用（一般为类库内部使用）

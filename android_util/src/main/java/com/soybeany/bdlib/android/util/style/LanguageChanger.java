@@ -2,12 +2,13 @@ package com.soybeany.bdlib.android.util.style;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 
 import com.soybeany.bdlib.android.util.BDContext;
 
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * <br>Created by Soybeany on 2019/4/21.

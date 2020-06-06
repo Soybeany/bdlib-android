@@ -1,6 +1,5 @@
 package com.soybeany.bdlib.project;
 
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Intent;
 import android.view.View;
 
@@ -14,6 +13,8 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
 import java.util.Locale;
 import java.util.Set;
+
+import androidx.lifecycle.MutableLiveData;
 
 
 public class MainActivity extends BaseActivity {

@@ -1,12 +1,6 @@
 package com.soybeany.bdlib.android.mvp;
 
 import android.app.Activity;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.soybeany.bdlib.android.util.BDApplication;
 import com.soybeany.bdlib.android.util.IObserver;
@@ -17,6 +11,13 @@ import com.soybeany.bdlib.android.web.msg.DVMsg;
 import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 import com.soybeany.bdlib.core.java8.function.Consumer;
 import com.soybeany.bdlib.core.util.storage.KeySetStorage;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModel;
 
 import static com.soybeany.bdlib.android.util.BDContext.MAIN_HANDLER;
 

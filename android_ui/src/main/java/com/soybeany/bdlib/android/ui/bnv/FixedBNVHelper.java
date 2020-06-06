@@ -1,17 +1,18 @@
 package com.soybeany.bdlib.android.ui.bnv;
 
-import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationMenuView;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.View;
 
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.ViewPager;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 

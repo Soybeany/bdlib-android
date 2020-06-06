@@ -1,11 +1,12 @@
 package com.soybeany.bdlib.android.template.annotation;
 
-import android.support.annotation.IntDef;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import androidx.annotation.IntDef;
 
 import static com.soybeany.bdlib.android.template.annotation.BackType.BACK_ITEM;
 import static com.soybeany.bdlib.android.template.annotation.BackType.BACK_KEY;

@@ -1,10 +1,6 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +12,11 @@ import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.util.ViewTransferUtils;
 import com.soybeany.bdlib.android.util.system.KeyboardUtils;
 import com.soybeany.bdlib.core.java8.Optional;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeOnNotNull;
 

@@ -1,18 +1,19 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
-import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.soybeany.bdlib.android.util.system.PermissionRequester;
 import com.soybeany.bdlib.core.java8.Optional;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
 
 import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeOnNotNull;
 

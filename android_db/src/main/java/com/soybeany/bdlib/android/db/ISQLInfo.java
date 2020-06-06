@@ -1,6 +1,6 @@
 package com.soybeany.bdlib.android.db;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * SQL信息

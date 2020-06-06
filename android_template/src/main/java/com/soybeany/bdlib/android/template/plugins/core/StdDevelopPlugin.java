@@ -1,11 +1,7 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
 import android.app.Activity;
-import android.arch.lifecycle.LifecycleOwner;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.util.ToastUtils;
@@ -13,6 +9,11 @@ import com.soybeany.bdlib.android.util.system.PermissionRequester;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
 
 import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeInUiThread;
 import static com.soybeany.bdlib.android.template.interfaces.IExtendPlugin.invokeOnNotNull;

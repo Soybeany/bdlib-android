@@ -1,12 +1,13 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
 import android.app.Activity;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.util.style.DrawableStatusBarUtils;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * 只在{@link Activity}中使用

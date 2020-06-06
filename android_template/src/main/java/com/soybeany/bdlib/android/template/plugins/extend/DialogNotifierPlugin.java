@@ -1,9 +1,5 @@
 package com.soybeany.bdlib.android.template.plugins.extend;
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 import com.soybeany.bdlib.android.util.dialog.IRealDialog;
 import com.soybeany.bdlib.android.web.dialog.DialogInfoManager;
@@ -15,6 +11,10 @@ import com.soybeany.bdlib.android.web.notifier.DialogNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
 
 /**
  * <br>Created by Soybeany on 2019/4/30.

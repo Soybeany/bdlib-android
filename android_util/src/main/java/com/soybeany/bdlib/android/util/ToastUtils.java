@@ -1,7 +1,8 @@
 package com.soybeany.bdlib.android.util;
 
-import android.support.annotation.StringRes;
 import android.widget.Toast;
+
+import androidx.annotation.StringRes;
 
 import static com.soybeany.bdlib.android.util.BDContext.getString;
 

@@ -1,8 +1,8 @@
 package com.soybeany.bdlib.android.util.dialog;
 
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * <br>Created by Soybeany on 2020/4/3.

@@ -1,12 +1,12 @@
 package com.soybeany.bdlib.android.template.interfaces;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.soybeany.bdlib.android.util.BDContext;
 import com.soybeany.bdlib.android.util.IObserver;
 import com.soybeany.bdlib.core.java8.Optional;
 import com.soybeany.bdlib.core.java8.function.Consumer;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * 可拓展插件

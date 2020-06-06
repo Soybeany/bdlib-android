@@ -1,15 +1,15 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 /**
  * <br>Created by Soybeany on 2019/4/30.

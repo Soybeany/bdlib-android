@@ -1,14 +1,15 @@
 package com.soybeany.bdlib.android.template.plugins.core;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.soybeany.bdlib.android.template.annotation.BackType;
 import com.soybeany.bdlib.android.template.interfaces.IExtendPlugin;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * 只在{@link Activity}中使用，需自行调用{@link #onBackPressed()}
